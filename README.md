@@ -1,0 +1,2 @@
+# Castimofx
+Trading bot
