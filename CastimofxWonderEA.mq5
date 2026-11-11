@@ -644,24 +644,9 @@ void CloseAllSells()
 //==================================================================
 void ResetSetupsAfterStopout()
 {
-   g_m1BuyState = M1_NONE;
-   g_m1SellState = M1_NONE;
-
-   g_buySwing1 = 0.0;
-   g_buySwing2 = 0.0;
-   g_buySwing3 = 0.0;
-
-   g_sellSwing1 = 0.0;
-   g_sellSwing2 = 0.0;
-   g_sellSwing3 = 0.0;
-
-   g_buySwingTime1 = 0;
-   g_buySwingTime2 = 0;
-   g_buySwingTime3 = 0;
-
-   g_sellSwingTime1 = 0;
-   g_sellSwingTime2 = 0;
-   g_sellSwingTime3 = 0;
+   // M1 swings and M1 state are KEPT after a stop out.
+   // The swing structure is still valid; only a new
+   // M5 confirmation is required before trading again.
 
    g_buyM5State = M5_WAIT_SOLDIERS;
    g_sellM5State = M5_WAIT_SOLDIERS;
