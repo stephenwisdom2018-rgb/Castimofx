@@ -6,7 +6,7 @@
 //| DYNAMIC GRID SPACING BASED ON MAX TRADES                         |
 //| INDIVIDUAL TP = $20 PRICE MOVEMENT                               |
 //| TP RE-ENTRY = ORIGINAL ENTRY PRICE LIMIT ORDER                   |
-//| ACCOUNT STOP OUT = 50% OF ACCOUNT BALANCE                        |
+//| ACCOUNT STOP OUT = TIERED 50% -> 10% OF ACCOUNT BALANCE          |
 //+------------------------------------------------------------------+
 #property strict
 #property version "5.18"
@@ -28,7 +28,6 @@ input int    InpMinHistoryDays       = 14;
 
 input int    InpMaxPositions         = 10;
 input double InpIndividualTPUSD      = 20.0;
-input double InpStopoutPercent       = 50.0;
 
 input int    InpSwingLookback        = 2;
 input int    InpSwingMaxBars         = 300;
@@ -679,7 +678,32 @@ void ResetSetupsAfterStopout()
 }
 
 //==================================================================
-// 50% BALANCE-BASED ACCOUNT STOP OUT
+// TIERED STOP OUT PERCENT
+// Balance below $2000      -> 50%
+// $2000 - $2999.99         -> 40%
+// $3000 - $3999.99         -> 30%
+// $4000 - $4999.99         -> 20%
+// $5000 and above          -> 10% (locked)
+//==================================================================
+double GetStopoutPercent(double balance)
+{
+   if(balance < 2000.0)
+      return 50.0;
+
+   if(balance < 3000.0)
+      return 40.0;
+
+   if(balance < 4000.0)
+      return 30.0;
+
+   if(balance < 5000.0)
+      return 20.0;
+
+   return 10.0;
+}
+
+//==================================================================
+// TIERED BALANCE-BASED ACCOUNT STOP OUT
 //==================================================================
 bool CheckAccountStopout()
 {
@@ -691,7 +715,7 @@ bool CheckAccountStopout()
    double equity = AccountInfoDouble(ACCOUNT_EQUITY);
 
    double stopoutEquity =
-      balance*(1.0-InpStopoutPercent/100.0);
+      balance*(1.0-GetStopoutPercent(balance)/100.0);
 
    if(equity > stopoutEquity)
       return false;
@@ -1896,7 +1920,8 @@ void UpdateComment()
 
    double balance = AccountInfoDouble(ACCOUNT_BALANCE);
    double equity = AccountInfoDouble(ACCOUNT_EQUITY);
-   double stopoutLevel = balance*(1.0-InpStopoutPercent/100.0);
+   double stopoutPct = GetStopoutPercent(balance);
+   double stopoutLevel = balance*(1.0-stopoutPct/100.0);
 
    int maxTrades = GetMaxPositions();
    double spacing = GetGridSpacing(maxTrades);
@@ -1935,7 +1960,7 @@ void UpdateComment()
       "FIXED LOT: 0.02\n",
       "INDIVIDUAL TP: $20 PRICE MOVEMENT\n",
       "TP RE-ENTRY: ORIGINAL ENTRY LIMIT\n",
-      "ACCOUNT STOP OUT: 50% BALANCE"
+      "ACCOUNT STOP OUT: ",DoubleToString(stopoutPct,0),"% BALANCE"
    );
 }
 
@@ -2009,7 +2034,7 @@ int OnInit()
       " GridSpacing=",DoubleToString(GetGridSpacing(GetMaxPositions()),2),
       " IndividualTP=$20",
       " TPReplacement=OriginalEntryLimit",
-      " Stopout=50% balance",
+      " Stopout=",DoubleToString(GetStopoutPercent(AccountInfoDouble(ACCOUNT_BALANCE)),0),"% balance",
       " HistoryDays=",InpHistoryDays
    );
 
