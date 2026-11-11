@@ -152,6 +152,13 @@ bool g_buyZoneValid  = false;
 bool g_sellZoneValid = false;
 
 //==================================================================
+// POST STOP-OUT STATE
+// After a stop out the EA must get a NEW full confirmation
+// (M1 structure + M5 setup) before trading again.
+//==================================================================
+bool g_waitConfirmAfterStopout = false;
+
+//==================================================================
 // GOLD CHECK - BROKER SUFFIX/PREFIX SUPPORT
 //==================================================================
 bool IsGold()
@@ -674,6 +681,14 @@ void ResetSetupsAfterStopout()
    g_buyZoneValid = false;
    g_sellZoneValid = false;
 
+   // Clear armed RSI cycles so the refill path cannot
+   // re-enter straight away.
+   g_buyExtremeArmed = false;
+   g_sellExtremeArmed = false;
+
+   // Require a fresh full confirmation before trading again.
+   g_waitConfirmAfterStopout = true;
+
    // Keep the current RSI direction.
    // No cooldown is imposed after a stopout.
 }
@@ -715,7 +730,8 @@ bool CheckAccountStopout()
 
    if(InpVerbose)
       Print("V5.18: All EA Gold trades closed. ",
-            "Scanning resumes immediately. No cooldown.");
+            "Scanning resumes immediately. ",
+            "Waiting for NEW full confirmation before trading.");
 
    return true;
 }
@@ -1717,6 +1733,10 @@ bool OpenSellBasket(double base)
 //==================================================================
 void RefillSameDirection()
 {
+   // After a stop out, only a new full confirmation may enter.
+   if(g_waitConfirmAfterStopout)
+      return;
+
    int maxExposure = GetMaxPositions();
 
    if(maxExposure <= 0)
@@ -1921,6 +1941,8 @@ void UpdateComment()
       "TOTAL OPEN + PENDING: ",
       CountMyTotalExposure(),"/",maxTrades,"\n",
       "GRID SPACING: ",spacingText,"\n",
+      "AFTER STOP OUT: ",
+      (g_waitConfirmAfterStopout?"WAITING NEW CONFIRMATION":"NORMAL"),"\n",
       "EQUITY: ",DoubleToString(equity,2),"\n",
       "BALANCE: ",DoubleToString(balance,2),"\n",
       "STOP OUT EQUITY LEVEL: ",
@@ -2099,6 +2121,7 @@ void OnTick()
                      if(OpenBuyBasket(base))
                      {
                         g_buyExtremeArmed = false;
+                        g_waitConfirmAfterStopout = false;
 
                         if(InpVerbose)
                            Print("V5.18: BUY entry setup confirmed.");
@@ -2134,6 +2157,7 @@ void OnTick()
                      if(OpenSellBasket(base))
                      {
                         g_sellExtremeArmed = false;
+                        g_waitConfirmAfterStopout = false;
 
                         if(InpVerbose)
                            Print("V5.18: SELL entry setup confirmed.");
