@@ -1,6 +1,6 @@
 //+------------------------------------------------------------------+
 //| CASTIMOFX MA+RSI WONDER EA V5.18                                 |
-//| GOLD ONLY - BROKER SYMBOL SUFFIX/PREFIX SUPPORT                  |
+//| GOLD ONLY - ALL BROKERS / ALL GOLD SYMBOL NAMES                  |
 //| FIXED LOT 0.02                                                   |
 //| EQUITY-BASED EXPOSURE - MAX 10 OPEN + PENDING                    |
 //| DYNAMIC GRID SPACING BASED ON MAX TRADES                         |
@@ -162,13 +162,22 @@ bool g_waitConfirmAfterStopout = false;
 //==================================================================
 bool IsGold()
 {
+   // Symbol name: XAUUSD, XAUUSDm, XAUUSD.r, XAU/USD, #XAUUSD,
+   // GOLD, GOLD#, GOLDmicro, etc.
    string s = _Symbol;
    StringToUpper(s);
 
-   if(StringFind(s,"XAUUSD") >= 0)
+   if(StringFind(s,"XAU") >= 0)
       return true;
 
    if(StringFind(s,"GOLD") >= 0)
+      return true;
+
+   // Broker base currency = XAU (renamed gold symbols).
+   string base = SymbolInfoString(_Symbol,SYMBOL_CURRENCY_BASE);
+   StringToUpper(base);
+
+   if(base == "XAU")
       return true;
 
    return false;
