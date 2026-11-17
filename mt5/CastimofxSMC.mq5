@@ -48,6 +48,7 @@ input int      InpEndHour       = 24;     // Trade until hour (server time)
 
 input group "Risk"
 input double   InpRiskPct        = 0.5;   // Risk per trade (% of balance)
+input double   InpMinLotMaxRisk  = 2.0;   // If min lot risks more than the above, still trade it up to this %
 input int      InpMaxPosSymbol   = 3;     // Max open trades per symbol
 input int      InpMaxPosTotal    = 6;     // Max open trades in total
 input double   InpMaxDailyLoss   = 3.0;   // Stop new trades after losing this % today
@@ -378,7 +379,14 @@ double LotsForRisk(string sym, double stopDist)
    double lots = MathFloor(riskMoney / lossPerLot / step) * step;
    if(lots < minLot)
      {
-      PrintFormat("%s: risk %.2f too small for min lot %.2f - skipped", sym, riskMoney, minLot);
+      double minLotRisk = minLot * lossPerLot;
+      double minLotPct  = minLotRisk / AccountInfoDouble(ACCOUNT_BALANCE) * 100.0;
+      if(minLotPct <= InpMinLotMaxRisk)
+        {
+         PrintFormat("%s: using min lot %.2f (risks %.2f = %.2f%% of balance)", sym, minLot, minLotRisk, minLotPct);
+         return minLot;
+        }
+      PrintFormat("%s: min lot %.2f would risk %.2f (%.2f%% of balance) - skipped", sym, minLot, minLotRisk, minLotPct);
       return 0;
      }
    lots = MathMin(lots, maxLot);
