@@ -29,8 +29,14 @@ def _strategy_args(p: argparse.ArgumentParser) -> None:
     p.add_argument("--risk", type=float, default=1.0, help="%% of balance risked per trade (default 1)")
     p.add_argument("--balance", type=float, default=10_000, help="starting balance (default 10000)")
     p.add_argument("--spread", type=float, default=1.0, help="spread in pips (default 1)")
-    p.add_argument("--sl-buffer", type=float, default=2.0, help="pips beyond the zone for the stop (default 2)")
-    p.add_argument("--max-stop", type=float, default=50.0, help="skip zones wider than this many pips")
+    p.add_argument("--sl-buffer", type=float, default=0.1, help="stop buffer beyond the zone, x ATR (default 0.1)")
+    p.add_argument("--max-stop", type=float, default=4.0, help="skip zones whose stop is wider than this x ATR (default 4)")
+    p.add_argument("--max-positions", type=int, default=1, help="trades open at the same time (default 1)")
+    p.add_argument("--entry", choices=["edge", "mid", "market"], default="edge",
+                   help="edge/mid = limit order in the zone, market = confirmation entry right after the break")
+    p.add_argument("--htf", type=int, default=0, help="trend filter: timeframe this many times higher (16 on M15 = H4)")
+    p.add_argument("--session", default="", help="only trade between these hours, e.g. 7-17")
+    p.add_argument("--sweep", action="store_true", help="only trade breaks whose leg swept the previous swing")
     p.add_argument("--no-discount-filter", action="store_true", help="also trade zones on the wrong side of equilibrium")
     p.add_argument("--choch-only", action="store_true", help="only trade zones created by a CHoCH")
     p.add_argument("--trades", type=int, default=10, help="number of recent trades to list")
@@ -38,9 +44,11 @@ def _strategy_args(p: argparse.ArgumentParser) -> None:
 
 def _backtest(df: pd.DataFrame, args: argparse.Namespace) -> None:
     scfg = StrategyConfig(
-        swing_length=args.swing, rr=args.rr, sl_buffer_pips=args.sl_buffer,
+        swing_length=args.swing, rr=args.rr, sl_buffer_atr=args.sl_buffer,
         pip_size=pip_size_for(args.pair), require_discount=not args.no_discount_filter,
-        choch_only=args.choch_only, max_stop_pips=args.max_stop,
+        choch_only=args.choch_only, max_stop_atr=args.max_stop,
+        max_positions=args.max_positions, entry_mode=args.entry, htf_factor=args.htf, require_sweep=args.sweep,
+        session_hours=tuple(int(x) for x in args.session.split("-")) if args.session else None,
     )
     bcfg = BacktestConfig(initial_balance=args.balance, risk_pct=args.risk, spread_pips=args.spread)
     result = run_backtest(df, scfg, bcfg)

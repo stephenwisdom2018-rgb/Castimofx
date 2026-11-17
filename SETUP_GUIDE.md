@@ -33,30 +33,66 @@ then "BUY filled", then "TP hit" / "SL hit".
 
 ---
 
-## 2. MT5 auto-trading (Exness or any MT5 broker)
+## 2. MT5 auto-trader v2 (Exness or any MT5 broker)
 
-> **Start on a DEMO account.** Run it for at least 2–4 weeks before using real money.
+The EA **draws the SMC picture on the MT5 chart** and trades it automatically:
+BOS / CHoCH lines, demand (green) and supply (red) zones that turn grey when touched,
+premium / discount / equilibrium, strong/weak high/low, PDH/PDL/PWH/PWL/PMH/PML.
+A panel in the top-left shows each symbol's M15 and H4 trend, the last break, open trades and today's P/L.
 
-1. On a Windows PC (or a VPS so it runs 24/5), open MT5 and log in to your **demo** account.
-2. **File → Open Data Folder → MQL5 → Experts**. Copy `CastimofxSMC.mq5` into that folder.
-3. In MT5, press **F4** to open MetaEditor, open the file, and press **F7 (Compile)**. It should say "0 errors".
-4. Back in MT5, open a chart (for example EURUSD M15) and drag **CastimofxSMC** from the Navigator onto it.
-5. Tick **Allow Algo Trading**, then turn on the **Algo Trading** button in the toolbar.
-6. The top-left corner of the chart shows the structure, the last BOS/CHoCH, the active zones, and the position.
+> **Start on a DEMO account.** See "Honest results" below.
 
-### Backtest it first, on your broker's real data
-**View → Strategy Tester** → Expert: CastimofxSMC → symbol and M15 → Modelling: "Every tick based on real ticks" → choose a date range → **Start**.
+### Install
+1. On a Windows PC (or VPS), open MT5 and log in to your **demo** account.
+2. **File → Open Data Folder → MQL5 → Experts**. Copy `CastimofxSMC.mq5` there.
+3. Press **F4** (MetaEditor), open the file, press **F7 (Compile)**. It should say "0 errors". If it shows errors, screenshot them and send them to me.
+4. Open an **M15** chart (for example EURUSD), drag **CastimofxSMC** onto it, tick **Allow Algo Trading**, and switch on **Algo Trading** in the toolbar.
 
-### Main settings
+### Getting 3+ trades a day
+On M15 with the default settings, each symbol gives roughly **1–2 trades a day**. Trade several symbols from one chart:
+
+- **Symbols:** `EURUSD,GBPUSD,XAUUSD,GBPJPY,AUDUSD`
+- **Broker suffix:** Exness Standard accounts use names like `EURUSDm`, so type `m`. Leave it empty if your symbols have no suffix.
+
+With 5–6 symbols, expect around **6–12 trades a day** in total. The zones are drawn for the chart's own symbol.
+Open another chart and attach the EA with the same symbol list if you also want to see another pair's zones.
+In that case, give it a different **Magic number** and an empty symbol list, or it will double-trade.
+
+### Settings
 | Setting | Default | Meaning |
 |---|---|---|
-| Swing length | 5 | Bigger means fewer, stronger swings and zones |
-| Risk : reward | 2 | Take profit = 2 × the risk |
-| Buy only in discount… | on | The premium/discount filter |
-| Only zones created by a CHoCH | off | Turn on for reversal-only trading |
-| Risk per trade % | 1 | % of balance lost if the stop is hit |
-| Max spread (points) | 30 | No new orders when the spread is wider (raise it for gold) |
-| Trade from/until hour | 0 / 24 | Server-time session filter (for example London + NY) |
+| Entry timeframe | M15 | Where zones and breaks are found |
+| Trend filter timeframe | H4 | Only buy when H4 structure is bullish, only sell when it's bearish. Choose CURRENT to switch off |
+| Entry type | Confirmation | **Confirmation** = enter right after the BOS/CHoCH candle closes. **Zone limit** = limit order at the zone edge |
+| Swing length | 3 | Smaller = more swings, zones and trades |
+| Risk : reward | 3 | Take profit = 3 × the risk |
+| Only CHoCH / only sweeps | off | Fewer, "cleaner" trades (in testing they did *not* improve results) |
+| Trade from / until hour | 0 / 24 | Server time. Exness server time = GMT. London+NY ≈ 7 to 17 |
+| Risk per trade % | 0.5 | % of balance lost if the stop is hit |
+| Max open trades per symbol / total | 3 / 6 | |
+| Daily loss limit % | 3 | No new trades for the rest of the day once you're down this much |
+| Max trades per day | 20 | |
+| Max spread % of stop | 20 | Skips trades where the spread eats too much of the stop |
 
-One pending order and one open trade at a time per chart. Attach it to several charts to trade several pairs.
-Give each chart a different **Magic number** only if you run two copies on the same symbol.
+### Backtest in MT5 before going live
+**View → Strategy Tester** → Expert: CastimofxSMC → symbol and M15 → Modelling: "Every tick based on real ticks"
+→ a date range of **at least 1 year** → **Start**. For multi-symbol tests, fill in the Symbols input. MT5 loads them automatically.
+
+---
+
+## Honest results (read this)
+
+I tested these rules in Python on **real M15 and M5 data for EURUSD, GBPUSD, USDJPY, AUDUSD, GBPJPY and gold**
+(26 Aug to 17 Nov 2026, about 2.5 months), with spread included. I tuned on the first half and checked on the second half.
+
+- The original zone-limit entry **lost money on every pair** (about −0.2 to −0.5R per trade).
+  More trades (M5, smaller swings) **lost faster**, because tight zones make the spread a big share of each trade.
+- I tried the H4 trend filter, a session filter, mid-zone entries, sweep confirmation, and 1.5 / 2 / 3 R:R targets: about 1,000 combinations.
+  **None was reliably profitable on both halves.** The least-bad setting, which is now the default (confirmation entry + H4 filter, R:R 3),
+  was close to break-even: about −0.07R and −0.03R per trade.
+- 2.5 months of data is short, and the free data I used isn't your broker's feed. Your MT5 Strategy Tester
+  with a year or more of Exness tick data is the real judge.
+
+**Bottom line:** the bot does what you asked (draws the zones and trades them automatically, 3+ times a day), but
+I have **no evidence yet that these rules make money**. Run it on demo, check the Strategy Tester, and only go live
+if a long backtest *and* several weeks of demo both show profit.

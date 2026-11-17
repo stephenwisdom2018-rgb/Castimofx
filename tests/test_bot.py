@@ -120,3 +120,47 @@ def test_cli_demo_and_analyze(tmp_path, capsys):
     assert main(["analyze", str(p)]) == 0
     out = capsys.readouterr().out
     assert "win_rate_pct" in out and "Structure:" in out
+
+
+def test_confirmation_entry_fills_next_bar_open_and_targets_rr():
+    df = synthetic(4000, seed=2)
+    r = run_backtest(df, StrategyConfig(entry_mode="market", rr=2.0, require_discount=False))
+    assert r.trades
+    opens = df["open"]
+    for t in r.trades:
+        assert t.entry == pytest.approx(opens.loc[t.entry_time])
+        assert t.target == pytest.approx(t.entry + (2.0 if t.direction == BULLISH else -2.0) * abs(t.entry - t.stop))
+
+
+def test_max_positions_allows_overlapping_trades():
+    df = synthetic(6000, seed=4)
+    one = run_backtest(df, StrategyConfig(max_positions=1, require_discount=False))
+    many = run_backtest(df, StrategyConfig(max_positions=3, require_discount=False))
+
+    def max_overlap(trades):
+        ev = sorted([(t.entry_time, 1) for t in trades] + [(t.exit_time, -1) for t in trades], key=lambda x: (x[0], x[1]))
+        cur = best = 0
+        for _, d in ev:
+            cur += d
+            best = max(best, cur)
+        return best
+
+    assert max_overlap(one.trades) <= 1
+    assert len(many.trades) >= len(one.trades)
+
+
+def test_htf_filter_only_trades_with_higher_timeframe_trend():
+    from castimofx.backtest import htf_trend
+    df = synthetic(4000, seed=8)
+    bias = htf_trend(df, 16, 3)
+    r = run_backtest(df, StrategyConfig(swing_length=3, htf_factor=16, entry_mode="market", require_discount=False))
+    pos = {ts: i for i, ts in enumerate(df.index)}
+    for t in r.trades:
+        assert bias[pos[t.entry_time] - 1] == t.direction  # decided on the previous bar's close
+
+
+def test_session_filter():
+    df = synthetic(4000, seed=9)
+    r = run_backtest(df, StrategyConfig(entry_mode="market", session_hours=(7, 17), require_discount=False))
+    assert r.trades
+    assert all(7 <= t.entry_time.hour < 17 for t in r.trades)
