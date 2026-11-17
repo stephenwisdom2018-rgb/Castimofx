@@ -3,8 +3,15 @@
 A forex trading bot built on **Smart Money Concepts (SMC)**, the style of chart
 with BOS / CHoCH labels, supply and demand zones, equilibrium and PDL / PWL / PML levels.
 
-> ⚠️ This is a research and backtesting tool. It does not place real trades yet.
-> Forex trading is high risk. Backtest and paper-trade before risking money.
+**→ Start here: [SETUP_GUIDE.md](SETUP_GUIDE.md)**
+
+| Part | File |
+|---|---|
+| TradingView indicator (chart drawing, signals, alerts) | [`tradingview/castimofx_smc.pine`](tradingview/castimofx_smc.pine) |
+| MT5 auto-trader (Expert Advisor) | [`mt5/CastimofxSMC.mq5`](mt5/CastimofxSMC.mq5) |
+| Python research and backtester | `castimofx/` |
+
+> ⚠️ Forex trading is high risk. Backtest and demo-trade before risking real money.
 
 ## What it detects
 
@@ -58,7 +65,8 @@ python -m pytest
 
 ## Roadmap
 
-- [ ] Connect a broker for paper and then live trading (OANDA API or MetaTrader 5)
+- [x] MT5 Expert Advisor for automatic trading
+- [x] TradingView indicator with alerts
 - [ ] Higher-timeframe bias (for example, H4 structure filtering M15 entries)
 - [ ] Liquidity-sweep confirmation and fair value gaps
 - [ ] Session filter (London / New York) and news avoidance

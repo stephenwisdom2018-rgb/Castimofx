@@ -1,0 +1,449 @@
+// Castimofx SMC - Supply & Demand
+// Market structure (BOS / CHoCH), supply & demand zones, premium / discount,
+// previous day / week / month levels, trade signals and alerts.
+// Same rules as the Castimofx MT5 Expert Advisor and the Python backtester.
+//@version=5
+indicator("Castimofx SMC - Supply & Demand", shorttitle = "CFX SMC", overlay = true,
+     max_boxes_count = 500, max_lines_count = 500, max_labels_count = 500, max_bars_back = 1000)
+
+// ───────────────────────────── Inputs ─────────────────────────────
+grpS = "Market structure"
+swingLen   = input.int(5, "Swing length", minval = 2, maxval = 50, group = grpS,
+     tooltip = "Bars on each side that confirm a swing high / low. Bigger = fewer, stronger swings.")
+showStruct = input.bool(true, "Show BOS / CHoCH", group = grpS)
+bullCol    = input.color(#089981, "Bullish", group = grpS, inline = "sc")
+bearCol    = input.color(#F23645, "Bearish", group = grpS, inline = "sc")
+
+grpZ = "Supply & demand zones"
+showZones     = input.bool(true, "Show zones", group = grpZ)
+maxZones      = input.int(5, "Zones to keep per side", minval = 1, maxval = 50, group = grpZ)
+obLookback    = input.int(5, "Order-block search (bars)", minval = 0, maxval = 20, group = grpZ)
+demandCol     = input.color(color.new(#089981, 75), "Demand", group = grpZ, inline = "zc")
+supplyCol     = input.color(color.new(#F23645, 75), "Supply", group = grpZ, inline = "zc")
+keepMitigated = input.bool(true, "Keep touched zones (greyed out)", group = grpZ)
+
+grpP = "Premium / discount"
+showPD = input.bool(true, "Show premium / discount / equilibrium", group = grpP)
+
+grpL = "Key levels"
+showD  = input.bool(true, "PDH / PDL", group = grpL, inline = "kl")
+showW  = input.bool(true, "PWH / PWL", group = grpL, inline = "kl")
+showM  = input.bool(true, "PMH / PML", group = grpL, inline = "kl")
+lvlCol = input.color(color.gray, "Colour", group = grpL)
+
+grpT = "Signals"
+showSignals = input.bool(true, "Show trade signals", group = grpT)
+rr          = input.float(2.0, "Risk : reward", minval = 0.5, step = 0.5, group = grpT)
+pdFilter    = input.bool(true, "Buy only in discount / sell only in premium", group = grpT)
+chochOnly   = input.bool(false, "Only trade zones created by a CHoCH", group = grpT)
+slBufAtr    = input.float(0.1, "Stop buffer beyond zone (x ATR)", minval = 0, step = 0.05, group = grpT)
+minStopAtr  = input.float(0.3, "Skip if stop smaller than (x ATR)", minval = 0, step = 0.1, group = grpT)
+maxStopAtr  = input.float(4.0, "Skip if stop bigger than (x ATR)", minval = 0.5, step = 0.5, group = grpT)
+expiryBars  = input.int(96, "Cancel unfilled order after (bars)", minval = 1, group = grpT)
+showStats   = input.bool(true, "Show results table", group = grpT)
+
+// ───────────────────────────── Types & state ─────────────────────────────
+type Zone
+    int   dir
+    float top
+    float bot
+    int   created
+    box   bx
+    bool  broken = false
+
+var array<Zone> zones = array.new<Zone>()
+
+var int   trend    = 0
+var float shPrice  = na
+var int   shBar    = na
+var bool  shBroken = true
+var float slPrice  = na
+var int   slBar    = na
+var bool  slBroken = true
+
+var float trailTop    = na
+var int   trailTopBar = na
+var float trailBot    = na
+var int   trailBotBar = na
+
+// pending limit order
+var int   pDir    = 0
+var float pEntry  = na
+var float pStop   = na
+var float pTp     = na
+var int   pExpiry = na
+var Zone  pZone   = na
+var line  pLine   = na
+
+// open trade
+var int   tDir    = 0
+var float tEntry  = na
+var float tStop   = na
+var float tTp     = na
+var box   tRisk   = na
+var box   tReward = na
+
+var int   wins      = 0
+var int   losses    = 0
+var float grossWinR = 0.0
+var float grossLosR = 0.0
+
+bool buySetup  = false
+bool sellSetup = false
+bool buyEntry  = false
+bool sellEntry = false
+bool tpHit     = false
+bool slHit     = false
+
+atr = ta.atr(14)
+ph  = ta.pivothigh(high, swingLen, swingLen)
+pl  = ta.pivotlow(low, swingLen, swingLen)
+
+f_px(float v) => str.tostring(v, format.mintick)
+
+// ───────────────────────────── Helpers ─────────────────────────────
+f_zoneBox(int dir, float top, float bot, int leftBar) =>
+    box b = na
+    if showZones
+        col = dir == 1 ? demandCol : supplyCol
+        b := box.new(leftBar, top, bar_index, bot, border_color = color.new(col, 40), bgcolor = col,
+             extend = extend.right, text = dir == 1 ? "Demand" : "Supply", text_size = size.tiny,
+             text_color = color.new(col, 0), text_halign = text.align_right, text_valign = text.align_center)
+    b
+
+f_trim(int dir) =>
+    int cnt = 0
+    for i = zones.size() - 1 to 0
+        Zone z = zones.get(i)
+        if z.dir == dir
+            cnt += 1
+            if cnt > maxZones
+                box.delete(z.bx)
+                zones.remove(i)
+
+// Entry / stop / target for a new zone. Returns [ok, entry, stop, target]
+f_plan(int dir, float top, float bot, float eq, bool isChoch) =>
+    float buf    = slBufAtr * atr
+    float entry  = dir == 1 ? top : bot
+    float stop   = dir == 1 ? bot - buf : top + buf
+    float risk   = math.abs(entry - stop)
+    float target = entry + dir * rr * risk
+    bool  inOpt  = dir == 1 ? top <= eq : bot >= eq
+    bool  ok     = (not pdFilter or inOpt) and (not chochOnly or isChoch) and risk >= minStopAtr * atr and risk <= maxStopAtr * atr
+    [ok, entry, stop, target]
+
+f_signed(float v) => (v > 0 ? "+" : "") + str.tostring(v, "#.##")
+
+f_extendTrade() =>
+    if not na(tRisk)
+        box.set_right(tRisk, bar_index)
+    if not na(tReward)
+        box.set_right(tReward, bar_index)
+
+f_closeDraw(float exitPx, float r) =>
+    f_extendTrade()
+    if showSignals
+        label.new(bar_index, exitPx, (r > 0 ? "TP " : "SL ") + f_signed(r) + "R",
+             style = label.style_label_left, color = r > 0 ? bullCol : bearCol, textcolor = color.white, size = size.small)
+
+// ───────────────────────────── 1. Manage open trade ─────────────────────────────
+if tDir != 0
+    bool gapStop   = tDir == 1 ? open <= tStop : open >= tStop
+    bool stopped   = tDir == 1 ? low <= tStop : high >= tStop
+    bool gapTarget = tDir == 1 ? open >= tTp : open <= tTp
+    bool target    = tDir == 1 ? high >= tTp : low <= tTp
+    if stopped or target
+        float exitPx = stopped ? (gapStop ? open : tStop) : (gapTarget ? open : tTp)
+        float r = (exitPx - tEntry) * tDir / math.abs(tEntry - tStop)
+        if r > 0
+            wins += 1
+            grossWinR += r
+            tpHit := true
+        else
+            losses += 1
+            grossLosR -= r
+            slHit := true
+        f_closeDraw(exitPx, r)
+        tDir := 0
+    else
+        f_extendTrade()
+
+// ───────────────────────────── 2. Fill pending order ─────────────────────────────
+if tDir == 0 and pDir != 0
+    bool touched = pDir == 1 ? low <= pEntry : high >= pEntry
+    if touched
+        float fill = pDir == 1 ? math.min(open, pEntry) : math.max(open, pEntry)
+        bool throughStop = pDir == 1 ? fill <= pStop : fill >= pStop
+        if not throughStop
+            tDir   := pDir
+            tEntry := fill
+            tStop  := pStop
+            tTp    := pTp
+            box.delete(tRisk)
+            box.delete(tReward)
+            tRisk   := na
+            tReward := na
+            if showSignals
+                tRisk   := box.new(bar_index, tEntry, bar_index, tStop, border_color = color.new(bearCol, 60), bgcolor = color.new(bearCol, 85))
+                tReward := box.new(bar_index, tEntry, bar_index, tTp, border_color = color.new(bullCol, 60), bgcolor = color.new(bullCol, 85))
+            buyEntry  := tDir == 1
+            sellEntry := tDir == -1
+            alert((tDir == 1 ? "BUY" : "SELL") + " filled " + syminfo.ticker + " @ " + f_px(tEntry) + "  SL " + f_px(tStop) + "  TP " + f_px(tTp), alert.freq_once_per_bar_close)
+            // stop inside the fill bar counts as a loss (target is checked from the next bar)
+            bool stopNow = tDir == 1 ? low <= tStop : high >= tStop
+            if stopNow
+                float r = (tStop - tEntry) * tDir / math.abs(tEntry - tStop)
+                losses += 1
+                grossLosR -= r
+                slHit := true
+                f_closeDraw(tStop, r)
+                tDir := 0
+        pDir := 0
+        line.delete(pLine)
+
+// ───────────────────────────── 3. Market structure ─────────────────────────────
+if not na(ph)
+    shPrice     := ph
+    shBar       := bar_index - swingLen
+    shBroken    := false
+    trailTop    := ph
+    trailTopBar := shBar
+if not na(pl)
+    slPrice     := pl
+    slBar       := bar_index - swingLen
+    slBroken    := false
+    trailBot    := pl
+    trailBotBar := slBar
+if not na(trailTop) and high > trailTop
+    trailTop    := high
+    trailTopBar := bar_index
+if not na(trailBot) and low < trailBot
+    trailBot    := low
+    trailBotBar := bar_index
+
+// zones: broken (close through) -> removed, touched -> mitigated
+if zones.size() > 0
+    for i = zones.size() - 1 to 0
+        Zone z = zones.get(i)
+        if z.created < bar_index
+            bool broke  = z.dir == 1 ? close < z.bot : close > z.top
+            bool tapped = z.dir == 1 ? low <= z.top : high >= z.bot
+            if broke
+                z.broken := true
+                box.delete(z.bx)
+                zones.remove(i)
+            else if tapped
+                if keepMitigated and not na(z.bx)
+                    box.set_right(z.bx, bar_index)
+                    box.set_extend(z.bx, extend.none)
+                    box.set_bgcolor(z.bx, color.new(color.gray, 85))
+                    box.set_border_color(z.bx, color.new(color.gray, 70))
+                    box.set_text_color(z.bx, color.new(color.gray, 40))
+                else
+                    box.delete(z.bx)
+                zones.remove(i)
+
+bool bullBreak = not shBroken and not na(shPrice) and close > shPrice
+bool bearBreak = not slBroken and not na(slPrice) and close < slPrice
+
+Zone  bullZone = na
+float bullEq   = na
+bool  bullChoch = false
+if bullBreak
+    shBroken  := true
+    bullChoch := trend == -1
+    trend     := 1
+    string kind = bullChoch ? "CHoCH" : "BOS"
+    if showStruct
+        line.new(shBar, shPrice, bar_index, shPrice, color = bullCol, style = bullChoch ? line.style_solid : line.style_dashed)
+        label.new(math.round((shBar + bar_index) / 2), shPrice, kind, color = color(na), textcolor = bullCol,
+             style = label.style_label_down, size = size.small)
+    // leg origin = lowest low between the broken swing and now
+    int   span = math.min(bar_index - shBar, 500)
+    int   oOff = 0
+    float oLow = low
+    for i = 0 to span
+        if low[i] <= oLow
+            oLow := low[i]
+            oOff := i
+    float rHigh = high
+    for i = 0 to oOff
+        rHigh := math.max(rHigh, high[i])
+    // order block = last bearish candle at / just before the origin
+    int obOff = oOff
+    for j = oOff to oOff + obLookback
+        if close[j] < open[j]
+            obOff := j
+            break
+    float zTop = high[obOff]
+    float zBot = oLow
+    for j = oOff to obOff
+        zBot := math.min(zBot, low[j])
+    bullZone := Zone.new(1, zTop, zBot, bar_index, f_zoneBox(1, zTop, zBot, bar_index - obOff))
+    zones.push(bullZone)
+    f_trim(1)
+    bullEq := (rHigh + oLow) / 2
+
+Zone  bearZone = na
+float bearEq   = na
+bool  bearChoch = false
+if bearBreak
+    slBroken  := true
+    bearChoch := trend == 1
+    trend     := -1
+    string kind = bearChoch ? "CHoCH" : "BOS"
+    if showStruct
+        line.new(slBar, slPrice, bar_index, slPrice, color = bearCol, style = bearChoch ? line.style_solid : line.style_dashed)
+        label.new(math.round((slBar + bar_index) / 2), slPrice, kind, color = color(na), textcolor = bearCol,
+             style = label.style_label_up, size = size.small)
+    int   span = math.min(bar_index - slBar, 500)
+    int   oOff = 0
+    float oHigh = high
+    for i = 0 to span
+        if high[i] >= oHigh
+            oHigh := high[i]
+            oOff  := i
+    float rLow = low
+    for i = 0 to oOff
+        rLow := math.min(rLow, low[i])
+    int obOff = oOff
+    for j = oOff to oOff + obLookback
+        if close[j] > open[j]
+            obOff := j
+            break
+    float zBot = low[obOff]
+    float zTop = oHigh
+    for j = oOff to obOff
+        zTop := math.max(zTop, high[j])
+    bearZone := Zone.new(-1, zTop, zBot, bar_index, f_zoneBox(-1, zTop, zBot, bar_index - obOff))
+    zones.push(bearZone)
+    f_trim(-1)
+    bearEq := (oHigh + rLow) / 2
+
+// ───────────────────────────── 4. Orders ─────────────────────────────
+// cancel the pending order if structure flipped, its zone broke, or it expired
+if pDir != 0
+    bool cancel = bar_index >= pExpiry or trend != pDir
+    if not na(pZone)
+        if pZone.broken
+            cancel := true
+    if cancel
+        pDir := 0
+        line.delete(pLine)
+    else if not na(pLine)
+        line.set_x2(pLine, bar_index)
+
+if bullBreak
+    [ok, entry, stop, target] = f_plan(1, bullZone.top, bullZone.bot, bullEq, bullChoch)
+    if ok
+        line.delete(pLine)
+        pDir    := 1
+        pEntry  := entry
+        pStop   := stop
+        pTp     := target
+        pExpiry := bar_index + expiryBars
+        pZone   := bullZone
+        buySetup := true
+        pLine := showSignals ? line.new(bar_index, entry, bar_index, entry, color = bullCol, style = line.style_dotted, width = 2) : na
+        alert("BUY LIMIT " + syminfo.ticker + " @ " + f_px(entry) + "  SL " + f_px(stop) + "  TP " + f_px(target), alert.freq_once_per_bar_close)
+
+if bearBreak
+    [ok, entry, stop, target] = f_plan(-1, bearZone.top, bearZone.bot, bearEq, bearChoch)
+    if ok
+        line.delete(pLine)
+        pDir    := -1
+        pEntry  := entry
+        pStop   := stop
+        pTp     := target
+        pExpiry := bar_index + expiryBars
+        pZone   := bearZone
+        sellSetup := true
+        pLine := showSignals ? line.new(bar_index, entry, bar_index, entry, color = bearCol, style = line.style_dotted, width = 2) : na
+        alert("SELL LIMIT " + syminfo.ticker + " @ " + f_px(entry) + "  SL " + f_px(stop) + "  TP " + f_px(target), alert.freq_once_per_bar_close)
+
+if tpHit
+    alert("TP hit " + syminfo.ticker, alert.freq_once_per_bar_close)
+if slHit
+    alert("SL hit " + syminfo.ticker, alert.freq_once_per_bar_close)
+
+plotshape(showSignals and buySetup,  "Buy limit set",  shape.circle,       location.belowbar, color.new(bullCol, 40), size = size.tiny)
+plotshape(showSignals and sellSetup, "Sell limit set", shape.circle,       location.abovebar, color.new(bearCol, 40), size = size.tiny)
+plotshape(showSignals and buyEntry,  "Buy entry",      shape.triangleup,   location.belowbar, bullCol, size = size.small, text = "BUY",  textcolor = bullCol)
+plotshape(showSignals and sellEntry, "Sell entry",     shape.triangledown, location.abovebar, bearCol, size = size.small, text = "SELL", textcolor = bearCol)
+
+alertcondition(buySetup,  "Buy limit setup",  "CFX SMC: BUY LIMIT setup on {{ticker}}")
+alertcondition(sellSetup, "Sell limit setup", "CFX SMC: SELL LIMIT setup on {{ticker}}")
+alertcondition(buyEntry,  "Buy entry",        "CFX SMC: BUY filled on {{ticker}} at {{close}}")
+alertcondition(sellEntry, "Sell entry",       "CFX SMC: SELL filled on {{ticker}} at {{close}}")
+
+// ───────────────────────────── 5. Premium / discount, key levels ─────────────────────────────
+[pdh, pdl] = request.security(syminfo.tickerid, "D", [high[1], low[1]], lookahead = barmerge.lookahead_on)
+[pwh, pwl] = request.security(syminfo.tickerid, "W", [high[1], low[1]], lookahead = barmerge.lookahead_on)
+[pmh, pml] = request.security(syminfo.tickerid, "M", [high[1], low[1]], lookahead = barmerge.lookahead_on)
+
+var array<line>  lastLines  = array.new<line>()
+var array<label> lastLabels = array.new<label>()
+var array<box>   lastBoxes  = array.new<box>()
+
+f_level(float price, string txt) =>
+    if not na(price)
+        lastLines.push(line.new(bar_index - 30, price, bar_index + 15, price, color = lvlCol, style = line.style_dotted))
+        lastLabels.push(label.new(bar_index + 15, price, txt, color = color(na), textcolor = lvlCol,
+             style = label.style_label_left, size = size.small))
+
+if barstate.islast
+    for l in lastLines
+        line.delete(l)
+    for lb in lastLabels
+        label.delete(lb)
+    for b in lastBoxes
+        box.delete(b)
+    lastLines.clear()
+    lastLabels.clear()
+    lastBoxes.clear()
+
+    if showPD and not na(trailTop) and not na(trailBot)
+        float eq   = (trailTop + trailBot) / 2
+        int   left = math.min(trailTopBar, trailBotBar)
+        lastBoxes.push(box.new(left, trailTop, bar_index + 15, eq, border_color = color(na), bgcolor = color.new(bearCol, 92),
+             text = "Premium", text_size = size.small, text_color = color.new(bearCol, 30), text_halign = text.align_right, text_valign = text.align_top))
+        lastBoxes.push(box.new(left, eq, bar_index + 15, trailBot, border_color = color(na), bgcolor = color.new(bullCol, 92),
+             text = "Discount", text_size = size.small, text_color = color.new(bullCol, 30), text_halign = text.align_right, text_valign = text.align_bottom))
+        lastLines.push(line.new(left, eq, bar_index + 15, eq, color = color.gray, style = line.style_dashed))
+        lastLabels.push(label.new(bar_index + 15, eq, "Equilibrium", color = color(na), textcolor = color.gray, style = label.style_label_left, size = size.small))
+        lastLabels.push(label.new(trailTopBar, trailTop, trend == -1 ? "Strong High" : "Weak High", color = color(na),
+             textcolor = bearCol, style = label.style_label_down, size = size.small))
+        lastLabels.push(label.new(trailBotBar, trailBot, trend == 1 ? "Strong Low" : "Weak Low", color = color(na),
+             textcolor = bullCol, style = label.style_label_up, size = size.small))
+
+    if showD
+        f_level(pdh, "PDH")
+        f_level(pdl, "PDL")
+    if showW
+        f_level(pwh, "PWH")
+        f_level(pwl, "PWL")
+    if showM
+        f_level(pmh, "PMH")
+        f_level(pml, "PML")
+
+// ───────────────────────────── 6. Results table ─────────────────────────────
+var table stats = table.new(position.top_right, 2, 6, bgcolor = color.new(color.black, 25), border_width = 1)
+if barstate.islast and showStats
+    int   total = wins + losses
+    float wr    = total > 0 ? 100.0 * wins / total : 0.0
+    float netR  = grossWinR - grossLosR
+    string pf   = grossLosR > 0 ? str.tostring(grossWinR / grossLosR, "#.##") : "-"
+    string bias = trend == 1 ? "BULLISH" : trend == -1 ? "BEARISH" : "-"
+    table.cell(stats, 0, 0, "CFX SMC", text_color = color.white, text_size = size.small)
+    table.cell(stats, 1, 0, bias, text_color = trend == 1 ? bullCol : trend == -1 ? bearCol : color.white, text_size = size.small)
+    table.cell(stats, 0, 1, "Trades", text_color = color.silver, text_size = size.small)
+    table.cell(stats, 1, 1, str.tostring(total), text_color = color.white, text_size = size.small)
+    table.cell(stats, 0, 2, "Win rate", text_color = color.silver, text_size = size.small)
+    table.cell(stats, 1, 2, str.tostring(wr, "#.#") + "%", text_color = color.white, text_size = size.small)
+    table.cell(stats, 0, 3, "Net R", text_color = color.silver, text_size = size.small)
+    table.cell(stats, 1, 3, f_signed(netR), text_color = netR >= 0 ? bullCol : bearCol, text_size = size.small)
+    table.cell(stats, 0, 4, "Profit factor", text_color = color.silver, text_size = size.small)
+    table.cell(stats, 1, 4, pf, text_color = color.white, text_size = size.small)
+    table.cell(stats, 0, 5, tDir != 0 ? "In trade" : pDir != 0 ? "Pending" : "Waiting", text_color = color.silver, text_size = size.small)
+    table.cell(stats, 1, 5, tDir != 0 ? (tDir == 1 ? "BUY" : "SELL") : pDir != 0 ? (pDir == 1 ? "BUY LIMIT" : "SELL LIMIT") : "-",
+         text_color = color.white, text_size = size.small)
