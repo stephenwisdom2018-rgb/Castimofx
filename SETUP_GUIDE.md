@@ -135,8 +135,28 @@ a blue entry and four green take-profits (3,511 / 3,500 / 3,485 / 3,475), with *
   The EA then places fewer orders: 1 order goes to TP2, 2 orders go to TP1 and TP3, and 3 orders go to TP1-TP3.
   If even 0.01 lot would risk more than "min-lot max risk" (2%), the setup is skipped.
 
-### Results
-**Not yet measured on real gold data.** The backtester was checked on a pure random walk and gives no false
-profit (about −0.08R per trade, which is what an honest backtest of a no-edge strategy should show).
-Whether the setup really works must be tested on real XAUUSD history, either with the MT5 Strategy Tester
-or `python -m castimofx ote XAUUSD_M15.csv`, including the filters.
+### Results on real gold data (read this)
+Tested on **2 years of your broker's XAUUSDb M15 history** (Nov 2024 to Nov 2026, 47,220 bars), $1,000, 1% risk per trade,
+spread $0.10, with the same conservative fills as the other backtests.
+
+**The plain setup from the video loses money.**
+| Period | Trades | TP1 hit | Avg per trade | Net on $1,000 | Worst drawdown |
+|---|---|---|---|---|---|
+| Both years | 641 | 57% | −0.065R | **−$365** | −39% |
+| Year 1 | 306 | 56% | −0.080R | −$230 | −34% |
+| Year 2 | 333 | 59% | −0.053R | −$178 | −31% |
+
+TP1 is hit 57% of the time, which looks like a high win rate on video, but 43% of trades hit the full stop
+before TP1, and those losses outweigh the small TP1 wins.
+
+**Filters did not fix it.** 4,608 combinations of the filters, entry level, TP plan and swing size were tested on
+year 1 and then checked on year 2, which they were not chosen on:
+- The 20 best year-1 settings averaged about +0.35 to +0.66R per trade in year 1, but **17 of 20 lost in year 2**.
+- The most consistent year-1 improvements were the H4 trend filter, London/NY hours, a 79% entry and a single TP3 target.
+  Together they made +0.41R per trade in year 1 and **−0.12R in year 2**.
+- The 2-3 settings that stayed slightly positive in year 2 had only 60-86 trades, which is what luck alone produces
+  among 20 tries.
+
+**Bottom line:** the indicator and the EA reproduce the video's setup faithfully, but on two years of real data
+**there is no evidence it makes money**, with or without filters. Use the indicator to study the setup, and run the EA on
+**demo only**. Don't put it on a real account.

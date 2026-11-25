@@ -86,3 +86,13 @@ def test_tp_fractions_validated():
 def test_cli_ote(capsys):
     assert main(["ote", "--trades", "2"]) == 0
     assert "tp1_hit_pct" in capsys.readouterr().out
+
+
+def test_load_mt5_tab_export(tmp_path):
+    from castimofx import load_csv
+    p = tmp_path / "x.csv"
+    p.write_text("<DATE>\t<TIME>\t<OPEN>\t<HIGH>\t<LOW>\t<CLOSE>\t<TICKVOL>\t<VOL>\t<SPREAD>\r\n"
+                 "2024.11.26\t01:00:00\t2625.09\t2628.02\t2625.02\t2628.02\t684\t0\t4\r\n"
+                 "2024.11.26\t01:15:00\t2628.03\t2628.58\t2625.89\t2625.96\t726\t0\t5\r\n")
+    df = load_csv(str(p))
+    assert len(df) == 2 and df.close.iloc[-1] == 2625.96
