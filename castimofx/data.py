@@ -14,7 +14,7 @@ def load_csv(path: str) -> pd.DataFrame:
     Needs a time column plus open/high/low/close. Column names are case-insensitive.
     Returns a DataFrame indexed by timestamp with columns open, high, low, close.
     """
-    df = pd.read_csv(path)
+    df = pd.read_csv(path, sep=None, engine="python")  # comma, tab (MT5 export) or semicolon
     df.columns = [c.strip().lower().strip("<>") for c in df.columns]
 
     # MT4/MT5 exports often split date and time into two columns.
