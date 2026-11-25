@@ -96,3 +96,47 @@ I tested these rules in Python on **real M15 and M5 data for EURUSD, GBPUSD, USD
 **Bottom line:** the bot does what you asked (draws the zones and trades them automatically, 3+ times a day), but
 I have **no evidence yet that these rules make money**. Run it on demo, check the Strategy Tester, and only go live
 if a long backtest *and* several weeks of demo both show profit.
+
+
+---
+
+## 3. CHoCH OTE: the setup from the TikTok video
+
+The video shows an XAUUSD M15 chart with a **"CHoCH OTE SELL"** label, a **sell zone**, a red stop box,
+a blue entry and four green take-profits (3,511 / 3,500 / 3,485 / 3,475), with **PSY** lines every $25.
+
+### The rules
+1. **CHoCH**: price closes below the last swing low while the trend was up (sell). Buys are the mirror image.
+2. Draw a Fibonacci over the leg that broke structure, from its high (origin) to its lowest low.
+   While price keeps falling, the leg keeps extending.
+3. **OTE zone** = the 62%-79% retracement. A **sell limit at 70.5%**.
+4. **Stop** just above the leg high (100% + 0.2 × ATR).
+5. **TP1** = 50%, **TP2** = 0% (the leg low), **TP3** = -27%, **TP4** = -62%. A quarter closes at each,
+   and the stop moves to **breakeven** once TP1 is hit.
+6. **PSY levels**: round numbers. Full = every 100, ½ = every 50, ¼ = every 25 on gold.
+7. The order is cancelled if price closes back above the leg high, structure flips, or it isn't filled within 48 bars.
+
+### Accuracy filters (all off by default, switch them on to test)
+| Filter | Idea |
+|---|---|
+| Sweep | The leg high must take out the previous swing high first (liquidity grab) |
+| Order-block overlap | The OTE zone must overlap the sell / buy zone |
+| PSY level in zone | A round number must sit inside the 62-79% zone (in the video, 3,525 did) |
+| Displacement | The breaking candle must be big (x ATR) |
+| HTF trend | Only sell when H1/H4 structure is bearish |
+| Session | Only fill during London / New York hours |
+
+### Install
+- **TradingView**: Pine Editor → New indicator → paste `tradingview/castimofx_ote.pine` → Save → Add to chart.
+  Alerts: "Any alert() function call". You get the setup with entry, SL and TP1-4, then fills, TP hits and stops.
+- **MT5**: copy `mt5/CastimofxOTE.mq5` to MQL5/Experts, compile (F7), and attach it to an **XAUUSDb M15** chart.
+  The EA trades the chart's own symbol, so the `b` suffix needs no setting.
+- **Small accounts**: on $1,000 with 1% risk, a typical gold stop of $10-20 needs less than 4 × 0.01 lot.
+  The EA then places fewer orders: 1 order goes to TP2, 2 orders go to TP1 and TP3, and 3 orders go to TP1-TP3.
+  If even 0.01 lot would risk more than "min-lot max risk" (2%), the setup is skipped.
+
+### Results
+**Not yet measured on real gold data.** The backtester was checked on a pure random walk and gives no false
+profit (about −0.08R per trade, which is what an honest backtest of a no-edge strategy should show).
+Whether the setup really works must be tested on real XAUUSD history, either with the MT5 Strategy Tester
+or `python -m castimofx ote XAUUSD_M15.csv`, including the filters.
