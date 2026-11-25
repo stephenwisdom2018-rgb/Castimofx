@@ -8,7 +8,6 @@ import pandas as pd
 
 from .backtest import BacktestConfig, run_backtest
 from .data import load_csv, synthetic
-from .ote import OteConfig, run_ote_backtest
 from .smc import BULLISH, SMCAnalyzer, key_levels
 from .strategy import StrategyConfig
 
@@ -90,27 +89,6 @@ def _analyze(df: pd.DataFrame, args: argparse.Namespace) -> None:
         print("Key levels: " + "  ".join(f"{k} {v:.5f}" for k, v in levels.items()))
 
 
-def _ote(df: pd.DataFrame, args: argparse.Namespace) -> None:
-    cfg = OteConfig(
-        swing_length=args.swing, allow_bos=args.bos, ote_entry=args.entry_level,
-        sl_buffer_atr=args.sl_buffer, min_leg_atr=args.min_leg, expiry_bars=args.expiry,
-        require_sweep=args.sweep, require_ob_overlap=args.ob, psych_step=args.psych,
-        displacement_atr=args.displacement, htf_factor=args.htf,
-        breakeven_after_tp1=not args.no_breakeven,
-        session_hours=tuple(int(x) for x in args.session.split("-")) if args.session else None,
-    )
-    res = run_ote_backtest(df, cfg, initial_balance=args.balance, risk_pct=args.risk, spread=args.spread)
-    print(f"\nCHoCH OTE  {df.index[0]} -> {df.index[-1]}  ({len(df)} bars, {res.setups} CHoCH setups)")
-    print("-" * 52)
-    for k, v in res.stats().items():
-        print(f"{k:>18}: {v}")
-    if res.skipped:
-        print("   filtered out:", ", ".join(f"{k} {v}" for k, v in res.skipped.items()))
-    for tr in res.trades[-args.trades:]:
-        print(f"  {tr.entry_time:%Y-%m-%d %H:%M}  {tr.side:4}  in {tr.entry:.2f}  SL {tr.stop:.2f}"
-              f"  TPs hit {tr.tps_hit}  {tr.exit_reason:9} {tr.r_multiple:+.2f}R  {tr.pnl:+.2f}")
-
-
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(prog="castimofx", description="SMC forex trading bot")
     sub = parser.add_subparsers(dest="cmd", required=True)
@@ -128,31 +106,7 @@ def main(argv: list[str] | None = None) -> int:
     an.add_argument("csv")
     _strategy_args(an)
 
-    ote = sub.add_parser("ote", help="backtest the CHoCH + OTE (Fibonacci 62-79%%) strategy with 4 take-profits")
-    ote.add_argument("csv", nargs="?", help="OHLC CSV (omit for synthetic gold-like data)")
-    ote.add_argument("--swing", type=int, default=5, help="swing length in bars (default 5)")
-    ote.add_argument("--entry-level", type=float, default=0.705, help="entry retracement (default 0.705)")
-    ote.add_argument("--sl-buffer", type=float, default=0.2, help="stop buffer beyond the leg origin, x ATR (default 0.2)")
-    ote.add_argument("--min-leg", type=float, default=1.5, help="minimum leg size, x ATR (default 1.5)")
-    ote.add_argument("--expiry", type=int, default=48, help="cancel unfilled order after N bars (default 48)")
-    ote.add_argument("--bos", action="store_true", help="also trade BOS breaks, not only CHoCH")
-    ote.add_argument("--sweep", action="store_true", help="only if the leg swept the previous swing")
-    ote.add_argument("--ob", action="store_true", help="only if the OTE zone overlaps the order block")
-    ote.add_argument("--psych", type=float, default=0.0, help="only if a round number (multiple of this) is in the OTE zone, e.g. 25")
-    ote.add_argument("--displacement", type=float, default=0.0, help="breaking candle range at least this x ATR")
-    ote.add_argument("--htf", type=int, default=0, help="trend filter: timeframe this many times higher (16 on M15 = H4)")
-    ote.add_argument("--session", default="", help="only fill orders between these hours, e.g. 7-20")
-    ote.add_argument("--no-breakeven", action="store_true", help="keep the original stop after TP1")
-    ote.add_argument("--balance", type=float, default=1000, help="starting balance (default 1000)")
-    ote.add_argument("--risk", type=float, default=1.0, help="%% of balance risked per trade (default 1)")
-    ote.add_argument("--spread", type=float, default=0.25, help="spread in price units (default 0.25 = gold 25 cents)")
-    ote.add_argument("--trades", type=int, default=10, help="number of recent trades to list")
-
     args = parser.parse_args(argv)
-    if args.cmd == "ote":
-        df = load_csv(args.csv) if args.csv else synthetic(8000, start_price=3500, volatility=0.0012, seed=7)
-        _ote(df, args)
-        return 0
     if args.cmd == "demo":
         _backtest(synthetic(args.bars, seed=args.seed), args)
     elif args.cmd == "backtest":
