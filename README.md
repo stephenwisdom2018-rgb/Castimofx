@@ -10,9 +10,6 @@ with BOS / CHoCH labels, supply and demand zones, equilibrium and PDL / PWL / PM
 | TradingView indicator (chart drawing, signals, alerts) | [`tradingview/castimofx_smc.pine`](tradingview/castimofx_smc.pine) |
 | MT5 auto-trader (Expert Advisor) | [`mt5/CastimofxSMC.mq5`](mt5/CastimofxSMC.mq5) |
 | Python research and backtester | `castimofx/` |
-| **CHoCH OTE** (the TikTok setup): TradingView indicator | [`tradingview/castimofx_ote.pine`](tradingview/castimofx_ote.pine) |
-| **CHoCH OTE**: MT5 auto-trader | [`mt5/CastimofxOTE.mq5`](mt5/CastimofxOTE.mq5) |
-| **CHoCH OTE**: Python backtest | `castimofx/ote.py`, `python -m castimofx ote FILE.csv` |
 
 > ⚠️ Forex trading is high risk. Backtest and demo-trade before risking real money.
 
