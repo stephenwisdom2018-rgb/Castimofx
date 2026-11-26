@@ -172,6 +172,19 @@ mirror it), with a $20 stop and $20 target. Over full 2026: 134-152 trades, 41-4
 A-level memory (`research/a_level_test.py`): remember A of every structure. On a return to A, trade a small G-H-I
 inside the zone ($20/$20, once per level). Over full 2026: only 14-21 trades, 43% win, -$40 to -$60. Not used.
 
+## A/E zone memory (`research/ae_zone_test.py`): owner's idea, WORKS
+Every completed structure A-F is remembered. When price comes back, a low that sweeps into the zone is G, then a
+small H and I (3-candle swings; I not below G), and a break of H is a buy. $20 stop, $20 target, once per
+structure, 30-day memory. Sells mirror it. Full 2026, 0.01 lot:
+| G zone | RSI swings | Small swings |
+|---|---|---|
+| below E | -$60 (97 trades, 48% win) | +$500 (125 trades, 60% win, drop -$140) |
+| **between A and E** | +$20 | **+$520 (124 trades, 60% win, drop -$120)** |
+| below A | -$220 | +$180 (95 trades, drop -$320) |
+Zone A-E by month: Jan +60, Feb +20, Mar +20, Apr -40, May +40, Jun 0, Jul +100, Aug +60, Sep +200, Oct +80, Nov -20.
+**Combined with the main strategy** (fresh setup, RSI re-entry, 0.01): **+$1,381, worst drop -$221, 2 of 11 months
+losing** (Jan -$9, Apr -$121).
+
 ## Final plan (saved 26 Nov 2026, owner's decision)
 - Re-entry swings: **mixed**. The 1st re-entry uses micro (3-candle) swings; the 2nd and later use RSI-confirmed swings (68/32).
   Code: `simulate_reentry(..., pivot=3, later_pivot=0)`.
