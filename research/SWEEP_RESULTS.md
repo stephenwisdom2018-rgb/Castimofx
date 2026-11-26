@@ -449,3 +449,19 @@ its entry or better, with the original stop and target.
 - skip, join any: 12 trades joined, 2 won, 10 lost, -$205 -> +$3,300, PF 1.56
 - skip, join main re-entries only: no trade qualified (same as no join)
 The owner was right: a skipped trade still sitting at its entry after the hour usually goes on to the stop. **No late join.**
+**PENDING (owner: "keep that in memory"):** skip new trades at 15:00 and 23:00 server (no late join). Not added yet.
+
+## How long trades are held (`research/hold_time.py`), chosen strategy, 2026, 0.01
+Median minutes held: main losers 118, winners 162 | zone losers 78, winners 148. **Losers die fast; winners take time.**
+| Held | trades | win% | net |
+|---|---|---|---|
+| under 15 min | 60 | 32% | -$217 |
+| 15-30 min | 64 | **16%** | -$474 |
+| 30-60 min | 88 | 38% | -$204 |
+| 1-2 h | 127 | 39% | -$134 |
+| 2-4 h | 107 | 47% | +$513 |
+| 4-8 h | 92 | 43% | +$429 |
+| 8-24 h | 58 | 53% | +$1,211 |
+| over 1 day | 40 | 57% | +$1,945 |
+Time exits (close after N minutes, or only if losing) all make less: best is 480 min if losing, +$2,878 (vs +$3,070).
+Cutting long trades cuts the winners. The losses happen in the first 2 hours: the trade goes straight to the stop.
