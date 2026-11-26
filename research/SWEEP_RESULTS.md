@@ -382,3 +382,18 @@ Only "target = structure size when F - G is under $20" (main trades) improves al
 2. Main trades: if the structure F - G is under $20, the target = F - G (minimum $5) instead of $20.
 Profit factor (money won / money lost): before 1.23 (Jan-Jun), 1.66 (Jul-Nov), 1.35 (year).
 Now (both rules): 1.33, 1.87, **1.48** (year). Won $9,473, lost $6,404.
+
+## Re-entry ideas on the chosen strategy (`research/reentry_v2.py`, `simulate_reentry(reentry_tp=...)`)
+Year at base 0.01: win / profit / drop / PF / profit per $1 drop.
+| Re-entry high / target / lots | Year |
+|---|---|
+| **RSI high / first target + $10 / flat (current)** | **40% +$3,070 -$270 PF 1.48 R 11.4** |
+| RSI / first target + $10 / 1-2-1-2 lots | 40% +$3,134 -$405 PF 1.44 R 7.7 |
+| RSI / $20 from re-entry if above 1st entry, else first target + $10 / flat | 40% +$3,071 -$296 PF 1.48 R 10.4 |
+| RSI / same, 1-2-1-2 | 40% +$3,093 -$456 R 6.8 |
+| RSI / $20 if above, else $30 from re-entry / flat | 42% +$2,043 -$453 R 4.5 |
+| 3-candle high (any target or lots) | +$1,142 to +$2,266, drop -$528 to -$1,002 |
+Max re-entries (RSI, current target, flat): 0 = +$2,012 -$298 | 1 = +$1,947 | 2 = +$2,665 | 3 = +$2,702 | **5 = +$3,070 -$270**.
+**Keep the current re-entry (RSI high, first target + $10, up to 5) with the SAME lot on every re-entry.**
+Doubling the 2nd entry adds about $60 a year but raises the worst drop from -$270 to -$405, so the profit per $1 of
+drop falls from 11.4 to 7.7. This replaces the alternating-lot idea in the earlier final plan.
