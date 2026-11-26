@@ -247,3 +247,17 @@ drop (-$160).
 ## Next steps
 1. Owner exports XAUUSDb M1 from 1 Jan to 26 Aug 2026; run the final settings on it unchanged.
 2. Then build the MT5 Expert Advisor with the final settings, test in the Strategy Tester, then demo.
+
+## Breakout-retest v2: 3 white soldiers near a moving average (`research/soldiers_entry.py`)
+Owner's correction: the entry is not a pivot break. After the H break, price comes back to H with RSI 30/32 hooked,
+then buy when 3 white soldiers (3 bullish candles, each closing higher) form "inside the moving average".
+Buy again each time price comes back to H, as often as possible, until an opposite trend forms or price goes below G.
+Stop $20, target $20. The MA period and the meaning of "inside" were not given, so variants were tested.
+| RSI | MA | soldiers | Jan-Jun | Jul-Nov |
+|---|---|---|---|---|
+| 32 | EMA50 | below MA | 285 tr, 52%, +$180, drop -$180 | 152 tr, 53%, +$200, drop -$320 |
+| 32 | none | - | 297 tr, 51%, +$100, drop -$220 | 157 tr, 55%, +$300, drop -$240 |
+| 32 | EMA20 | MA touches 1+ | 270 tr, 50%, -$40 | 155 tr, 55%, +$300 |
+| 30 | EMA20 | MA touches all 3 | 136 tr, 46%, -$240 | 87 tr, 49%, -$20 |
+About 2-3 trades/day, but only about 50% wins at 1:1, so profit is thin; v1 (1 per H, pivot break) was steadier.
+Waiting for the owner's MA period and the exact meaning of "inside the MA".
