@@ -28,7 +28,9 @@ SIMS = {
 if __name__ == '__main__':
     for rule, fk, wb in [('OLD rules (strict 6-swing staircase)', {}, True),
                          ('TAKEOUT structure', {'structure': 'takeout'}, True),
-                         ('TAKEOUT + H after G', {'structure': 'takeout', 'h_after_g': True}, True)]:
+                         ('TAKEOUT + H after G', {'structure': 'takeout', 'h_after_g': True}, True),
+                         ('Strict + takeout-counts-as-high', {'takeout_counts': True}, True),
+                         ('TAKEOUT + takeout-counts-as-high', {'structure': 'takeout', 'takeout_counts': True}, True)]:
         print(f'== {rule}')
         for name, sim in SIMS.items():
             net, dd, n, lm, months = run(fk, wb, sim)

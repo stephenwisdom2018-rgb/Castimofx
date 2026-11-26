@@ -50,7 +50,7 @@ class Swing:
     confirmed: int  # bar on which it became known
 
 
-def rsi_swings(high, low, r, hi_level=70.0, lo_level=30.0) -> list[Swing]:
+def rsi_swings(high, low, r, hi_level=70.0, lo_level=30.0, takeout_counts: bool = False) -> list[Swing]:
     """Alternating swings: a high is the top of a leg in which RSI reached 70, confirmed
     when RSI next reaches 30; a low is the mirror. A lower low before any valid high
     replaces the previous low (and the mirror for highs)."""
@@ -65,6 +65,14 @@ def rsi_swings(high, low, r, hi_level=70.0, lo_level=30.0) -> list[Swing]:
                 state, ext_p, ext_i, seen = "down", low[t], t, True
             continue
         if state == "up":
+            if takeout_counts and swings and swings[-1].kind == "L" and low[t] < swings[-1].price and ext_i < t:
+                seg = high[swings[-1].index + 1:t + 1]
+                k = int(np.argmax(seg))
+                hi_i = swings[-1].index + 1 + k
+                if hi_i < t:
+                    swings.append(Swing("H", high[hi_i], hi_i, t))
+                    state, ext_p, ext_i, seen = "down", low[t], t, True
+                    continue
             if high[t] > ext_p:
                 ext_p, ext_i = high[t], t
             if r[t] >= hi_level:
@@ -78,6 +86,16 @@ def rsi_swings(high, low, r, hi_level=70.0, lo_level=30.0) -> list[Swing]:
                 swings[-1] = Swing("L", low[t], t, t)  # the low extends
                 ext_p, ext_i = high[t], t
         else:
+            if takeout_counts and swings and swings[-1].kind == "H" and high[t] > swings[-1].price and ext_i < t:
+                # exception: the move passed a high whose RSI reached the line, so it counts as a high;
+                # the lowest point before it is the low
+                seg = low[swings[-1].index + 1:t + 1]
+                k = int(np.argmin(seg))
+                lo_i = swings[-1].index + 1 + k
+                if lo_i < t:
+                    swings.append(Swing("L", low[lo_i], lo_i, t))
+                    state, ext_p, ext_i, seen = "up", high[t], t, True
+                    continue
             if low[t] < ext_p:
                 ext_p, ext_i = low[t], t
             if r[t] <= lo_level:
@@ -127,14 +145,15 @@ def find_signals(df: pd.DataFrame, max_setup_bars: int = 600, hi_level: float = 
                  replace_on_new_trend: bool = True, minor_e: int = 0,
                  trend_g_no_sweep: bool = False, i_sweep: int = 0,
                  i_sweep_level: str = "recent", hybrid: bool = False,
-                 h_after_g: bool = False, structure: str = "strict") -> tuple[list[Signal], list[Swing]]:
+                 h_after_g: bool = False, structure: str = "strict",
+                 takeout_counts: bool = False) -> tuple[list[Signal], list[Swing]]:
     """Signals from the sweep rules. `tol` = how close (in $) a wick must come to a level to
     count as taking it out (broker feeds differ by cents). With `continuation`, the boss trend
     keeps trading after each entry without building a new A to F: it only needs a new F,
     a sweep of the low before it (E), then H, I and the break."""
     h, l, c = (df[k].to_numpy(float) for k in ("high", "low", "close"))
     r = rsi(c)
-    sw = rsi_swings(h, l, r, hi_level, lo_level)
+    sw = rsi_swings(h, l, r, hi_level, lo_level, takeout_counts)
     by_conf: dict[int, list[Swing]] = {}
     for s in sw:
         by_conf.setdefault(s.confirmed, []).append(s)
