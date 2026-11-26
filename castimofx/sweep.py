@@ -118,7 +118,7 @@ class _Setup:
 
 def find_signals(df: pd.DataFrame, max_setup_bars: int = 600, hi_level: float = 68.0, lo_level: float = 32.0,
                  tol: float = 0.0, continuation: bool = True,
-                 left_h: list | None = None) -> tuple[list[Signal], list[Swing]]:
+                 left_h: list | None = None, trend_changes: list | None = None) -> tuple[list[Signal], list[Swing]]:
     """Signals from the sweep rules. `tol` = how close (in $) a wick must come to a level to
     count as taking it out (broker feeds differ by cents). With `continuation`, the boss trend
     keeps trading after each entry without building a new A to F: it only needs a new F,
@@ -200,6 +200,8 @@ def find_signals(df: pd.DataFrame, max_setup_bars: int = 600, hi_level: float = 
                     ok = kinds == pat and ((p[0] < p[2] < p[4] and p[1] < p[3] < p[5]) if up
                                            else (p[0] > p[2] > p[4] and p[1] > p[3] > p[5]))
                     if ok:
+                        if boss != d and trend_changes is not None:
+                            trend_changes.append((t, d))  # a new trend is confirmed
                         boss = d
                         if setups[d] is None or setups[d].g is None:
                             setups[d] = _Setup(d, e=p[4], f=p[5], start=t)
@@ -289,7 +291,8 @@ def excursions(df: pd.DataFrame, signals: list[Signal], bars: int = 240, spread:
 def simulate_reentry(df: pd.DataFrame, signals: list[Signal], sl: float, tp: float, extra_tp: float = 0.0,
                      max_reentries: int = 3, spread: np.ndarray | float = 0.05, hi_level: float = 68.0,
                      lo_level: float = 32.0, close_on_opposite: bool = True, pivot: int = 3,
-                     reenter_at_entry: bool = False) -> list[TradeResult]:
+                     reenter_at_entry: bool = False, trend_changes: list | None = None,
+                     hedge: bool = False) -> list[TradeResult]:
     """Owner's re-entry rule: after a stop loss, wait for price to make a high then a low (buy;
     mirror for sell), and re-enter when a wick takes out that most recent high. The re-entry
     aims for the original take-profit level plus `extra_tp`, with the same $ stop.
@@ -310,6 +313,7 @@ def simulate_reentry(df: pd.DataFrame, signals: list[Signal], sl: float, tp: flo
     for s in sw:
         conf_at.setdefault(s.confirmed, []).append(s)
     sigs = {s.bar: s for s in sorted(signals, key=lambda s: s.bar)}
+    tc = dict(trend_changes or [])
     out: list[TradeResult] = []
     pos = None  # open trade
     wait = None  # waiting to re-enter: {"d", "target", "left", "level", "sig", "seen_high"}
@@ -328,6 +332,8 @@ def simulate_reentry(df: pd.DataFrame, signals: list[Signal], sl: float, tp: flo
                 px, reason = pos["tp"], "TP"
             elif close_on_opposite and sig_now is not None and sig_now.direction != d:
                 px, reason = sig_now.entry, "opposite"
+            elif tc.get(t, d) != d:
+                px, reason = c[t], "new trend"
             if reason:
                 out.append(TradeResult(pos["sig"], df.index[pos["t"]], pos["entry"], px, (px - pos["entry"]) * d,
                                        reason + ("" if pos["n"] == 0 else f" (re-entry {pos['n']})")))
