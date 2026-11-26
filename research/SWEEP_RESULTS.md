@@ -273,3 +273,10 @@ Sells mirror. `find_signals(g_events=[])` now records each G sweep as (direction
 | $5 | 1 | 70 | 3 | 196 tr, 40%, -$800 | 98 tr, 62%, +$480 |
 Promised 80%+ was not reached: 59-67% in Jul-Nov, but only 37-48% in Jan-Jun, and about 0.5 trades/day.
 Next step: compare with the owner's own example days to find what the code reads differently.
+
+## Reversal entry v2: the level follows the newest swept low (`research/reversal_follow.py`)
+If G1 is taken and G2 forms, the buy level becomes G1. If price stops on the way and sweeps another low, the level
+becomes that swept low. Buy only inside the zone, with RSI 68+. Stop and target $20.
+Best: zone $5, RSI 68, 1 bar, wait 3 days: Jan-Jun 245 tr, 52%, +$180, drop -$440 | Jul-Nov 97 tr, 61%, +$420, drop -$140.
+Other variants: 45-63% wins. Still far from the owner's 80%+ and 2-4 trades/day, so the code probably reads the setup
+differently. We need the owner's example trades to compare.
