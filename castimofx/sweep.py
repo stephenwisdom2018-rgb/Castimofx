@@ -115,12 +115,13 @@ class _Setup:
     h: float | None = None
     h_conf: int = -1
     e_pending: float | None = None
+    f_idx: int = -1  # bar of the F extreme
 
 
 def find_signals(df: pd.DataFrame, max_setup_bars: int = 600, hi_level: float = 68.0, lo_level: float = 32.0,
                  tol: float = 0.0, continuation: bool = True,
                  left_h: list | None = None, trend_changes: list | None = None,
-                 replace_on_new_trend: bool = True) -> tuple[list[Signal], list[Swing]]:
+                 replace_on_new_trend: bool = True, minor_e: int = 0) -> tuple[list[Signal], list[Swing]]:
     """Signals from the sweep rules. `tol` = how close (in $) a wick must come to a level to
     count as taking it out (broker feeds differ by cents). With `continuation`, the boss trend
     keeps trading after each entry without building a new A to F: it only needs a new F,
@@ -131,6 +132,30 @@ def find_signals(df: pd.DataFrame, max_setup_bars: int = 600, hi_level: float = 
     by_conf: dict[int, list[Swing]] = {}
     for s in sw:
         by_conf.setdefault(s.confirmed, []).append(s)
+
+    # small pivots (minor_e candles each side): the sweep may take out the last small low before F
+    piv_lo, piv_hi = [], []
+    if minor_e:
+        k = minor_e
+        for i in range(k, len(df) - k):
+            if l[i] == l[i - k:i + k + 1].min():
+                piv_lo.append((i, l[i]))
+            if h[i] == h[i - k:i + k + 1].max():
+                piv_hi.append((i, h[i]))
+    import bisect
+    lo_idx = [i for i, _ in piv_lo]
+    hi_idx = [i for i, _ in piv_hi]
+
+    def level_to_sweep(st: _Setup) -> float:
+        """E, or with minor_e the last small low (buy) / high (sell) before F, whichever is nearer."""
+        if not minor_e or st.f_idx < 0:
+            return st.e
+        idx, piv = (lo_idx, piv_lo) if st.d == 1 else (hi_idx, piv_hi)
+        j = bisect.bisect_left(idx, st.f_idx) - 1
+        if j < 0:
+            return st.e
+        lv = piv[j][1]
+        return max(lv, st.e) if st.d == 1 else min(lv, st.e)
 
     known: list[Swing] = []
     setups: dict[int, _Setup | None] = {1: None, -1: None}
@@ -175,12 +200,12 @@ def find_signals(df: pd.DataFrame, max_setup_bars: int = 600, hi_level: float = 
                 g_kind, h_kind = ("L", "H") if d == 1 else ("H", "L")
                 if st.f is None:  # continuation: wait for the first new extreme in the trend
                     if s.kind == h_kind and len(known) >= 2:
-                        st.f, st.e, st.start = s.price, known[-2].price, t
+                        st.f, st.e, st.start, st.f_idx = s.price, known[-2].price, t, s.index
                     continue
                 st.start = t  # the setup is alive while its swings keep coming
                 if s.kind == g_kind:
                     if st.g is None:
-                        if past(s.price, st.e, d) or st.second:
+                        if past(s.price, level_to_sweep(st), d) or st.second:
                             st.g = s.price
                         else:
                             st.e_pending = s.price  # staircase continues: a new higher low
@@ -191,7 +216,7 @@ def find_signals(df: pd.DataFrame, max_setup_bars: int = 600, hi_level: float = 
                 elif s.kind == h_kind and st.e_pending is not None:
                     higher = s.price > st.f if d == 1 else s.price < st.f
                     if higher:  # a new F: E and F move up the staircase
-                        st.e, st.f, st.e_pending, st.start = st.e_pending, s.price, None, t
+                        st.e, st.f, st.e_pending, st.start, st.f_idx = st.e_pending, s.price, None, t, s.index
             # new staircase completed by this swing?
             if len(known) >= 6:
                 last = known[-6:]
@@ -208,7 +233,7 @@ def find_signals(df: pd.DataFrame, max_setup_bars: int = 600, hi_level: float = 
                         boss = d
                         # a new trend replaces an unfinished setup of the same side
                         if setups[d] is None or setups[d].g is None or (replace_on_new_trend and new_boss):
-                            setups[d] = _Setup(d, e=p[4], f=p[5], start=t)
+                            setups[d] = _Setup(d, e=p[4], f=p[5], start=t, f_idx=last[5].index)
     return signals, sw
 
 
