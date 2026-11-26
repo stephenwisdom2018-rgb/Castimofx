@@ -397,3 +397,13 @@ Max re-entries (RSI, current target, flat): 0 = +$2,012 -$298 | 1 = +$1,947 | 2 
 **Keep the current re-entry (RSI high, first target + $10, up to 5) with the SAME lot on every re-entry.**
 Doubling the 2nd entry adds about $60 a year but raises the worst drop from -$270 to -$405, so the profit per $1 of
 drop falls from 11.4 to 7.7. This replaces the alternating-lot idea in the earlier final plan.
+
+## If every trade hit its target (chosen strategy, 2026, 0.01)
+636 trades. If all hit target: +$23,181. Actual: +$3,070 (won $9,473, lost $6,404).
+| Source | Trades | Actual | If all hit target |
+|---|---|---|---|
+| main first entries | 114 | **+$129** (won $1,149, lost $1,020) | $2,133 |
+| main re-entries | 69 | +$1,137 | $5,797 |
+| zone | 453 | +$1,803 | $15,251 |
+All 381 losers were full stop-outs; no early closes. Of 255 winners, 254 hit the full target.
+Loophole found: main first entries barely make money (+$129 from 114 trades); most main profit comes from re-entries.
