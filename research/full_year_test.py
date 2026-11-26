@@ -26,11 +26,10 @@ SIMS = {
                                                      for x in simulate_reentry(df, s, 20, 20, 10, 5, sp, pivot=3, later_pivot=0)],
 }
 if __name__ == '__main__':
-    for rule, fk, wb in [('Strict + exception (reference)', {'takeout_counts': True}, True),
-                         ('Cancel on G sweep, with boss', {'takeout_counts': True, 'cancel_on_g_sweep': True}, True),
-                         ('Cancel on G sweep, both sides', {'takeout_counts': True, 'cancel_on_g_sweep': True}, False),
-                         ('TAKEOUT + cancel, with boss', {'structure': 'takeout', 'takeout_counts': True, 'cancel_on_g_sweep': True}, True),
-                         ('TAKEOUT + cancel, both sides', {'structure': 'takeout', 'takeout_counts': True, 'cancel_on_g_sweep': True}, False)]:
+    base = {'structure': 'takeout', 'takeout_counts': True, 'cancel_on_g_sweep': True}
+    for rule, fk, wb in [('Cancel, wait for fresh setup (current best)', base, True),
+                         ('Cancel + keep it as the opposite setup, with boss', {**base, 'flip_on_cancel': True}, True),
+                         ('Cancel + keep it as the opposite setup, both sides', {**base, 'flip_on_cancel': True}, False)]:
         print(f'== {rule}')
         for name, sim in SIMS.items():
             net, dd, n, lm, months = run(fk, wb, sim)
