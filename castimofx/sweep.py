@@ -101,6 +101,7 @@ class Signal:
     g: float  # sweep extreme (G)
     f: float  # F level
     second_g: bool
+    with_boss: bool = True  # False = taken against the boss trend (an unfinished trade)
 
 
 @dataclass
@@ -114,11 +115,18 @@ class _Setup:
     h: float | None = None
     h_conf: int = -1
     e_pending: float | None = None
+    f_idx: int = -1  # bar of the F extreme
+    cont: bool = False  # continuation setup inside the boss trend
+    g_idx: int = -1  # bar index when G was set (i_sweep mode)
+    g_swept: bool = True  # G took out a low on its way down
 
 
 def find_signals(df: pd.DataFrame, max_setup_bars: int = 600, hi_level: float = 68.0, lo_level: float = 32.0,
                  tol: float = 0.0, continuation: bool = True,
-                 left_h: list | None = None) -> tuple[list[Signal], list[Swing]]:
+                 left_h: list | None = None, trend_changes: list | None = None,
+                 replace_on_new_trend: bool = True, minor_e: int = 0,
+                 trend_g_no_sweep: bool = False, i_sweep: int = 0,
+                 i_sweep_level: str = "recent", hybrid: bool = False) -> tuple[list[Signal], list[Swing]]:
     """Signals from the sweep rules. `tol` = how close (in $) a wick must come to a level to
     count as taking it out (broker feeds differ by cents). With `continuation`, the boss trend
     keeps trading after each entry without building a new A to F: it only needs a new F,
@@ -129,6 +137,38 @@ def find_signals(df: pd.DataFrame, max_setup_bars: int = 600, hi_level: float = 
     by_conf: dict[int, list[Swing]] = {}
     for s in sw:
         by_conf.setdefault(s.confirmed, []).append(s)
+
+    # small pivots (minor_e candles each side): the sweep may take out the last small low before F
+    piv_lo, piv_hi = [], []
+    if minor_e:
+        k = minor_e
+        for i in range(k, len(df) - k):
+            if l[i] == l[i - k:i + k + 1].min():
+                piv_lo.append((i, l[i]))
+            if h[i] == h[i - k:i + k + 1].max():
+                piv_hi.append((i, h[i]))
+    ik = i_sweep
+    ip_lo, ip_hi = {}, {}  # small pivots for the I-sweep entry, keyed by confirmation bar
+    if ik:
+        for i in range(ik, len(df) - ik):
+            if l[i] == l[i - ik:i + ik + 1].min():
+                ip_lo[i + ik] = (i, l[i])
+            if h[i] == h[i - ik:i + ik + 1].max():
+                ip_hi[i + ik] = (i, h[i])
+    import bisect
+    lo_idx = [i for i, _ in piv_lo]
+    hi_idx = [i for i, _ in piv_hi]
+
+    def level_to_sweep(st: _Setup) -> float:
+        """E, or with minor_e the last small low (buy) / high (sell) before F, whichever is nearer."""
+        if not minor_e or st.f_idx < 0:
+            return st.e
+        idx, piv = (lo_idx, piv_lo) if st.d == 1 else (hi_idx, piv_hi)
+        j = bisect.bisect_left(idx, st.f_idx) - 1
+        if j < 0:
+            return st.e
+        lv = piv[j][1]
+        return max(lv, st.e) if st.d == 1 else min(lv, st.e)
 
     known: list[Swing] = []
     setups: dict[int, _Setup | None] = {1: None, -1: None}
@@ -148,6 +188,34 @@ def find_signals(df: pd.DataFrame, max_setup_bars: int = 600, hi_level: float = 
             if t - s.start > max_setup_bars:
                 setups[d] = None
                 continue
+            if ik and s.g is not None and not (hybrid and s.g_swept):
+                # I-sweep entry: after G, a small low must take out the previous small low (staying beyond G),
+                # then buy the break of the most recent small high
+                if not hasattr(s, "lows"):
+                    s.lows, s.hi, s.swept = [], None, False
+                pv = (ip_lo if d == 1 else ip_hi).get(t)
+                if pv is not None and pv[0] > s.g_idx:
+                    if (pv[1] < s.g) if d == 1 else (pv[1] > s.g):
+                        if not s.second:
+                            s.second, s.g = True, pv[1]  # went beyond G: this is the new G
+                            s.lows, s.hi, s.swept = [], None, False
+                            s.g_idx = pv[0]
+                    else:
+                        if s.lows and ((pv[1] < s.lows[-1]) if d == 1 else (pv[1] > s.lows[-1])):
+                            s.swept = True
+                        s.lows.append(pv[1])
+                ph = (ip_hi if d == 1 else ip_lo).get(t)
+                if ph is not None and ph[0] > s.g_idx:
+                    if i_sweep_level == "highest" and s.hi is not None:
+                        s.hi = max(s.hi, ph[1]) if d == 1 else min(s.hi, ph[1])
+                    else:
+                        s.hi = ph[1]
+                if s.swept and s.hi is not None and ((h[t] > s.hi) if d == 1 else (l[t] < s.hi)):
+                    signals.append(Signal(d, t, s.hi, s.g, s.f, s.second, boss == d))
+                    setups[d] = None
+                    if continuation and boss == d:
+                        setups[d] = _Setup(d, e=None, f=None, start=t, cont=True)
+                continue
             if s.g is not None and s.h is not None and t > s.h_conf:
                 beyond_g = l[t] < s.g + tol if d == 1 else h[t] > s.g - tol
                 broke_h = h[t] > s.h if d == 1 else l[t] < s.h
@@ -159,10 +227,10 @@ def find_signals(df: pd.DataFrame, max_setup_bars: int = 600, hi_level: float = 
                     s.start = t
                     continue
                 if broke_h:
-                    signals.append(Signal(d, t, s.h, s.g, s.f, s.second))
+                    signals.append(Signal(d, t, s.h, s.g, s.f, s.second, boss == d))
                     setups[d] = None  # the opposite setup stays: it may be an unfinished trade
                     if continuation and boss == d:
-                        setups[d] = _Setup(d, e=None, f=None, start=t)
+                        setups[d] = _Setup(d, e=None, f=None, start=t, cont=True)
         # 2) swings confirmed at this bar's close
         for s in by_conf.get(t, []):
             known.append(s)
@@ -173,13 +241,14 @@ def find_signals(df: pd.DataFrame, max_setup_bars: int = 600, hi_level: float = 
                 g_kind, h_kind = ("L", "H") if d == 1 else ("H", "L")
                 if st.f is None:  # continuation: wait for the first new extreme in the trend
                     if s.kind == h_kind and len(known) >= 2:
-                        st.f, st.e, st.start = s.price, known[-2].price, t
+                        st.f, st.e, st.start, st.f_idx = s.price, known[-2].price, t, s.index
                     continue
                 st.start = t  # the setup is alive while its swings keep coming
                 if s.kind == g_kind:
                     if st.g is None:
-                        if past(s.price, st.e, d) or st.second:
-                            st.g = s.price
+                        swept = past(s.price, level_to_sweep(st), d) or st.second
+                        if swept or (trend_g_no_sweep and st.cont):
+                            st.g, st.g_idx, st.g_swept = s.price, s.index, swept
                         else:
                             st.e_pending = s.price  # staircase continues: a new higher low
                     elif st.second:
@@ -189,7 +258,7 @@ def find_signals(df: pd.DataFrame, max_setup_bars: int = 600, hi_level: float = 
                 elif s.kind == h_kind and st.e_pending is not None:
                     higher = s.price > st.f if d == 1 else s.price < st.f
                     if higher:  # a new F: E and F move up the staircase
-                        st.e, st.f, st.e_pending, st.start = st.e_pending, s.price, None, t
+                        st.e, st.f, st.e_pending, st.start, st.f_idx = st.e_pending, s.price, None, t, s.index
             # new staircase completed by this swing?
             if len(known) >= 6:
                 last = known[-6:]
@@ -200,9 +269,13 @@ def find_signals(df: pd.DataFrame, max_setup_bars: int = 600, hi_level: float = 
                     ok = kinds == pat and ((p[0] < p[2] < p[4] and p[1] < p[3] < p[5]) if up
                                            else (p[0] > p[2] > p[4] and p[1] > p[3] > p[5]))
                     if ok:
+                        if boss != d and trend_changes is not None:
+                            trend_changes.append((t, d))  # a new trend is confirmed
+                        new_boss = boss != d
                         boss = d
-                        if setups[d] is None or setups[d].g is None:
-                            setups[d] = _Setup(d, e=p[4], f=p[5], start=t)
+                        # a new trend replaces an unfinished setup of the same side
+                        if setups[d] is None or setups[d].g is None or (replace_on_new_trend and new_boss):
+                            setups[d] = _Setup(d, e=p[4], f=p[5], start=t, f_idx=last[5].index)
     return signals, sw
 
 
@@ -288,7 +361,9 @@ def excursions(df: pd.DataFrame, signals: list[Signal], bars: int = 240, spread:
 
 def simulate_reentry(df: pd.DataFrame, signals: list[Signal], sl: float, tp: float, extra_tp: float = 0.0,
                      max_reentries: int = 3, spread: np.ndarray | float = 0.05, hi_level: float = 68.0,
-                     lo_level: float = 32.0, close_on_opposite: bool = True, pivot: int = 3) -> list[TradeResult]:
+                     lo_level: float = 32.0, close_on_opposite: bool = True, pivot: int = 3,
+                     reenter_at_entry: bool = False, trend_changes: list | None = None,
+                     hedge: bool = False) -> list[TradeResult]:
     """Owner's re-entry rule: after a stop loss, wait for price to make a high then a low (buy;
     mirror for sell), and re-enter when a wick takes out that most recent high. The re-entry
     aims for the original take-profit level plus `extra_tp`, with the same $ stop.
@@ -309,6 +384,7 @@ def simulate_reentry(df: pd.DataFrame, signals: list[Signal], sl: float, tp: flo
     for s in sw:
         conf_at.setdefault(s.confirmed, []).append(s)
     sigs = {s.bar: s for s in sorted(signals, key=lambda s: s.bar)}
+    tc = dict(trend_changes or [])
     out: list[TradeResult] = []
     pos = None  # open trade
     wait = None  # waiting to re-enter: {"d", "target", "left", "level", "sig", "seen_high"}
@@ -327,12 +403,14 @@ def simulate_reentry(df: pd.DataFrame, signals: list[Signal], sl: float, tp: flo
                 px, reason = pos["tp"], "TP"
             elif close_on_opposite and sig_now is not None and sig_now.direction != d:
                 px, reason = sig_now.entry, "opposite"
+            elif tc.get(t, d) != d:
+                px, reason = c[t], "new trend"
             if reason:
                 out.append(TradeResult(pos["sig"], df.index[pos["t"]], pos["entry"], px, (px - pos["entry"]) * d,
                                        reason + ("" if pos["n"] == 0 else f" (re-entry {pos['n']})")))
                 if reason == "SL" and pos["n"] < max_reentries:
                     wait = {"d": d, "target": pos["tp0"], "n": pos["n"] + 1, "level": None, "sig": pos["sig"],
-                            "seen": False}
+                            "seen": False, "entry0": pos["entry0"]}
                 pos = None
         # a new signal cancels any waiting re-entry and opens a trade
         if pos is None and sig_now is not None:
@@ -340,19 +418,23 @@ def simulate_reentry(df: pd.DataFrame, signals: list[Signal], sl: float, tp: flo
             d = sig_now.direction
             entry = (max(o[t], sig_now.entry) + sp[t]) if d == 1 else min(o[t], sig_now.entry)
             pos = {"d": d, "entry": entry, "sl": entry - d * sl, "tp": entry + d * tp, "tp0": entry + d * tp,
-                   "t": t, "sig": sig_now, "n": 0}
+                   "t": t, "sig": sig_now, "n": 0, "entry0": entry}
             continue
         # waiting to re-enter: a high (buy) then a low must form, then price takes out that high
         if wait is not None and pos is None:
             d = wait["d"]
-            if wait["level"] is not None and wait["seen"]:
-                broke = h[t] > wait["level"] if d == 1 else l[t] < wait["level"]
+            ready = wait["level"] is not None and wait["seen"]
+            back_at_entry = reenter_at_entry and ((h[t] >= wait["entry0"]) if d == 1 else (l[t] <= wait["entry0"]))
+            if back_at_entry and not (ready and ((h[t] > wait["level"]) if d == 1 else (l[t] < wait["level"]))):
+                wait["level"], ready = wait["entry0"], True  # price came back to the first entry: it is the recent high
+            if ready:
+                broke = h[t] >= wait["level"] if d == 1 else l[t] <= wait["level"]
                 if broke:
                     entry = (max(o[t], wait["level"]) + sp[t]) if d == 1 else min(o[t], wait["level"])
                     target = wait["target"] + d * extra_tp
                     if (target - entry) * d > 0:
                         pos = {"d": d, "entry": entry, "sl": entry - d * sl, "tp": target, "tp0": wait["target"],
-                               "t": t, "sig": wait["sig"], "n": wait["n"]}
+                               "t": t, "sig": wait["sig"], "n": wait["n"], "entry0": wait["entry0"]}
                     wait = None
             for s in conf_at.get(t, []):
                 if wait is None:
