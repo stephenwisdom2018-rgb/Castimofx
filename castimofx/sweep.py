@@ -126,7 +126,8 @@ def find_signals(df: pd.DataFrame, max_setup_bars: int = 600, hi_level: float = 
                  left_h: list | None = None, trend_changes: list | None = None,
                  replace_on_new_trend: bool = True, minor_e: int = 0,
                  trend_g_no_sweep: bool = False, i_sweep: int = 0,
-                 i_sweep_level: str = "recent", hybrid: bool = False) -> tuple[list[Signal], list[Swing]]:
+                 i_sweep_level: str = "recent", hybrid: bool = False,
+                 h_after_g: bool = False) -> tuple[list[Signal], list[Swing]]:
     """Signals from the sweep rules. `tol` = how close (in $) a wick must come to a level to
     count as taking it out (broker feeds differ by cents). With `continuation`, the boss trend
     keeps trading after each entry without building a new A to F: it only needs a new F,
@@ -252,9 +253,11 @@ def find_signals(df: pd.DataFrame, max_setup_bars: int = 600, hi_level: float = 
                         else:
                             st.e_pending = s.price  # staircase continues: a new higher low
                     elif st.second:
-                        st.g = min(st.g, s.price) if d == 1 else max(st.g, s.price)
+                        if (s.price < st.g) if d == 1 else (s.price > st.g):
+                            st.g, st.g_idx = s.price, s.index
                 elif s.kind == h_kind and st.g is not None:
-                    st.h, st.h_conf = s.price, t
+                    if not h_after_g or s.index > st.g_idx:  # H must be a new high formed after G (never the first F)
+                        st.h, st.h_conf = s.price, t
                 elif s.kind == h_kind and st.e_pending is not None:
                     higher = s.price > st.f if d == 1 else s.price < st.f
                     if higher:  # a new F: E and F move up the staircase
