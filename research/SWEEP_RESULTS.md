@@ -525,3 +525,20 @@ Added to the chosen strategy (main + E-A zone up to 10, RSI-50 side filter, smal
 2026 at 0.01 ($1,000 start each half): **45% win, +$3,802, PF 2.05, worst drop -14.3% (Jan-Jun) / -8.9% (Jul-Nov)**.
 Before: 40%, +$3,070, PF 1.48, -23.6% / -11.5%. The filters were found on 2026 data; confirm on new data.
 Owner's target: push the strategy toward +$10,000 (2026, 0.01) before coding the EA.
+
+## $20,000 push, step 1: more trades from the same structures (`research/more_trades.py`), 0.01, all filters on
+Drops are % of a $1,000 start in each half. `zone(..., big_rr, reent)` added.
+| Variant | Jan-Jun | Jul-Nov | Year |
+|---|---|---|---|
+| current (10 per structure, 10 days) | 42% +$2,171 -14.3% | 50% +$1,631 -8.9% | +$3,802 PF 2.05 |
+| zone re-entry, RSI swings (any) | drops -56% to -146% | | rejected |
+| zone re-entry, 3-candle, 2x risk, 1 | 40% +$2,737 -17.5% | 49% +$1,847 -9.3% | +$4,585 PF 1.96 |
+| zone re-entry, 3-candle, 2x risk, 3 | 38% +$2,704 -20.4% | 50% +$2,157 -7.3% | +$4,861 |
+| **up to 20 per structure, 10 days** | 43% +$2,421 -14.3% | 50% +$1,765 -8.4% | +$4,187 PF 2.10 |
+| **up to 20 per structure, 20 days** | 42% +$2,426 -14.3% | 50% +$1,843 -8.0% | **+$4,269 PF 2.05** |
+| up to 99, 30 days | 41% +$2,322 -14.3% | 51% +$2,124 -5.3% | +$4,446 PF 1.97 |
+| 2.5x / 3x / 4x target when stop > $20 | +$2,097 / +$1,300 / +$1,540 | +$1,829 / +$2,026 / +$2,289 | worse drop in Jan-Jun |
+| 20 per, 20 days + 3-candle re-entry 2x 1 | 41% +$3,344 -17.5% | 51% +$2,327 -7.4% | **+$5,671 PF 2.04** |
+| 99 per, 30 days + same re-entry | 40% +$3,182 -17.5% | 52% +$2,750 -5.7% | +$5,933 PF 1.94 |
+Passes the all-three test: up to 20 per structure, 20 days (+$4,269). Biggest gain with a small extra drop:
+20 per, 20 days + one 3-candle zone re-entry (2x risk target), +$5,671, Jan-Jun drop -17.5% vs -14.3%.
