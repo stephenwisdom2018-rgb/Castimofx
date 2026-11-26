@@ -94,6 +94,17 @@ Gold rose from 4318 to 4748 in Jan - Mar, while Aug - Nov was a strong fall (466
 of the profit. The edge seen in Aug - Nov looks market-dependent. Do not put client money on it until May - Aug is
 tested and the difference is understood.
 
+## Full 2026 test (Jan 1 - Nov 25, missing Aug 1-25), base 0.01 on $1,000
+| Period | No re-entry | Micro re-entry, all 0.01 | Final plan (mixed, alternating) |
+|---|---|---|---|
+| Jan - Mar | +$20 | -$434 | -$301 |
+| Apr - Jul | -$316 | -$398 | -$748 (Apr alone -$811) |
+| Aug 26 - Nov 25 | +$360 | +$938 | +$1,563 |
+| **All 2026** | **+$64** (worst drop -$616) | **+$106** (-$1,188) | **+$514** (-$1,458) |
+**Verdict:** across 2026 the coded rules have no reliable edge. The profit came from the Aug - Nov fall, and the
+worst drops would have wiped a $1,000 account at 0.01. Not ready for clients. Next: compare the owner's real trades on
+losing months (for example April 2026) with the code's trades, to find where the code reads the rules differently.
+
 ## Final plan (saved 26 Nov 2026, owner's decision)
 - Re-entry swings: **mixed**. The 1st re-entry uses micro (3-candle) swings; the 2nd and later use RSI-confirmed swings (68/32).
   Code: `simulate_reentry(..., pivot=3, later_pivot=0)`.
