@@ -150,6 +150,19 @@ new low is G2. No buy until a low takes out G2 (the 3rd low); then any breakout 
 | Strict + exception + draft reversal after 3 lows | -$103 (-$784) | +$169 (-$673) | +$383 (-$1,151) |
 Requiring G2 to be swept halves the number of trades and does not improve results.
 
+## BREAKTHROUGH: cancel the setup when G is swept (`cancel_on_g_sweep=True`)
+Owner's rule: if price goes below G1 before breaking H, the setup is invalid (no second G). Wait for a fresh setup:
+a sell staircase that sweeps a high, or 2 new higher highs then a sweep of a low.
+Full 2026 (Jan 1 - Nov 25, Aug 1-25 missing), base 0.01 on $1,000, with `structure='takeout', takeout_counts=True`:
+| Re-entry | Net | Worst drop | Trades | Losing months |
+|---|---|---|---|---|
+| No re-entry | +$40 | -$200 | 120 | 4 of 11 |
+| **RSI re-entry, all 0.01** | **+$861** | **-$201** | 167 | 4 of 11 |
+| Mixed re-entry, alternating | +$1,510 | -$550 | 199 | 4 of 11 |
+By month (RSI re-entry): Jan -$69, Feb +$226, Mar +$132, Apr -$81, May +$33, Jun +$389, Jul -$66, Aug -$40,
+Sep +$76, Oct +$129, Nov +$133. Trading both sides (no boss filter) gives almost the same result.
+About 0.8 trades a day.
+
 ## Final plan (saved 26 Nov 2026, owner's decision)
 - Re-entry swings: **mixed**. The 1st re-entry uses micro (3-candle) swings; the 2nd and later use RSI-confirmed swings (68/32).
   Code: `simulate_reentry(..., pivot=3, later_pivot=0)`.
