@@ -9,8 +9,11 @@ from castimofx.sweep import find_signals, simulate_reentry, Swing
 FILES = ['data/XAUUSDb_M1_2026-01_2026-04.csv', 'data/XAUUSDb_M1_2026-04_2026-08.csv', 'data/XAUUSDb_M1_2026-08_2026-11.csv']
 KW = dict(tol=1.0, minor_e=5, structure='takeout', takeout_counts=True, cancel_on_g_sweep=True)
 
-def zone(df, sp, max_per, mem_days, fresh=None):
+def zone(df, sp, max_per, mem_days, fresh=None, rr=2.0, be=None, g_rsi=None, main=True):
     c = df.close.to_numpy()
+    from castimofx.sweep import rsi as _rsi
+    r = _rsi(c)
+    rsi_ok = lambda x, d: g_rsi is None or ((r[max(0, x.index - 3):x.index + 4].min() <= g_rsi) if d == 1 else (r[max(0, x.index - 3):x.index + 4].max() >= 100 - g_rsi))
     h, l = df.high.to_numpy(), df.low.to_numpy(); n = len(df)
     lv = []; sig, _ = find_signals(df, **KW, a_levels=lv)
     sw = []
@@ -38,11 +41,11 @@ def zone(df, sp, max_per, mem_days, fresh=None):
             while j < len(sw) and sw[j].confirmed < end:
                 x = sw[j]; j += 1
                 if G is None:
-                    if x.kind == lo and ok(x.price): G = x.price
+                    if x.kind == lo and ok(x.price) and rsi_ok(x, d): G = x.price
                     continue
                 if x.kind == lo:
                     if (x.price < G) if d == 1 else (x.price > G):
-                        if ok(x.price): G, H, I_ok = x.price, None, False
+                        if ok(x.price) and rsi_ok(x, d): G, H, I_ok = x.price, None, False
                         else: break
                     elif H is not None: I_ok = True
                 else: H, I_ok = x.price, False
@@ -57,13 +60,18 @@ def zone(df, sp, max_per, mem_days, fresh=None):
             if not trade: break
             u, lvl, g = trade
             entry = lvl + (sp[u] if d == 1 else 0); risk = max(abs(entry - g) + 1, 5)
-            stop, target = entry - d * risk, entry + d * 2 * risk
-            exit_t = None
+            stop, target = entry - d * risk, entry + d * rr * risk
+            exit_t = None; info = ('zone', d, risk, taken, depth, abs(F - E))
             for v in range(u, n):
-                if (l[v] <= stop) if d == 1 else (h[v] + sp[v] >= stop): out.append((df.index[u], -risk, df.index[v], 'zone', d, risk, taken, depth, abs(F - E))); exit_t = v; break
-                if v > u and ((h[v] >= target) if d == 1 else (l[v] + sp[v] <= target)): out.append((df.index[u], 2 * risk, df.index[v], 'zone', d, risk, taken, depth, abs(F - E))); exit_t = v; break
+                if (l[v] <= stop) if d == 1 else (h[v] + sp[v] >= stop):
+                    out.append((df.index[u], d * (stop - entry), df.index[v]) + info); exit_t = v; break
+                if v > u and ((h[v] >= target) if d == 1 else (l[v] + sp[v] <= target)):
+                    out.append((df.index[u], rr * risk, df.index[v]) + info); exit_t = v; break
+                if be is not None and ((h[v] >= entry + be * risk) if d == 1 else (l[v] + sp[v] <= entry - be * risk)):
+                    stop = entry if d == 1 else entry          # move the stop to breakeven
             if exit_t is None: break
             taken += 1; start = exit_t
+    if not main: return out, []
     main = simulate_reentry(df, [s for s in sig if s.bar >= 600 and s.with_boss], 20, 20, 10, 5, sp, pivot=0)
     return out, [(x.time, x.pnl, x.exit_time, id(x.signal), x.signal.direction) for x in main]
 
