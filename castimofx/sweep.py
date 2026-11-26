@@ -118,6 +118,7 @@ class _Setup:
     f_idx: int = -1  # bar of the F extreme
     cont: bool = False  # continuation setup inside the boss trend
     g_idx: int = -1  # bar index when G was set (i_sweep mode)
+    g_swept: bool = True  # G took out a low on its way down
 
 
 def find_signals(df: pd.DataFrame, max_setup_bars: int = 600, hi_level: float = 68.0, lo_level: float = 32.0,
@@ -125,7 +126,7 @@ def find_signals(df: pd.DataFrame, max_setup_bars: int = 600, hi_level: float = 
                  left_h: list | None = None, trend_changes: list | None = None,
                  replace_on_new_trend: bool = True, minor_e: int = 0,
                  trend_g_no_sweep: bool = False, i_sweep: int = 0,
-                 i_sweep_level: str = "recent") -> tuple[list[Signal], list[Swing]]:
+                 i_sweep_level: str = "recent", hybrid: bool = False) -> tuple[list[Signal], list[Swing]]:
     """Signals from the sweep rules. `tol` = how close (in $) a wick must come to a level to
     count as taking it out (broker feeds differ by cents). With `continuation`, the boss trend
     keeps trading after each entry without building a new A to F: it only needs a new F,
@@ -187,7 +188,7 @@ def find_signals(df: pd.DataFrame, max_setup_bars: int = 600, hi_level: float = 
             if t - s.start > max_setup_bars:
                 setups[d] = None
                 continue
-            if ik and s.g is not None:
+            if ik and s.g is not None and not (hybrid and s.g_swept):
                 # I-sweep entry: after G, a small low must take out the previous small low (staying beyond G),
                 # then buy the break of the most recent small high
                 if not hasattr(s, "lows"):
@@ -245,8 +246,9 @@ def find_signals(df: pd.DataFrame, max_setup_bars: int = 600, hi_level: float = 
                 st.start = t  # the setup is alive while its swings keep coming
                 if s.kind == g_kind:
                     if st.g is None:
-                        if past(s.price, level_to_sweep(st), d) or st.second or (trend_g_no_sweep and st.cont):
-                            st.g, st.g_idx = s.price, s.index
+                        swept = past(s.price, level_to_sweep(st), d) or st.second
+                        if swept or (trend_g_no_sweep and st.cont):
+                            st.g, st.g_idx, st.g_swept = s.price, s.index, swept
                         else:
                             st.e_pending = s.price  # staircase continues: a new higher low
                     elif st.second:
