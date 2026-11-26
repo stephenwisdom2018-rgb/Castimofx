@@ -516,3 +516,12 @@ Breakout20 against 196 tr 40% +$1,019.
 None passes the all-three test. Counter-trend trades are profitable, so cutting them loses money. **No daily trend filter.**
 Both pending filters together (hours + consolidation): Jan-Jun 42% +$2,171 -$283 | Jul-Nov 50% +$1,631 -$129 |
 year +$3,802 PF 2.05. The Jan-Jun drop is worse than either filter alone, so combining them does not pass.
+
+## ADOPTED (owner, 27 Nov 2026): both filters together
+Added to the chosen strategy (main + E-A zone up to 10, RSI-50 side filter, small-structure target):
+1. No new trades at 15:00 and 23:00 server time (no late join).
+2. No new trades when the last 1h range is under 0.6x its 5-day median, or when ADX(14) on M15 (last finished bar)
+   is between 25 and 35.
+2026 at 0.01 ($1,000 start each half): **45% win, +$3,802, PF 2.05, worst drop -14.3% (Jan-Jun) / -8.9% (Jul-Nov)**.
+Before: 40%, +$3,070, PF 1.48, -23.6% / -11.5%. The filters were found on 2026 data; confirm on new data.
+Owner's target: push the strategy toward +$10,000 (2026, 0.01) before coding the EA.
