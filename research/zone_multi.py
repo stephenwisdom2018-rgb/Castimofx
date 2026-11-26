@@ -9,7 +9,7 @@ from castimofx.sweep import find_signals, simulate_reentry, Swing
 FILES = ['data/XAUUSDb_M1_2026-01_2026-04.csv', 'data/XAUUSDb_M1_2026-04_2026-08.csv', 'data/XAUUSDb_M1_2026-08_2026-11.csv']
 KW = dict(tol=1.0, minor_e=5, structure='takeout', takeout_counts=True, cancel_on_g_sweep=True)
 
-def zone(df, sp, max_per, mem_days, fresh=None, rr=2.0, be=None, g_rsi=None, main=True):
+def zone(df, sp, max_per, mem_days, fresh=None, rr=2.0, be=None, g_rsi=None, main=True, big_rr=None, reent=None):
     c = df.close.to_numpy()
     from castimofx.sweep import rsi as _rsi
     r = _rsi(c)
@@ -21,6 +21,44 @@ def zone(df, sp, max_per, mem_days, fresh=None, rr=2.0, be=None, g_rsi=None, mai
         if h[i] == h[i-3:i+4].max(): sw.append(Swing('H', h[i], i, i + 3))
         if l[i] == l[i-3:i+4].min(): sw.append(Swing('L', l[i], i, i + 3))
     sw.sort(key=lambda x: x.confirmed); conf = np.array([x.confirmed for x in sw])
+    rsw = None
+    def _reenter(v0, d, tgt0, stop_bar, cfg, info):
+        """after a zone stop: wait for a high then a low, re-enter on the break of that high (buys; sells mirror).
+        stop $1 beyond the lowest point since the stop (min $5); target = the first target, or 2x risk."""
+        nonlocal rsw
+        if cfg['swings'] == 'rsi':
+            if rsw is None:
+                from castimofx.sweep import rsi_swings
+                rsw = sorted(rsi_swings(h, l, r, 68, 32, True), key=lambda x: x.confirmed)
+            S = rsw
+        else:
+            S = sw
+        cf = np.array([x.confirmed for x in S]); res = []; t, k = v0, 0
+        while k < cfg['max'] and t < stop_bar:
+            j = int(np.searchsorted(cf, t, side='right')); lvl = None; seen = False; ent = None
+            while j < len(S) and S[j].confirmed < stop_bar:
+                x = S[j]; j += 1
+                if x.kind == ('H' if d == 1 else 'L'): lvl, seen = x.price, False
+                elif lvl is not None: seen = True
+                if lvl is not None and seen:
+                    u = x.confirmed + 1; nxt = S[j].confirmed if j < len(S) else n
+                    while u < min(nxt, stop_bar):
+                        if (h[u] > lvl) if d == 1 else (l[u] < lvl): ent = u; break
+                        u += 1
+                    if ent: break
+            if ent is None: break
+            entry = lvl + (sp[ent] if d == 1 else 0)
+            ext = l[v0:ent + 1].min() if d == 1 else h[v0:ent + 1].max()
+            risk = max(abs(entry - ext) + 1, 5); stop = entry - d * risk
+            target = tgt0 if cfg['target'] == 'orig' else entry + d * 2 * risk
+            if (target - entry) * d <= 0: break
+            ex = None
+            for v in range(ent, n):
+                if (l[v] <= stop) if d == 1 else (h[v] + sp[v] >= stop): res.append((df.index[ent], d * (stop - entry), df.index[v]) + info[:3] + (-1,) + info[4:10] + (entry,)); ex = v; break
+                if v > ent and ((h[v] >= target) if d == 1 else (l[v] + sp[v] <= target)): res.append((df.index[ent], abs(target - entry), df.index[v]) + info[:3] + (-1,) + info[4:10] + (entry,)); ex = v; break
+            if ex is None or res[-1][1] > 0: break
+            k += 1; t = ex; v0 = ex
+        return res
     out = []
     for d, A, t0, E, F in lv:
         if A is None or E is None or (E - A) * d <= 0: continue
@@ -60,16 +98,19 @@ def zone(df, sp, max_per, mem_days, fresh=None, rr=2.0, be=None, g_rsi=None, mai
             if not trade: break
             u, lvl, g = trade
             entry = lvl + (sp[u] if d == 1 else 0); risk = max(abs(entry - g) + 1, 5)
-            stop, target = entry - d * risk, entry + d * rr * risk
+            trr = big_rr if (big_rr and risk > 20) else rr                 # bigger target for big-stop trades
+            stop, target = entry - d * risk, entry + d * trr * risk
             exit_t = None; info = ('zone', d, risk, taken, depth, abs(F - E), (E - g) * d / depth, (u - t0) / 60, abs(lvl - g), u, entry)
             for v in range(u, n):
                 if (l[v] <= stop) if d == 1 else (h[v] + sp[v] >= stop):
                     out.append((df.index[u], d * (stop - entry), df.index[v]) + info); exit_t = v; break
                 if v > u and ((h[v] >= target) if d == 1 else (l[v] + sp[v] <= target)):
-                    out.append((df.index[u], rr * risk, df.index[v]) + info); exit_t = v; break
+                    out.append((df.index[u], trr * risk, df.index[v]) + info); exit_t = v; break
                 if be is not None and ((h[v] >= entry + be * risk) if d == 1 else (l[v] + sp[v] <= entry - be * risk)):
                     stop = entry if d == 1 else entry          # move the stop to breakeven
             if exit_t is None: break
+            if reent and out[-1][1] < 0:
+                out += _reenter(exit_t, d, target, min(n - 1, max(end, exit_t + 4320)), reent, info)
             taken += 1; start = exit_t
     if not main: return out, []
     main = simulate_reentry(df, [s for s in sig if s.bar >= 600 and s.with_boss], 20, 20, 10, 5, sp, pivot=0)
