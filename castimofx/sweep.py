@@ -350,7 +350,7 @@ def find_signals(df: pd.DataFrame, max_setup_bars: int = 600, hi_level: float = 
                                 k["base"] = k["pull"]
                             k["lvl"], k["pull"] = s.price, None
                             if k["cnt"] == 2 and a_levels is not None and k["a"] is not None:
-                                a_levels.append((d, k["a"], t))  # remember A of every completed structure
+                                a_levels.append((d, k["a"], t, k["base"]))  # remember A (and E) of every completed structure
                             if k["cnt"] >= 2 and k["base"] is not None:
                                 if boss != d and trend_changes is not None:
                                     trend_changes.append((t, d))
