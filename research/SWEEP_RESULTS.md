@@ -494,3 +494,11 @@ Loses in BOTH halves: last 1h range under 0.6x normal (tight, true consolidation
 "Skip tight last hour" and "skip both" pass the all-three test. Caution: ADX 25-35 is a middle band picked from the
 same data (nearby bands 25-30 and 27-33 also help). Waiting for the owner's decision.
 **PENDING (owner: "we're going to see"):** skip a tight last hour (<0.6x) and ADX M15 25-35. Not added yet.
+
+## Losing trades by buy and sell (chosen strategy, 2026, 0.01)
+| | trades | win% | lost | won | net | Jan-Jun | Jul-Nov |
+|---|---|---|---|---|---|---|---|
+| buys | 259 | 36% | -$3,242 | +$4,656 | +$1,414 | +$1,219 | +$195 |
+| sells | 377 | 43% | -$3,162 | +$4,818 | +$1,656 | +$285 | +$1,371 |
+Zone buys are the weakest (31% win). By month: buys make money Jan-Mar (gold rising), lose Apr-May; sells lose
+Jan-Mar and win May-Nov (no buys at all Aug-Nov). Losses cluster in trades against the bigger trend of the month.
