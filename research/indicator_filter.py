@@ -64,7 +64,7 @@ def run():
             if h[i] == h[i-3:i+4].max(): sw.append(Swing('H', h[i], i, i + 3))
             if l[i] == l[i-3:i+4].min(): sw.append(Swing('L', l[i], i, i + 3))
         sw.sort(key=lambda x: x.confirmed); conf = np.array([x.confirmed for x in sw])
-        for d, A, t0, E in lv:
+        for d, A, t0, E, *_ in lv:
             if A is None or E is None or (E - A) * d <= 0: continue
             depth = (E - A) * d; ok = lambda p: 0 < (E - p) * d < depth
             lo = 'L' if d == 1 else 'H'

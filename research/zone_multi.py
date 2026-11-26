@@ -19,7 +19,7 @@ def zone(df, sp, max_per, mem_days, fresh=None):
         if l[i] == l[i-3:i+4].min(): sw.append(Swing('L', l[i], i, i + 3))
     sw.sort(key=lambda x: x.confirmed); conf = np.array([x.confirmed for x in sw])
     out = []
-    for d, A, t0, E in lv:
+    for d, A, t0, E, F in lv:
         if A is None or E is None or (E - A) * d <= 0: continue
         depth = (E - A) * d; ok = lambda p: 0 < (E - p) * d < depth; lo = 'L' if d == 1 else 'H'
         start, end, taken = t0, t0 + mem_days * 1440, 0
@@ -60,8 +60,8 @@ def zone(df, sp, max_per, mem_days, fresh=None):
             stop, target = entry - d * risk, entry + d * 2 * risk
             exit_t = None
             for v in range(u, n):
-                if (l[v] <= stop) if d == 1 else (h[v] + sp[v] >= stop): out.append((df.index[u], -risk, df.index[v], 'zone', d, risk, taken, depth)); exit_t = v; break
-                if v > u and ((h[v] >= target) if d == 1 else (l[v] + sp[v] <= target)): out.append((df.index[u], 2 * risk, df.index[v], 'zone', d, risk, taken, depth)); exit_t = v; break
+                if (l[v] <= stop) if d == 1 else (h[v] + sp[v] >= stop): out.append((df.index[u], -risk, df.index[v], 'zone', d, risk, taken, depth, abs(F - E))); exit_t = v; break
+                if v > u and ((h[v] >= target) if d == 1 else (l[v] + sp[v] <= target)): out.append((df.index[u], 2 * risk, df.index[v], 'zone', d, risk, taken, depth, abs(F - E))); exit_t = v; break
             if exit_t is None: break
             taken += 1; start = exit_t
     main = simulate_reentry(df, [s for s in sig if s.bar >= 600 and s.with_boss], 20, 20, 10, 5, sp, pivot=0)
