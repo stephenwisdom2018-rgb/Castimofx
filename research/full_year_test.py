@@ -26,10 +26,9 @@ SIMS = {
                                                      for x in simulate_reentry(df, s, 20, 20, 10, 5, sp, pivot=3, later_pivot=0)],
 }
 if __name__ == '__main__':
-    for rule, fk, wb in [('OLD rules (boss filter, H may be first F)', {}, True),
-                         ('FIX 1: H after G', {'h_after_g': True}, True),
-                         ('FIX 2: both sides (no boss filter)', {}, False),
-                         ('FIX 1 + 2', {'h_after_g': True}, False)]:
+    for rule, fk, wb in [('OLD rules (strict 6-swing staircase)', {}, True),
+                         ('TAKEOUT structure', {'structure': 'takeout'}, True),
+                         ('TAKEOUT + H after G', {'structure': 'takeout', 'h_after_g': True}, True)]:
         print(f'== {rule}')
         for name, sim in SIMS.items():
             net, dd, n, lm, months = run(fk, wb, sim)

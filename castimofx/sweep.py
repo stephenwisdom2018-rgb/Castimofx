@@ -127,7 +127,7 @@ def find_signals(df: pd.DataFrame, max_setup_bars: int = 600, hi_level: float = 
                  replace_on_new_trend: bool = True, minor_e: int = 0,
                  trend_g_no_sweep: bool = False, i_sweep: int = 0,
                  i_sweep_level: str = "recent", hybrid: bool = False,
-                 h_after_g: bool = False) -> tuple[list[Signal], list[Swing]]:
+                 h_after_g: bool = False, structure: str = "strict") -> tuple[list[Signal], list[Swing]]:
     """Signals from the sweep rules. `tol` = how close (in $) a wick must come to a level to
     count as taking it out (broker feeds differ by cents). With `continuation`, the boss trend
     keeps trading after each entry without building a new A to F: it only needs a new F,
@@ -171,6 +171,10 @@ def find_signals(df: pd.DataFrame, max_setup_bars: int = 600, hi_level: float = 
         lv = piv[j][1]
         return max(lv, st.e) if st.d == 1 else min(lv, st.e)
 
+    # "takeout" structure: a high only counts if it takes out the previous counted high (lows mirrored);
+    # smaller swings in between are ignored. Two highs taken = buy bias (two lows taken = sell bias).
+    trk = {1: {"lvl": None, "base": None, "pull": None, "cnt": 0, "last_opp": None},
+           -1: {"lvl": None, "base": None, "pull": None, "cnt": 0, "last_opp": None}}
     known: list[Swing] = []
     setups: dict[int, _Setup | None] = {1: None, -1: None}
     signals: list[Signal] = []
@@ -262,6 +266,34 @@ def find_signals(df: pd.DataFrame, max_setup_bars: int = 600, hi_level: float = 
                     higher = s.price > st.f if d == 1 else s.price < st.f
                     if higher:  # a new F: E and F move up the staircase
                         st.e, st.f, st.e_pending, st.start, st.f_idx = st.e_pending, s.price, None, t, s.index
+            if structure == "takeout":
+                for d in (1, -1):
+                    k = trk[d]
+                    ext_kind = "H" if d == 1 else "L"  # the side that must be taken out
+                    beyond = (lambda a, b: a > b) if d == 1 else (lambda a, b: a < b)
+                    if s.kind == ext_kind:
+                        if k["lvl"] is None:
+                            k["lvl"], k["pull"] = s.price, None
+                        elif beyond(s.price, k["lvl"]):
+                            k["cnt"] += 1
+                            if k["pull"] is not None:
+                                k["base"] = k["pull"]
+                            k["lvl"], k["pull"] = s.price, None
+                            if k["cnt"] >= 2 and k["base"] is not None:
+                                if boss != d and trend_changes is not None:
+                                    trend_changes.append((t, d))
+                                new_boss = boss != d
+                                boss = d
+                                if setups[d] is None or setups[d].g is None or (replace_on_new_trend and new_boss):
+                                    setups[d] = _Setup(d, e=k["base"], f=s.price, start=t, f_idx=s.index)
+                        k["last_opp"] = None
+                    else:
+                        k["pull"] = s.price if k["pull"] is None else (min(k["pull"], s.price) if d == 1 else max(k["pull"], s.price))
+                        if k["base"] is not None and beyond(k["base"], s.price):
+                            # the pullback took out the last counted low: the staircase is broken, start again
+                            k["cnt"], k["base"], k["pull"] = 0, s.price, None
+                            k["lvl"] = None
+                continue
             # new staircase completed by this swing?
             if len(known) >= 6:
                 last = known[-6:]
