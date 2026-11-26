@@ -321,6 +321,7 @@ def simulate(df: pd.DataFrame, signals: list[Signal], sl_mode: str, sl: float, t
                 elif t - pos["t"] >= max_bars:
                     px, reason = c[t], "time"
             if reason:
+                flipped = reason == "opposite"
                 out.append(TradeResult(pos["sig"], df.index[pos["t"]], pos["entry"], px, (px - pos["entry"]) * d, reason))
                 pos = None
         if pos is None and sig_now is not None:
@@ -364,7 +365,7 @@ def simulate_reentry(df: pd.DataFrame, signals: list[Signal], sl: float, tp: flo
                      max_reentries: int = 3, spread: np.ndarray | float = 0.05, hi_level: float = 68.0,
                      lo_level: float = 32.0, close_on_opposite: bool = True, pivot: int = 3,
                      reenter_at_entry: bool = False, trend_changes: list | None = None,
-                     hedge: bool = False, reentry_mode: str = "pivot") -> list[TradeResult]:
+                     hedge: bool = False, reentry_mode: str = "pivot", flip_tp: float | None = None) -> list[TradeResult]:
     """Owner's re-entry rule: after a stop loss, wait for price to make a high then a low (buy;
     mirror for sell), and re-enter when a wick takes out that most recent high. The re-entry
     aims for the original take-profit level plus `extra_tp`, with the same $ stop.
@@ -391,6 +392,7 @@ def simulate_reentry(df: pd.DataFrame, signals: list[Signal], sl: float, tp: flo
     wait = None  # waiting to re-enter: {"d", "target", "left", "level", "sig", "seen_high"}
     for t in range(len(df)):
         sig_now = sigs.get(t)
+        flipped = False
         # manage an open trade
         if pos is not None:
             d = pos["d"]
@@ -407,6 +409,7 @@ def simulate_reentry(df: pd.DataFrame, signals: list[Signal], sl: float, tp: flo
             elif tc.get(t, d) != d:
                 px, reason = c[t], "new trend"
             if reason:
+                flipped = reason == "opposite"
                 out.append(TradeResult(pos["sig"], df.index[pos["t"]], pos["entry"], px, (px - pos["entry"]) * d,
                                        reason + ("" if pos["n"] == 0 else f" (re-entry {pos['n']})"), df.index[t]))
                 if reason == "SL" and pos["n"] < max_reentries:
@@ -424,7 +427,8 @@ def simulate_reentry(df: pd.DataFrame, signals: list[Signal], sl: float, tp: flo
                 pos = {"d": d, "entry": entry, "sl": entry - d * sl, "tp": target, "tp0": wait["target"],
                        "t": t, "sig": sig_now, "n": wait["n"], "entry0": wait["entry0"]}
             else:
-                pos = {"d": d, "entry": entry, "sl": entry - d * sl, "tp": entry + d * tp, "tp0": entry + d * tp,
+                this_tp = flip_tp if (flipped and flip_tp) else tp  # the trade that flips gets its own target
+                pos = {"d": d, "entry": entry, "sl": entry - d * sl, "tp": entry + d * this_tp, "tp0": entry + d * this_tp,
                        "t": t, "sig": sig_now, "n": 0, "entry0": entry}
             wait = None
             continue
