@@ -81,6 +81,19 @@ and re-entering only when price is back at the first entry (+$354 to +$656).
 Friday rules (alternating lots): as now +$1,828; no new trades after Fri 20:00 +$1,675; that plus closing at Friday's close +$1,521, with no drawdown improvement. **Kept: hold over the weekend.**
 Swap, commission and slippage are not included.
 
+## Out-of-sample test, Jan - Mar 2026 (IMPORTANT)
+Final plan (mixed re-entry, alternating lots, base 0.01), XAUUSDb M1, 1 Jan - 1 Apr 2026 (`research/final_plan_test.py`):
+| Month | Trades | Net | Worst drop |
+|---|---|---|---|
+| Jan | 40 | -$38 | -$180 |
+| Feb | 48 | -$32 | -$240 |
+| Mar | 53 | -$172 | -$430 |
+| **Total** | 143 | **-$301** | **-$490** |
+Losing weeks: 9 of 13. First entries alone were break-even (50% hit TP at 1:1); the re-entry chains lost.
+Gold rose from 4318 to 4748 in Jan - Mar, while Aug - Nov was a strong fall (4661 to 3447), where sells made most
+of the profit. The edge seen in Aug - Nov looks market-dependent. Do not put client money on it until May - Aug is
+tested and the difference is understood.
+
 ## Final plan (saved 26 Nov 2026, owner's decision)
 - Re-entry swings: **mixed**. The 1st re-entry uses micro (3-candle) swings; the 2nd and later use RSI-confirmed swings (68/32).
   Code: `simulate_reentry(..., pivot=3, later_pivot=0)`.
