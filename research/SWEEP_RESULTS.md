@@ -493,3 +493,4 @@ Loses in BOTH halves: last 1h range under 0.6x normal (tight, true consolidation
 | **both** | **41% +$2,032 -$269** | **51% +$1,746 -$129** | **+$3,777 -$269 PF 1.97** |
 "Skip tight last hour" and "skip both" pass the all-three test. Caution: ADX 25-35 is a middle band picked from the
 same data (nearby bands 25-30 and 27-33 also help). Waiting for the owner's decision.
+**PENDING (owner: "we're going to see"):** skip a tight last hour (<0.6x) and ADX M15 25-35. Not added yet.
