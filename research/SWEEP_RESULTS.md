@@ -94,6 +94,11 @@ Swap, commission and slippage are not included.
   $100 accounts were wiped out on 7% of start days, including a start on 28 Aug. Results are optimistic
   (one mostly winning period, compounding, no swap, commission or slippage).
 
+Fast-market filters tested and **not used** (mixed re-entry, alternating lots): pausing with trade memory on
+speed ($10 in 5 min, $15 or $20 in 10 min) or on ATR (2x or 2.5x normal) made +$1,436 to +$1,569, against +$1,643
+without a filter. Skipping trades against the M15 or H1 EMA50 trend made +$1,523 or +$1,001. None reduced the worst
+drop (-$160).
+
 ## MT5 bot design notes (owner's decisions)
 - On start (or after a VPS restart), the bot loads the last 2-3 days of M1 and replays the rules, so it knows the
   boss trend, swings, sweeps and the current G / H / I. It then takes any setup that triggers after it starts.
