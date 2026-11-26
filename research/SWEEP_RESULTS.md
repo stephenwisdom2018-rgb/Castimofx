@@ -344,3 +344,16 @@ Every size makes money, so short structures stay in (no minimum size). Most trad
 Zone trades by F-E: $5-10: 4 tr, -$31 | $10-15: 27 tr, +$93 | $15-20: 36 tr, +$219 | $20-30: 135 tr, +$80 | over $30: 317 tr, +$1,247.
 Minimum F-E for zone trades (main + zone): none +$2,468 (drop -$361) | $10 +$2,499 | $15 +$2,407 (-$344) |
 $20 +$2,188 | $30 +$2,108. Skipping short legs does not help (only under $10 loses, and those are just 4 trades).
+
+## Small structures and the $20 target (`research/small_structure_tp.py`)
+Owner: "a $20 target on a structure smaller than $20?" Main trades split by structure size (F - G):
+under $20: 31 tr, 35% win, -$82 for the year | $20+: 136 tr, 44%, +$943.
+The tests run the small and big groups separately, so the "current" figure here (+$1,041 main) differs from the real
++$861; compare the rows with each other only.
+| Rule for structures under $20 (F - G) | Main alone | Main + zone | Worst drop (with zone) |
+|---|---|---|---|
+| target $20 (current) | +$1,041 | +$2,648 | -$344 |
+| skip them | +$939 | +$2,547 | -$425 |
+| **target = structure size (min $5)** | **+$1,246, 48% win** | **+$2,854** | -$360 |
+With size = H - G instead, neither change helps. Best: target = F - G size when it is under $20 (Jan-Jun about the same,
+Jul-Nov +$217 better).
