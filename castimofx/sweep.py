@@ -368,7 +368,8 @@ def simulate_reentry(df: pd.DataFrame, signals: list[Signal], sl: float, tp: flo
                      hedge: bool = False, reentry_mode: str = "pivot", flip_tp: float | None = None,
                      be_at: float | None = None, reenter_after_be: bool = False,
                      limit_offset: float = 0.0, limit_tp: str = "own",
-                     reentry_sl: float | None = None) -> list[TradeResult]:
+                     reentry_sl: float | None = None, friday_cutoff: int | None = None,
+                     friday_close: bool = False) -> list[TradeResult]:
     """Owner's re-entry rule: after a stop loss, wait for price to make a high then a low (buy;
     mirror for sell), and re-enter when a wick takes out that most recent high. The re-entry
     aims for the original take-profit level plus `extra_tp`, with the same $ stop.
@@ -391,12 +392,20 @@ def simulate_reentry(df: pd.DataFrame, signals: list[Signal], sl: float, tp: flo
     sigs = {s.bar: s for s in sorted(signals, key=lambda s: s.bar)}
     tc = dict(trend_changes or [])
     out: list[TradeResult] = []
+    idx_t = df.index
+    dow = idx_t.dayofweek.to_numpy()
+    hour = idx_t.hour.to_numpy()
+    gap_after = np.r_[(idx_t[1:] - idx_t[:-1]).total_seconds() / 3600, 99]
+    week_end = (dow == 4) & (gap_after > 6)  # last bar before the weekend
+    no_new = (dow == 4) & (hour >= friday_cutoff) if friday_cutoff is not None else np.zeros(len(df), bool)
     pend = None  # limit order for a first entry (limit_offset > 0)
     pos = None  # open trade
     wait = None  # waiting to re-enter: {"d", "target", "left", "level", "sig", "seen_high"}
     for t in range(len(df)):
         sig_now = sigs.get(t)
         flipped = False
+        if no_new[t] or (friday_close and week_end[t]):
+            wait = None if friday_close else wait
         # manage an open trade
         if pos is not None:
             d = pos["d"]
@@ -412,6 +421,8 @@ def simulate_reentry(df: pd.DataFrame, signals: list[Signal], sl: float, tp: flo
                 px, reason = sig_now.entry, "opposite"
             elif tc.get(t, d) != d:
                 px, reason = c[t], "new trend"
+            elif friday_close and week_end[t]:
+                px, reason = c[t], "friday close"
             # break-even: once the trade is $be_at in profit (checked after this bar), the stop moves to entry
             if not reason and be_at and not pos.get("be") and t > pos["t"]:
                 best = (h[t] - pos["entry"]) if d == 1 else (pos["entry"] - (l[t] + sp[t]))
@@ -425,6 +436,9 @@ def simulate_reentry(df: pd.DataFrame, signals: list[Signal], sl: float, tp: flo
                     wait = {"d": d, "target": pos["tp0"], "n": pos["n"] + 1, "level": None, "sig": pos["sig"],
                             "seen": False, "entry0": pos["entry0"]}
                 pos = None
+        if no_new[t] and pos is None:
+            pend = None
+            continue
         # pending limit order for a first entry: fill, or cancel if price runs to the target first
         if pend is not None and pos is None:
             d = pend["d"]
