@@ -129,6 +129,16 @@ counted high (lows mirrored); two highs taken = buy bias. With it, the code find
 | **Takeout** | +$16 (-$584) | **+$266 (-$339)**, 4 of 11 months lose | +$167 (-$1,301) |
 | Takeout + H after G | +$36 (-$584) | +$286 (-$339) | +$126 (-$1,301) |
 
+## RSI takeout exception (`takeout_counts=True`)
+Owner's rule: a high counts at RSI 68 after a low at 32. Exception: a move that passes a previous high whose RSI
+reached 68 counts as a high even without reaching 68 itself (lows mirrored). Full 2026, base 0.01:
+| Rules | No re-entry | RSI re-entry | Mixed, alternating |
+|---|---|---|---|
+| Strict + exception | +$114 (drop -$626) | +$437 (-$559) | +$605 (-$1,171) |
+| Takeout + exception | +$16 (-$584) | +$237 (-$373) | +$308 (-$1,221) |
+| Takeout (for reference) | +$16 (-$584) | +$266 (-$339) | +$167 (-$1,301) |
+Small changes, and still no strong edge across the year. The 3rd-low reversal rule is not coded yet.
+
 ## Final plan (saved 26 Nov 2026, owner's decision)
 - Re-entry swings: **mixed**. The 1st re-entry uses micro (3-candle) swings; the 2nd and later use RSI-confirmed swings (68/32).
   Code: `simulate_reentry(..., pivot=3, later_pivot=0)`.
