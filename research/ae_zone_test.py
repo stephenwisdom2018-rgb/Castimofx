@@ -24,7 +24,7 @@ def zone_trades(df, sp, zone, swings_kind, max_days=30, max_below=30, sl=20, tp=
     sw = rsi_swings(h, l, rsi(c), 68, 32, True) if swings_kind == 'rsi' else pivots(h, l, 3)
     conf = np.array([x.confirmed for x in sw])
     out = []
-    for d, A, t0, E in lv:
+    for d, A, t0, E, *_ in lv:
         if A is None or E is None:
             continue
         lo_kind, hi_kind = ('L', 'H') if d == 1 else ('H', 'L')

@@ -338,3 +338,9 @@ First touch only makes less money. Zone alone, first touch with 1 trade wins mor
 ## Zone trades by structure size (E-A distance), full 2026, 0.01
 Under $5: 7 tr, +$49 | $5-10: 13 tr, +$114 | $10-20: 45 tr, +$97 | $20-40: 110 tr, +$210 | over $40: 344 tr, +$1,138.
 Every size makes money, so short structures stay in (no minimum size). Most trades come from big structures.
+
+## Zone trades by F-E leg size (owner: "is a short structure considered?"), full 2026, 0.01
+`find_signals(a_levels=...)` now stores (d, A, bar, E, F).
+Zone trades by F-E: $5-10: 4 tr, -$31 | $10-15: 27 tr, +$93 | $15-20: 36 tr, +$219 | $20-30: 135 tr, +$80 | over $30: 317 tr, +$1,247.
+Minimum F-E for zone trades (main + zone): none +$2,468 (drop -$361) | $10 +$2,499 | $15 +$2,407 (-$344) |
+$20 +$2,188 | $30 +$2,108. Skipping short legs does not help (only under $10 loses, and those are just 4 trades).

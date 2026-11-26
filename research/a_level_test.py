@@ -15,7 +15,7 @@ def a_trades(df, sp, max_days=30, zone_tol=2.0, k=3, sl=20, tp=20):
     find_signals(df, **KW, a_levels=lv)
     h, l = df.high.to_numpy(), df.low.to_numpy()
     n = len(df); out = []
-    for d, A, t0 in lv:
+    for d, A, t0, *_ in lv:
         end = min(n, t0 + max_days * 1440)
         # first return to A
         t = t0 + 1

@@ -32,7 +32,7 @@ def trades(params):
     res = []
     for df, sp, lv, h, l, swd in DATA:
         sw = swd[swk]; conf = np.array([x.confirmed for x in sw]); n = len(df)
-        for d, A, t0, E in lv:
+        for d, A, t0, E, *_ in lv:
             if A is None or E is None: continue
             lo, hi = ('L', 'H') if d == 1 else ('H', 'L')
             depth = (E - A) * d
