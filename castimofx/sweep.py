@@ -106,8 +106,8 @@ class Signal:
 @dataclass
 class _Setup:
     d: int
-    e: float
-    f: float
+    e: float | None
+    f: float | None
     start: int
     g: float | None = None
     second: bool = False
@@ -116,10 +116,15 @@ class _Setup:
     e_pending: float | None = None
 
 
-def find_signals(df: pd.DataFrame, max_setup_bars: int = 600) -> tuple[list[Signal], list[Swing]]:
+def find_signals(df: pd.DataFrame, max_setup_bars: int = 600, hi_level: float = 68.0, lo_level: float = 32.0,
+                 tol: float = 0.0, continuation: bool = True) -> tuple[list[Signal], list[Swing]]:
+    """Signals from the sweep rules. `tol` = how close (in $) a wick must come to a level to
+    count as taking it out (broker feeds differ by cents). With `continuation`, the boss trend
+    keeps trading after each entry without building a new A to F: it only needs a new F,
+    a sweep of the low before it (E), then H, I and the break."""
     h, l, c = (df[k].to_numpy(float) for k in ("high", "low", "close"))
     r = rsi(c)
-    sw = rsi_swings(h, l, r)
+    sw = rsi_swings(h, l, r, hi_level, lo_level)
     by_conf: dict[int, list[Swing]] = {}
     for s in sw:
         by_conf.setdefault(s.confirmed, []).append(s)
@@ -127,6 +132,11 @@ def find_signals(df: pd.DataFrame, max_setup_bars: int = 600) -> tuple[list[Sign
     known: list[Swing] = []
     setups: dict[int, _Setup | None] = {1: None, -1: None}
     signals: list[Signal] = []
+    boss = 0
+
+    def past(price: float, level: float, d: int) -> bool:
+        """Price takes out `level` on the side away from direction d (a low for a buy)."""
+        return price < level + tol if d == 1 else price > level - tol
 
     for t in range(len(df)):
         # 1) wick triggers on this bar (levels known before this bar)
@@ -138,16 +148,18 @@ def find_signals(df: pd.DataFrame, max_setup_bars: int = 600) -> tuple[list[Sign
                 setups[d] = None
                 continue
             if s.g is not None and s.h is not None and t > s.h_conf:
-                beyond_g = l[t] < s.g if d == 1 else h[t] > s.g
+                beyond_g = l[t] < s.g + tol if d == 1 else h[t] > s.g - tol
                 broke_h = h[t] > s.h if d == 1 else l[t] < s.h
                 if beyond_g and not s.second and not broke_h:
-                    s.second, s.g, s.h = True, None, None  # first G swept: reset
+                    # first G swept: the next low is the second G; the latest high stays H
+                    s.second, s.g = True, None
                     s.start = t
                     continue
                 if broke_h:
                     signals.append(Signal(d, t, s.h, s.g, s.f, s.second))
-                    setups[d] = None
-                    setups[-d] = None  # the new trend leads
+                    setups[d] = None  # the opposite setup stays: it may be an unfinished trade
+                    if continuation and boss == d:
+                        setups[d] = _Setup(d, e=None, f=None, start=t)
         # 2) swings confirmed at this bar's close
         for s in by_conf.get(t, []):
             known.append(s)
@@ -156,10 +168,14 @@ def find_signals(df: pd.DataFrame, max_setup_bars: int = 600) -> tuple[list[Sign
                 if st is None:
                     continue
                 g_kind, h_kind = ("L", "H") if d == 1 else ("H", "L")
+                if st.f is None:  # continuation: wait for the first new extreme in the trend
+                    if s.kind == h_kind and len(known) >= 2:
+                        st.f, st.e, st.start = s.price, known[-2].price, t
+                    continue
+                st.start = t  # the setup is alive while its swings keep coming
                 if s.kind == g_kind:
                     if st.g is None:
-                        sweeps = s.price < st.e if d == 1 else s.price > st.e
-                        if sweeps or st.second:
+                        if past(s.price, st.e, d) or st.second:
                             st.g = s.price
                         else:
                             st.e_pending = s.price  # staircase continues: a new higher low
@@ -170,16 +186,20 @@ def find_signals(df: pd.DataFrame, max_setup_bars: int = 600) -> tuple[list[Sign
                 elif s.kind == h_kind and st.e_pending is not None:
                     higher = s.price > st.f if d == 1 else s.price < st.f
                     if higher:  # a new F: E and F move up the staircase
-                        st.e, st.f, st.e_pending = st.e_pending, s.price, None
+                        st.e, st.f, st.e_pending, st.start = st.e_pending, s.price, None, t
             # new staircase completed by this swing?
             if len(known) >= 6:
                 last = known[-6:]
                 kinds = "".join(x.kind for x in last)
                 p = [x.price for x in last]
-                if kinds == "LHLHLH" and p[0] < p[2] < p[4] and p[1] < p[3] < p[5] and setups[1] is None:
-                    setups[1] = _Setup(1, e=p[4], f=p[5], start=t)
-                if kinds == "HLHLHL" and p[0] > p[2] > p[4] and p[1] > p[3] > p[5] and setups[-1] is None:
-                    setups[-1] = _Setup(-1, e=p[4], f=p[5], start=t)
+                for d, pat in ((1, "LHLHLH"), (-1, "HLHLHL")):
+                    up = d == 1
+                    ok = kinds == pat and ((p[0] < p[2] < p[4] and p[1] < p[3] < p[5]) if up
+                                           else (p[0] > p[2] > p[4] and p[1] > p[3] > p[5]))
+                    if ok:
+                        boss = d
+                        if setups[d] is None or setups[d].g is None:
+                            setups[d] = _Setup(d, e=p[4], f=p[5], start=t)
     return signals, sw
 
 
