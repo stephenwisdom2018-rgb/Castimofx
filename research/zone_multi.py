@@ -61,7 +61,7 @@ def zone(df, sp, max_per, mem_days, fresh=None, rr=2.0, be=None, g_rsi=None, mai
             u, lvl, g = trade
             entry = lvl + (sp[u] if d == 1 else 0); risk = max(abs(entry - g) + 1, 5)
             stop, target = entry - d * risk, entry + d * rr * risk
-            exit_t = None; info = ('zone', d, risk, taken, depth, abs(F - E), (E - g) * d / depth, (u - t0) / 60, abs(lvl - g), u)
+            exit_t = None; info = ('zone', d, risk, taken, depth, abs(F - E), (E - g) * d / depth, (u - t0) / 60, abs(lvl - g), u, entry)
             for v in range(u, n):
                 if (l[v] <= stop) if d == 1 else (h[v] + sp[v] >= stop):
                     out.append((df.index[u], d * (stop - entry), df.index[v]) + info); exit_t = v; break
