@@ -169,6 +169,8 @@ Bigger targets on the fresh-setup version ($20 stop, RSI re-entry): TP $20 +$861
 $60 +$706 (-$405), $80 +$632 (-$487), $100 +$871 (-$379). **$20 stays best.**
 G2 memory (`research/g2_memory_test.py`): after a cancelled setup, buy once when price first returns to G2 (sells
 mirror it), with a $20 stop and $20 target. Over full 2026: 134-152 trades, 41-42% win, -$440 to -$560. **Not used.**
+A-level memory (`research/a_level_test.py`): remember A of every structure. On a return to A, trade a small G-H-I
+inside the zone ($20/$20, once per level). Over full 2026: only 14-21 trades, 43% win, -$40 to -$60. Not used.
 
 ## Final plan (saved 26 Nov 2026, owner's decision)
 - Re-entry swings: **mixed**. The 1st re-entry uses micro (3-candle) swings; the 2nd and later use RSI-confirmed swings (68/32).

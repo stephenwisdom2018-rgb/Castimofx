@@ -149,7 +149,8 @@ def find_signals(df: pd.DataFrame, max_setup_bars: int = 600, hi_level: float = 
                  h_after_g: bool = False, structure: str = "strict",
                  takeout_counts: bool = False, reversal_after: int = 0,
                  g2_must_be_swept: bool = False, cancel_on_g_sweep: bool = False,
-                 flip_on_cancel: bool = False, g2_levels: list | None = None) -> tuple[list[Signal], list[Swing]]:
+                 flip_on_cancel: bool = False, g2_levels: list | None = None,
+                 a_levels: list | None = None) -> tuple[list[Signal], list[Swing]]:
     """Signals from the sweep rules. `tol` = how close (in $) a wick must come to a level to
     count as taking it out (broker feeds differ by cents). With `continuation`, the boss trend
     keeps trading after each entry without building a new A to F: it only needs a new F,
@@ -195,8 +196,8 @@ def find_signals(df: pd.DataFrame, max_setup_bars: int = 600, hi_level: float = 
 
     # "takeout" structure: a high only counts if it takes out the previous counted high (lows mirrored);
     # smaller swings in between are ignored. Two highs taken = buy bias (two lows taken = sell bias).
-    trk = {1: {"lvl": None, "base": None, "pull": None, "cnt": 0, "last_opp": None},
-           -1: {"lvl": None, "base": None, "pull": None, "cnt": 0, "last_opp": None}}
+    trk = {1: {"lvl": None, "base": None, "pull": None, "cnt": 0, "last_opp": None, "a": None},
+           -1: {"lvl": None, "base": None, "pull": None, "cnt": 0, "last_opp": None, "a": None}}
     # reversal: after `reversal_after` lows taken in a row, buy the next break of the most recent high (mirror for sells)
     rev = {1: {"cnt": 0, "lvl": None, "ext": None, "level": None, "conf": -1},
            -1: {"cnt": 0, "lvl": None, "ext": None, "level": None, "conf": -1}}
@@ -342,11 +343,14 @@ def find_signals(df: pd.DataFrame, max_setup_bars: int = 600, hi_level: float = 
                     if s.kind == ext_kind:
                         if k["lvl"] is None:
                             k["lvl"], k["pull"] = s.price, None
+                            k["a"] = known[-2].price if len(known) >= 2 and known[-2].kind != s.kind else None
                         elif beyond(s.price, k["lvl"]):
                             k["cnt"] += 1
                             if k["pull"] is not None:
                                 k["base"] = k["pull"]
                             k["lvl"], k["pull"] = s.price, None
+                            if k["cnt"] == 2 and a_levels is not None and k["a"] is not None:
+                                a_levels.append((d, k["a"], t))  # remember A of every completed structure
                             if k["cnt"] >= 2 and k["base"] is not None:
                                 if boss != d and trend_changes is not None:
                                     trend_changes.append((t, d))
