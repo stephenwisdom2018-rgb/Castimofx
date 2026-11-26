@@ -49,6 +49,13 @@ Results for 1 Oct to 25 Nov 2026 (`research/grid_stack_test.py`). Each position 
 | (Prop at 6%, for reference) | 10, $1 apart | 6% of balance | +22% | 9.9% | 3.8% |
 Warning: at 10% sizing, the prop mode would break typical prop limits (10% total, 5% daily). Check the firm's rules.
 
+## Re-entry limit (client account, $1,000 at 0.02 lot, one trade at a time)
+| Max re-entries | Total, 28 Aug - 25 Nov | Worst drop |
+|---|---|---|
+| 1 | +$1,465 | 42% (Sep) |
+| 2 | +$1,327 | 58% (Sep) |
+| **5 (kept)** | **+$1,899** | **31%** |
+
 ## Next steps
 1. Owner exports XAUUSDb M1 from 1 Jan to 26 Aug 2026; run the final settings on it unchanged.
 2. Then build the MT5 Expert Advisor with the final settings, test in the Strategy Tester, then demo.
