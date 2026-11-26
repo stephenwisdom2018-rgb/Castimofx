@@ -116,12 +116,14 @@ class _Setup:
     h_conf: int = -1
     e_pending: float | None = None
     f_idx: int = -1  # bar of the F extreme
+    cont: bool = False  # continuation setup inside the boss trend
 
 
 def find_signals(df: pd.DataFrame, max_setup_bars: int = 600, hi_level: float = 68.0, lo_level: float = 32.0,
                  tol: float = 0.0, continuation: bool = True,
                  left_h: list | None = None, trend_changes: list | None = None,
-                 replace_on_new_trend: bool = True, minor_e: int = 0) -> tuple[list[Signal], list[Swing]]:
+                 replace_on_new_trend: bool = True, minor_e: int = 0,
+                 trend_g_no_sweep: bool = False) -> tuple[list[Signal], list[Swing]]:
     """Signals from the sweep rules. `tol` = how close (in $) a wick must come to a level to
     count as taking it out (broker feeds differ by cents). With `continuation`, the boss trend
     keeps trading after each entry without building a new A to F: it only needs a new F,
@@ -189,7 +191,7 @@ def find_signals(df: pd.DataFrame, max_setup_bars: int = 600, hi_level: float = 
                     signals.append(Signal(d, t, s.h, s.g, s.f, s.second, boss == d))
                     setups[d] = None  # the opposite setup stays: it may be an unfinished trade
                     if continuation and boss == d:
-                        setups[d] = _Setup(d, e=None, f=None, start=t)
+                        setups[d] = _Setup(d, e=None, f=None, start=t, cont=True)
         # 2) swings confirmed at this bar's close
         for s in by_conf.get(t, []):
             known.append(s)
@@ -205,7 +207,7 @@ def find_signals(df: pd.DataFrame, max_setup_bars: int = 600, hi_level: float = 
                 st.start = t  # the setup is alive while its swings keep coming
                 if s.kind == g_kind:
                     if st.g is None:
-                        if past(s.price, level_to_sweep(st), d) or st.second:
+                        if past(s.price, level_to_sweep(st), d) or st.second or (trend_g_no_sweep and st.cont):
                             st.g = s.price
                         else:
                             st.e_pending = s.price  # staircase continues: a new higher low
