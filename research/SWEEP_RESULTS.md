@@ -84,7 +84,10 @@ Swap, commission and slippage are not included.
 ## MT5 bot design notes (owner's decisions)
 - On start (or after a VPS restart), the bot loads the last 2-3 days of M1 and replays the rules, so it knows the
   boss trend, swings, sweeps and the current G / H / I. It then takes any setup that triggers after it starts.
-- It never enters a trade that triggered before it started.
+- If a trade triggered before it started and is still open in drawdown (price between its entry and its stop,
+  no stop or target hit yet), the bot joins it at market with 0.01, keeping that trade's original stop and target.
+  If that stop is then hit, the normal re-entry chain follows.
+- It does not join a missed trade that is already in profit.
 - If a missed trade already hit its stop and a re-entry is waiting, the bot takes that re-entry at **0.01**
   (no real loss to recover), aiming for the original target + $10.
 
