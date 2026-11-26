@@ -514,3 +514,5 @@ Breakout20 against 196 tr 40% +$1,019.
 | half lot against | +$2,438 -$210 (Jul-Nov drop worse: -$195) | +$2,560 -$435 |
 | skip zone against | +$2,412 -$260 (Jul-Nov drop -$257) | +$2,600 -$446 |
 None passes the all-three test. Counter-trend trades are profitable, so cutting them loses money. **No daily trend filter.**
+Both pending filters together (hours + consolidation): Jan-Jun 42% +$2,171 -$283 | Jul-Nov 50% +$1,631 -$129 |
+year +$3,802 PF 2.05. The Jan-Jun drop is worse than either filter alone, so combining them does not pass.
