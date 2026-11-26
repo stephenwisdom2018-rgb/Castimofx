@@ -162,6 +162,9 @@ Full 2026 (Jan 1 - Nov 25, Aug 1-25 missing), base 0.01 on $1,000, with `structu
 By month (RSI re-entry): Jan -$69, Feb +$226, Mar +$132, Apr -$81, May +$33, Jun +$389, Jul -$66, Aug -$40,
 Sep +$76, Oct +$129, Nov +$133. Trading both sides (no boss filter) gives almost the same result.
 About 0.8 trades a day.
+Tested: keeping the cancelled F-G1-H-G2 as an opposite setup (`flip_on_cancel=True`). With the boss filter it made
+RSI +$755 (drop -$247) and mixed +$701 (-$1,002); trading both sides it made RSI +$48 and mixed -$303. **Waiting for a
+fresh setup stays best.**
 
 ## Final plan (saved 26 Nov 2026, owner's decision)
 - Re-entry swings: **mixed**. The 1st re-entry uses micro (3-candle) swings; the 2nd and later use RSI-confirmed swings (68/32).
