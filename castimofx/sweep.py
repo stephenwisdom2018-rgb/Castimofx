@@ -287,6 +287,7 @@ class TradeResult:
     exit: float
     pnl: float  # $ per 0.01 lot (= price move in $)
     reason: str
+    exit_time: pd.Timestamp | None = None
 
 
 def simulate(df: pd.DataFrame, signals: list[Signal], sl_mode: str, sl: float, tp: float,
@@ -407,7 +408,7 @@ def simulate_reentry(df: pd.DataFrame, signals: list[Signal], sl: float, tp: flo
                 px, reason = c[t], "new trend"
             if reason:
                 out.append(TradeResult(pos["sig"], df.index[pos["t"]], pos["entry"], px, (px - pos["entry"]) * d,
-                                       reason + ("" if pos["n"] == 0 else f" (re-entry {pos['n']})")))
+                                       reason + ("" if pos["n"] == 0 else f" (re-entry {pos['n']})"), df.index[t]))
                 if reason == "SL" and pos["n"] < max_reentries:
                     wait = {"d": d, "target": pos["tp0"], "n": pos["n"] + 1, "level": None, "sig": pos["sig"],
                             "seen": False, "entry0": pos["entry0"]}
