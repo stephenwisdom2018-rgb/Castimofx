@@ -479,7 +479,7 @@ def simulate_reentry(df: pd.DataFrame, signals: list[Signal], sl: float, tp: flo
                      limit_offset: float = 0.0, limit_tp: str = "own",
                      reentry_sl: float | None = None, friday_cutoff: int | None = None,
                      friday_close: bool = False, later_pivot: int | None = None,
-                     fast: np.ndarray | None = None) -> list[TradeResult]:
+                     fast: np.ndarray | None = None, reentry_tp: str = "orig+extra") -> list[TradeResult]:
     """Owner's re-entry rule: after a stop loss, wait for price to make a high then a low (buy;
     mirror for sell), and re-enter when a wick takes out that most recent high. The re-entry
     aims for the original take-profit level plus `extra_tp`, with the same $ stop.
@@ -634,6 +634,10 @@ def simulate_reentry(df: pd.DataFrame, signals: list[Signal], sl: float, tp: flo
                 if broke:
                     entry = (max(o[t], wait["level"]) + sp[t]) if d == 1 else min(o[t], wait["level"])
                     target = wait["target"] + d * extra_tp
+                    if reentry_tp != "orig+extra" and (entry - wait["entry0"]) * d >= 0:
+                        target = entry + d * tp  # re-entry above the first entry: the normal target from here
+                    elif reentry_tp == "own+extra":
+                        target = entry + d * (tp + extra_tp)  # below the first entry: a bigger target from here
                     if fast_arr[t] and (target - entry) * d > 0:
                         mem = {"d": d, "entry": wait["level"], "target": target, "tp0": wait["target"],
                                "n": wait["n"], "sig": wait["sig"], "entry0": wait["entry0"]}
