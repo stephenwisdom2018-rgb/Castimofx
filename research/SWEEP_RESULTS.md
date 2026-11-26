@@ -105,6 +105,19 @@ tested and the difference is understood.
 worst drops would have wiped a $1,000 account at 0.01. Not ready for clients. Next: compare the owner's real trades on
 losing months (for example April 2026) with the code's trades, to find where the code reads the rules differently.
 
+## Blind check, 25 Feb 2026, and two fixes (full 2026)
+The owner's trades on 25 Feb: SELL at 5,180.5 (11:03, after the 5,210 high) and BUY at 5,191.5 (16:56). The code
+missed the sell, skipped the buy (against the boss trend), and bought the break of the first F at 03:14 instead.
+Fix 1 (`h_after_g=True`: H must form after G) and fix 2 (both sides, no boss filter), full 2026 at base 0.01:
+| Rules | No re-entry | RSI re-entry | Mixed, alternating |
+|---|---|---|---|
+| Old | +$64 | +$318 | +$514 |
+| Fix 1 | +$84 | +$338 | +$472 |
+| Fix 2 | -$258 | -$149 | -$22 |
+| Fix 1 + 2 | -$238 | -$129 | -$64 |
+Fix 1 changes very little. Fix 2 makes results worse. The owner's sell after a sweep of the high in a buy trend
+is still not coded.
+
 ## Final plan (saved 26 Nov 2026, owner's decision)
 - Re-entry swings: **mixed**. The 1st re-entry uses micro (3-candle) swings; the 2nd and later use RSI-confirmed swings (68/32).
   Code: `simulate_reentry(..., pivot=3, later_pivot=0)`.
