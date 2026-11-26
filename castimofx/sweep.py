@@ -366,7 +366,9 @@ def simulate_reentry(df: pd.DataFrame, signals: list[Signal], sl: float, tp: flo
                      lo_level: float = 32.0, close_on_opposite: bool = True, pivot: int = 3,
                      reenter_at_entry: bool = False, trend_changes: list | None = None,
                      hedge: bool = False, reentry_mode: str = "pivot", flip_tp: float | None = None,
-                     be_at: float | None = None, reenter_after_be: bool = False) -> list[TradeResult]:
+                     be_at: float | None = None, reenter_after_be: bool = False,
+                     limit_offset: float = 0.0, limit_tp: str = "own",
+                     reentry_sl: float | None = None) -> list[TradeResult]:
     """Owner's re-entry rule: after a stop loss, wait for price to make a high then a low (buy;
     mirror for sell), and re-enter when a wick takes out that most recent high. The re-entry
     aims for the original take-profit level plus `extra_tp`, with the same $ stop.
@@ -389,6 +391,7 @@ def simulate_reentry(df: pd.DataFrame, signals: list[Signal], sl: float, tp: flo
     sigs = {s.bar: s for s in sorted(signals, key=lambda s: s.bar)}
     tc = dict(trend_changes or [])
     out: list[TradeResult] = []
+    pend = None  # limit order for a first entry (limit_offset > 0)
     pos = None  # open trade
     wait = None  # waiting to re-enter: {"d", "target", "left", "level", "sig", "seen_high"}
     for t in range(len(df)):
@@ -422,6 +425,24 @@ def simulate_reentry(df: pd.DataFrame, signals: list[Signal], sl: float, tp: flo
                     wait = {"d": d, "target": pos["tp0"], "n": pos["n"] + 1, "level": None, "sig": pos["sig"],
                             "seen": False, "entry0": pos["entry0"]}
                 pos = None
+        # pending limit order for a first entry: fill, or cancel if price runs to the target first
+        if pend is not None and pos is None:
+            d = pend["d"]
+            if (h[t] >= pend["cancel"]) if d == 1 else (l[t] <= pend["cancel"]):
+                pend = None
+            elif (l[t] <= pend["level"]) if d == 1 else (h[t] + sp[t] >= pend["level"]):
+                entry = pend["level"] + (sp[t] if d == 1 else 0)
+                target = pend["tp"]
+                pos = {"d": d, "entry": entry, "sl": entry - d * sl, "tp": target, "tp0": target,
+                       "t": t, "sig": pend["sig"], "n": 0, "entry0": entry}
+                pend = None
+        if limit_offset and pos is None and sig_now is not None and not (wait is not None and reentry_mode == "signal"):
+            d = sig_now.direction
+            lvl = sig_now.entry - d * limit_offset
+            tp_lvl = (lvl + d * tp) if limit_tp == "own" else (sig_now.entry + d * tp)
+            pend = {"d": d, "level": lvl, "tp": tp_lvl, "cancel": sig_now.entry + d * tp, "sig": sig_now}
+            wait = None
+            continue
         # a new signal opens a trade; in "signal" mode a same-side signal after a stop is the re-entry
         if pos is None and sig_now is not None:
             d = sig_now.direction
@@ -443,6 +464,8 @@ def simulate_reentry(df: pd.DataFrame, signals: list[Signal], sl: float, tp: flo
         # waiting to re-enter: a high (buy) then a low must form, then price takes out that high
         if wait is not None and pos is None:
             d = wait["d"]
+            if reentry_mode == "entry_only":
+                wait["level"], wait["seen"] = wait["entry0"], True
             ready = wait["level"] is not None and wait["seen"]
             back_at_entry = reenter_at_entry and ((h[t] >= wait["entry0"]) if d == 1 else (l[t] <= wait["entry0"]))
             if back_at_entry and not (ready and ((h[t] > wait["level"]) if d == 1 else (l[t] < wait["level"]))):
@@ -453,7 +476,8 @@ def simulate_reentry(df: pd.DataFrame, signals: list[Signal], sl: float, tp: flo
                     entry = (max(o[t], wait["level"]) + sp[t]) if d == 1 else min(o[t], wait["level"])
                     target = wait["target"] + d * extra_tp
                     if (target - entry) * d > 0:
-                        pos = {"d": d, "entry": entry, "sl": entry - d * sl, "tp": target, "tp0": wait["target"],
+                        rsl = reentry_sl if reentry_sl else sl
+                        pos = {"d": d, "entry": entry, "sl": entry - d * rsl, "tp": target, "tp0": wait["target"],
                                "t": t, "sig": wait["sig"], "n": wait["n"], "entry0": wait["entry0"]}
                     wait = None
             for s in conf_at.get(t, []):
