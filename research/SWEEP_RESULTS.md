@@ -369,3 +369,14 @@ Zone-trade changes (`zone(..., rr, be, g_rsi)`), none pass:
 - target 1.5R: 40% / 48% win, +$1,287 | +$1,062, drop -$369 | -$183 (higher win rate, but less profit in Jul-Nov)
 - target 3R: +$654 (drop -$819) | +$1,710 ; breakeven at 1R: +$1,552 | +$947
 Only "target = structure size when F - G is under $20" (main trades) improves all three for the main trades.
+
+## Profit per $1 of drop (`research/ratio_test.py`), owner's measure
+| Rule | Jan-Jun win / profit / drop / ratio | Jul-Nov | Year |
+|---|---|---|---|
+| current | 34% +$1,175 -$361 3.3 | 43% +$1,293 -$201 6.4 | 37% +$2,468 -$361 6.8 |
+| RSI side filter | 36% +$1,461 -$289 5.1 | 43% +$1,223 -$198 6.2 | 38% +$2,684 -$289 9.3 |
+| small-structure target | 35% +$1,218 -$360 3.4 | 46% +$1,636 -$170 9.6 | 39% +$2,854 -$360 7.9 |
+| **both** | **37% +$1,504 -$270 5.6** | **46% +$1,566 -$155 10.1** | **40% +$3,070 -$270 11.4** |
+**Both rules together improve win rate, profit AND drop in both halves.** Added to the chosen strategy:
+1. Skip any entry (main or zone) where RSI 14 is on the wrong side of 50: buys need RSI >= 50, sells RSI <= 50.
+2. Main trades: if the structure F - G is under $20, the target = F - G (minimum $5) instead of $20.
