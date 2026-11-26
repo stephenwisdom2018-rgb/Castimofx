@@ -480,3 +480,16 @@ back are missed.
 | $10 better | 25% +$1,941 |
 | 10% of the stop better | 37% +$3,489 -$283 PF 1.61 (Jan-Jun +$1,915 -$283, Jul-Nov +$1,575 -$145) |
 None passes the all-three test: the win rate always falls, because winners are missed, and the drop is not smaller.
+
+## Consolidation at entry (`research/consolidation.py`, trades in `research/consolidation_trades.csv`)
+Measures known before entry: last 1h / 4h range vs normal, ADX(14) M15, last-hour efficiency, Bollinger width M15.
+Loses in BOTH halves: last 1h range under 0.6x normal (tight, true consolidation: 35 tr, -$177) and ADX M15 25-35
+(185 tr, 28% / 36% win, -$463 / -$134). ADX under 15 (no trend) is actually good (51% / 65% win), and so is ADX over 35.
+| Skip | Jan-Jun | Jul-Nov | Year |
+|---|---|---|---|
+| none (current) | 37% +$1,504 -$270 | 46% +$1,566 -$155 | +$3,070 -$270 PF 1.48 |
+| tight last hour (<0.6x) | 38% +$1,635 -$234 | 46% +$1,611 -$155 | +$3,246 -$234 PF 1.54 |
+| ADX 25-35 | 40% +$1,966 -$317 | 51% +$1,700 -$129 | +$3,666 -$317 PF 1.88 |
+| **both** | **41% +$2,032 -$269** | **51% +$1,746 -$129** | **+$3,777 -$269 PF 1.97** |
+"Skip tight last hour" and "skip both" pass the all-three test. Caution: ADX 25-35 is a middle band picked from the
+same data (nearby bands 25-30 and 27-33 also help). Waiting for the owner's decision.
