@@ -25,7 +25,7 @@ def simulate(trades, start, rule, per=500):
         elif rule.startswith('0.01 per'): base = scale
         else: base = max(scale, 2 if bal >= start + 100 else 1)
         lot = base
-        if rule.startswith('owner') and len(tr) == 4:                         # main trade: re-entries alternate L, 2L
+        if rule.startswith('owner') and tr[3] != 'zone':                         # main trade: re-entries alternate L, 2L
             k = first.get(tr[3], 0); lot = base * (2 if k % 2 == 1 else 1); first[tr[3]] = k + 1
         open_.append((tr[2], tr[1] * lot))
     for o in sorted(open_):

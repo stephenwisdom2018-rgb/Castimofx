@@ -312,3 +312,15 @@ Main + E-A zone (up to 10 per structure), 686 trades, 1 Jan - 25 Nov 2026. The b
 | $1,000 | owner's rule | $12,282 | -65% | $644 |
 The early-2026 loss (about -$255 at 0.01) wipes out $100 and $200 accounts. The safest growth is 0.01 per $1,000,
 with a $1,000 minimum.
+
+## Losing-trade traits (`research/loser_traits.py`, trades in `research/loser_traits_trades.csv`)
+Every trade of the chosen combination got traits at entry: main/zone, buy/sell, nth trade in the structure, stop size,
+hour, weekday, volatility (ATR vs normal), RSI, H1/M15 EMA50 trend, last-hour move, day range.
+**No trait loses money in both halves.** Losers look like winners, so there is no clean "avoid this" pattern.
+Weak in Jan-Jun only: zone stops under $15, RSI 32-50 at entry, price moving against the trade in the last hour, quiet market.
+Strong in both halves: stop over $20 (45-50% win), RSI 68+ at entry (buys; 32- for sells), last hour moving $10+ the trade's way.
+Filters (Jan-Jun | Jul-Nov):
+- none: +$1,175 drop -$361 | +$1,293 drop -$201
+- skip RSI < 50 at entry (buy; > 50 for sells): +$1,461 drop -$289 | +$1,223 drop -$198 (total +$2,684, best small gain)
+- skip zone stop < $10: +$1,291 | +$1,094 (fewer trades, less profit)
+- skip if price moved against in the last hour: +$1,335 | +$1,040
