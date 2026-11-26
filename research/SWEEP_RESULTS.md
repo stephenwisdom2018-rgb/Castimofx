@@ -39,6 +39,16 @@ together (+$859). Left-behind H levels as stop orders: 71% TP rate vs 62% random
 
 Boss-trend filter stays on: trades against the boss trend are skipped (owner's decision, 26 Nov 2026).
 
+## Account modes (owner's decision, 26 Nov 2026)
+Results for 1 Oct to 25 Nov 2026 (`research/grid_stack_test.py`). Each position is 0.01 lot per $1,000. All positions share the $20 stop and close at the trade's target.
+| Mode | Positions | Sizing | Net | Max drawdown | Worst day |
+|---|---|---|---|---|---|
+| Personal | 10, $1 apart | full | +367% | about 45% from peak | about 63% of start |
+| Clients | 2, $5 apart | full | +103% | 22% | |
+| Prop firm | 10, $1 apart | 10% of balance | +37% | 16.5% of account | 6.3% |
+| (Prop at 6%, for reference) | 10, $1 apart | 6% of balance | +22% | 9.9% | 3.8% |
+Warning: at 10% sizing, the prop mode would break typical prop limits (10% total, 5% daily). Check the firm's rules.
+
 ## Next steps
 1. Owner exports XAUUSDb M1 from 1 Jan to 26 Aug 2026; run the final settings on it unchanged.
 2. Then build the MT5 Expert Advisor with the final settings, test in the Strategy Tester, then demo.
