@@ -185,6 +185,14 @@ Zone A-E by month: Jan +60, Feb +20, Mar +20, Apr -40, May +40, Jun 0, Jul +100,
 **Combined with the main strategy** (fresh setup, RSI re-entry, 0.01): **+$1,381, worst drop -$221, 2 of 11 months
 losing** (Jan -$9, Apr -$121).
 
+## Entry search on A-F structures (`research/entry_search.py`)
+80 entry variants were chosen on Jan - Jun 2026 and checked on Jul - Nov 2026 (unseen). Every one of the top 15 was
+also profitable on the unseen months. Best:
+- G sweeps into the zone **between E and A**; small H and I (3-candle swings); memory 3 days
+- Entry: wick break of H. **Stop $1 below G** (minimum $5). **Target 2x the risk.**
+- Jan - Jun: 65 trades, 45% win, **+$636**, worst drop -$149. Jul - Nov (unseen): 47 trades, 51% win, **+$311**,
+  worst drop -$64. Total about +$947 at 0.01.
+
 ## Final plan (saved 26 Nov 2026, owner's decision)
 - Re-entry swings: **mixed**. The 1st re-entry uses micro (3-candle) swings; the 2nd and later use RSI-confirmed swings (68/32).
   Code: `simulate_reentry(..., pivot=3, later_pivot=0)`.
