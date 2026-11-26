@@ -137,6 +137,7 @@ class _Setup:
     cont: bool = False  # continuation setup inside the boss trend
     g_idx: int = -1  # bar index when G was set (i_sweep mode)
     g_swept: bool = True  # G took out a low on its way down
+    g2_taken: bool = False  # in second-G mode: a later low has taken out G2 (the 3rd low)
 
 
 def find_signals(df: pd.DataFrame, max_setup_bars: int = 600, hi_level: float = 68.0, lo_level: float = 32.0,
@@ -146,7 +147,8 @@ def find_signals(df: pd.DataFrame, max_setup_bars: int = 600, hi_level: float = 
                  trend_g_no_sweep: bool = False, i_sweep: int = 0,
                  i_sweep_level: str = "recent", hybrid: bool = False,
                  h_after_g: bool = False, structure: str = "strict",
-                 takeout_counts: bool = False, reversal_after: int = 0) -> tuple[list[Signal], list[Swing]]:
+                 takeout_counts: bool = False, reversal_after: int = 0,
+                 g2_must_be_swept: bool = False) -> tuple[list[Signal], list[Swing]]:
     """Signals from the sweep rules. `tol` = how close (in $) a wick must come to a level to
     count as taking it out (broker feeds differ by cents). With `continuation`, the boss trend
     keeps trading after each entry without building a new A to F: it only needs a new F,
@@ -262,6 +264,8 @@ def find_signals(df: pd.DataFrame, max_setup_bars: int = 600, hi_level: float = 
                     s.second, s.g = True, None
                     s.start = t
                     continue
+                if broke_h and g2_must_be_swept and s.second and not s.g2_taken:
+                    broke_h = False  # no buy after G2 until a low takes out G2
                 if broke_h:
                     signals.append(Signal(d, t, s.h, s.g, s.f, s.second, boss == d))
                     setups[d] = None  # the opposite setup stays: it may be an unfinished trade
@@ -305,6 +309,7 @@ def find_signals(df: pd.DataFrame, max_setup_bars: int = 600, hi_level: float = 
                     elif st.second:
                         if (s.price < st.g) if d == 1 else (s.price > st.g):
                             st.g, st.g_idx = s.price, s.index
+                            st.g2_taken = True  # this low took out G2: the 3rd low
                 elif s.kind == h_kind and st.g is not None:
                     if not h_after_g or s.index > st.g_idx:  # H must be a new high formed after G (never the first F)
                         st.h, st.h_conf = s.price, t

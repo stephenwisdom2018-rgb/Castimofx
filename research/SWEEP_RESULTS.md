@@ -139,6 +139,17 @@ reached 68 counts as a high even without reaching 68 itself (lows mirrored). Ful
 | Takeout (for reference) | +$16 (-$584) | +$266 (-$339) | +$167 (-$1,301) |
 Small changes, and still no strong edge across the year. The 3rd-low reversal rule is not coded yet.
 
+## 3rd-low rules (full 2026, base 0.01)
+Owner's counting: from F, G1 takes a low and H forms. If price goes below G1 without breaking H, H becomes F and the
+new low is G2. No buy until a low takes out G2 (the 3rd low); then any breakout of the most recent high is a buy.
+| Rules | No re-entry | RSI re-entry | Mixed, alternating |
+|---|---|---|---|
+| Strict + exception (reference) | +$114 (drop -$626) | +$437 (-$559) | +$605 (-$1,171) |
+| Strict + exception + G2 must be swept | -$260 (-$480), 177 trades | +$82 (-$454) | -$120 (-$965) |
+| Takeout + exception + G2 must be swept | -$490 (-$610), 123 trades | +$211 (-$279) | +$156 (-$596) |
+| Strict + exception + draft reversal after 3 lows | -$103 (-$784) | +$169 (-$673) | +$383 (-$1,151) |
+Requiring G2 to be swept halves the number of trades and does not improve results.
+
 ## Final plan (saved 26 Nov 2026, owner's decision)
 - Re-entry swings: **mixed**. The 1st re-entry uses micro (3-candle) swings; the 2nd and later use RSI-confirmed swings (68/32).
   Code: `simulate_reentry(..., pivot=3, later_pivot=0)`.
