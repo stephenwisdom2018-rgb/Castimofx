@@ -118,6 +118,17 @@ Fix 1 (`h_after_g=True`: H must form after G) and fix 2 (both sides, no boss fil
 Fix 1 changes very little. Fix 2 makes results worse. The owner's sell after a sweep of the high in a buy trend
 is still not coded.
 
+## Blind check, 6-8 Apr 2026: "takeout" structure (`structure='takeout'`)
+The code missed the owner's buy trend on 6 Apr: a small lower high (4,667) broke its strict 6-swing staircase, so
+sell stayed boss and the code sold twice into stop losses. New rule: a high only counts if it takes out the previous
+counted high (lows mirrored); two highs taken = buy bias. With it, the code finds the owner's Tue 7 Apr buys
+(4,666.60 at 01:02 and 4,661.40 at 19:02). Full 2026, base 0.01:
+| Structure | No re-entry | RSI re-entry | Mixed, alternating |
+|---|---|---|---|
+| Strict 6-swing (old) | +$64 (drop -$616) | +$318 (-$686) | +$514 (-$1,458) |
+| **Takeout** | +$16 (-$584) | **+$266 (-$339)**, 4 of 11 months lose | +$167 (-$1,301) |
+| Takeout + H after G | +$36 (-$584) | +$286 (-$339) | +$126 (-$1,301) |
+
 ## Final plan (saved 26 Nov 2026, owner's decision)
 - Re-entry swings: **mixed**. The 1st re-entry uses micro (3-candle) swings; the 2nd and later use RSI-confirmed swings (68/32).
   Code: `simulate_reentry(..., pivot=3, later_pivot=0)`.
