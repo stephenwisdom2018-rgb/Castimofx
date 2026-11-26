@@ -441,3 +441,11 @@ Best hours: 17:00 (+$1,152, 59% win), 03:00 (+$693), 02:00 (+$390), 18:00 (+$364
 | **23:00 and 15:00** | **39% +$1,930 -$263** | **46% +$1,575 -$123** | **+$3,506 -$263 PF 1.62** |
 Skipping 23:00 and 15:00 passes the all-three test in both halves. Caution: the hours were picked from the same
 data. 23:00 loses in both halves; 15:00 has a reason (US news). Waiting for the owner's decision.
+
+## Late join after the skipped hours (`research/late_join.py`)
+No new trades at 15:00 and 23:00 server. When the hour ends, join a skipped trade that is still open, only if price is at
+its entry or better, with the original stop and target.
+- skip, no join: +$3,506, drop -$263, PF 1.62 (best)
+- skip, join any: 12 trades joined, 2 won, 10 lost, -$205 -> +$3,300, PF 1.56
+- skip, join main re-entries only: no trade qualified (same as no join)
+The owner was right: a skipped trade still sitting at its entry after the hour usually goes on to the stop. **No late join.**
