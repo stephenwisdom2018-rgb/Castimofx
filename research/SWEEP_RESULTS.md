@@ -324,3 +324,13 @@ Filters (Jan-Jun | Jul-Nov):
 - skip RSI < 50 at entry (buy; > 50 for sells): +$1,461 drop -$289 | +$1,223 drop -$198 (total +$2,684, best small gain)
 - skip zone stop < $10: +$1,291 | +$1,094 (fewer trades, less profit)
 - skip if price moved against in the last hour: +$1,335 | +$1,040
+
+## Fresh zone, first touch only (`research/fresh_zone.py`), main + zone, full 2026, 0.01
+| Zone rule | Year | Worst drop | Losing months |
+|---|---|---|---|
+| any touch, up to 10 (current choice) | **+$2,468** | -$361 | 1/11 |
+| first touch, 1 trade | +$1,732 | -$324 | 2/11 |
+| first touch until 1 zone height above E, up to 10 | +$1,637 | -$504 | 1/11 |
+| first touch until close above E | +$972 | -$239 | 4/11 |
+First touch only makes less money. Zone alone, first touch with 1 trade wins more often (43% / 54%) but makes only
++$871 for the year. **Keep any touch, up to 10.** Later touches of the zone are profitable too.
