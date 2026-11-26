@@ -11,7 +11,7 @@ from castimofx.sweep import find_signals, rsi
 FILES = ['data/XAUUSDb_M1_2026-01_2026-04.csv', 'data/XAUUSDb_M1_2026-04_2026-08.csv', 'data/XAUUSDb_M1_2026-08_2026-11.csv']
 KW = dict(tol=1.0, minor_e=5, structure='takeout', takeout_counts=True, cancel_on_g_sweep=True)
 
-def run(df, sp, lows='rsi', zone=3.0, hi=68, sl=20, tp=20, k=3):
+def run(df, sp, lows='rsi', zone=3.0, hi=68, sl=20, tp=20, k=3, need32=False):
     h, l, c = (df[x].to_numpy(float) for x in ('high', 'low', 'close')); r = rsi(c); n = len(df)
     ev = []; sig, swings = find_signals(df, g_events=ev, **KW)
     # regime changes: (bar, direction, swept level)
@@ -38,16 +38,18 @@ def run(df, sp, lows='rsi', zone=3.0, hi=68, sl=20, tp=20, k=3):
             if a < 600: continue
             while j < len(kn) and kn[j][0] < a: j += 1
             open_lows = [p for bk, p in kn[max(0, j - 20):j]]               # recent lows known at the start
-            L, t, armed = lvl, a, True; jj = j
+            L, t, armed = lvl, a, True; jj = j; got32 = not need32
             while t < b:
                 while jj < len(kn) and kn[jj][0] <= t: open_lows.append(kn[jj][1]); jj += 1
                 broken = [p for p in open_lows if ((l[t] < p) if d == 1 else (h[t] > p))]
                 if broken:
                     L = min(broken) if d == 1 else max(broken)               # the low it has just taken out
                     open_lows = [p for p in open_lows if p not in broken]
+                    got32 = not need32
+                if (r[t] <= 100 - hi) if d == 1 else (r[t] >= hi): got32 = True     # the sweep reached RSI 32
                 near = abs(c[t] - L) <= zone
                 if not near: armed = True
-                if armed and near and ((r[t] >= hi) if d == 1 else (r[t] <= 100 - hi)):
+                if armed and near and got32 and ((r[t] >= hi) if d == 1 else (r[t] <= 100 - hi)):
                     entry = c[t] + (sp[t] if d == 1 else 0)
                     stop, target, res = entry - d * sl, entry + d * tp, None
                     for v in range(t + 1, n):
@@ -58,7 +60,8 @@ def run(df, sp, lows='rsi', zone=3.0, hi=68, sl=20, tp=20, k=3):
                     for v in range(t + 1, ex + 1):                          # lows taken during the trade still count
                         while jj < len(kn) and kn[jj][0] <= v: open_lows.append(kn[jj][1]); jj += 1
                         br = [p for p in open_lows if ((l[v] < p) if d == 1 else (h[v] > p))]
-                        if br: L = min(br) if d == 1 else max(br); open_lows = [p for p in open_lows if p not in br]
+                        if br: L = min(br) if d == 1 else max(br); open_lows = [p for p in open_lows if p not in br]; got32 = not need32
+                        if (r[v] <= 100 - hi) if d == 1 else (r[v] >= hi): got32 = True
                     t = ex + 1; continue
                 t += 1
     return sorted(out)
@@ -72,9 +75,9 @@ def stats(tr):
 if __name__ == '__main__':
     data = [(load_csv(f), pd.read_csv(f, sep='\t')['<SPREAD>'].to_numpy(float) / 100) for f in FILES]
     cut = pd.Timestamp('2026-07-01')
-    print('lows   zone RSI | Jan-Jun                                         | Jul-Nov (unseen)')
-    for lows, zone, hi in itertools.product(['rsi', '3-candle'], [2, 5], [68, 70]):
+    print('lows   zone RSI 32-must | Jan-Jun                                         | Jul-Nov (unseen)')
+    for lows, zone, hi, n32 in itertools.product(['rsi', '3-candle'], [2, 5], [68], [False, True]):
         tr = []
-        for df, sp in data: tr += run(df, sp, lows, zone, hi)
+        for df, sp in data: tr += run(df, sp, lows, zone, hi, need32=n32)
         tr.sort()
-        print(f'{lows:8} ${zone}  {hi} | {stats([x for x in tr if x[0] < cut])} | {stats([x for x in tr if x[0] >= cut])}')
+        print(f'{lows:8} ${zone}  {hi} {str(n32):5} | {stats([x for x in tr if x[0] < cut])} | {stats([x for x in tr if x[0] >= cut])}')

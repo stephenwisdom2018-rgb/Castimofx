@@ -286,3 +286,5 @@ Active from a buy G sweep until an opposite trend forms (a sell G sweep or a sel
 low price took out (RSI swing lows, or 3-candle lows). Buy in the zone with RSI 68+. Stop and target $20.
 Results: 33-57% wins, 1.1-1.5 trades/day. Best (RSI lows, $5 zone, 68): Jan-Jun 118 tr, 47%, -$160 | Jul-Nov 88 tr, 57%, +$240.
 Not better than v2. We need the owner's real example trades to see what differs.
+- With "RSI 32 must" added (the sweep below the low must reach RSI 32, then the return to the level needs RSI 68+):
+  RSI lows, $5 zone: Jan-Jun 79 tr, 44%, -$180 | Jul-Nov 80 tr, 57%, +$240. No better. 3-candle lows give almost no trades.
