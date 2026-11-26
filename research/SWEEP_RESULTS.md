@@ -30,6 +30,15 @@ i_sweep_level='highest'`, +$937 total), two-path rule (`hybrid=True`, +$800), bo
 together (+$859). Left-behind H levels as stop orders: 71% TP rate vs 62% random on 28 trades
 (`research/left_h_test.py`), not proven yet.
 
+## Stop / target comparison ($20 stop, 28 Aug - 25 Nov, 0.01 lot)
+| Target | Net | Max drawdown | Losing weeks |
+|---|---|---|---|
+| **$20 (chosen)** | **+$950** | 17% | 4 of 15 |
+| $30 | +$882 | 18% | 6 of 15 |
+| $40 | +$905 | 20% | 6 of 15 |
+
+Boss-trend filter stays on: trades against the boss trend are skipped (owner's decision, 26 Nov 2026).
+
 ## Next steps
 1. Owner exports XAUUSDb M1 from 1 Jan to 26 Aug 2026; run the final settings on it unchanged.
 2. Then build the MT5 Expert Advisor with the final settings, test in the Strategy Tester, then demo.
