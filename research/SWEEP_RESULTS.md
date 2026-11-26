@@ -418,3 +418,13 @@ The bot watches the first entry without trading it, and takes the re-entries if 
 | main only, skip first | 32% +$640 -$160 | 45% +$497 -$80 | 36% +$1,137 -$160 PF 2.26 |
 Fails the all-three test: higher profit factor, but lower win rate, less profit and a bigger drop with the zone.
 **Keep the first entry.**
+
+## Zone losing trades (`research/zone_losers.py`, trades in `research/zone_losers_trades.csv`)
+453 zone trades (RSI-50 filter on), 37% win, +$1,803. Traits: stop size, G position in the zone, hours since the
+structure, nth trade, E-A size, H-G / stop, hour, previous trade in the structure, buy/sell.
+Only one bucket loses in BOTH halves: **the 2nd zone trade in a structure** (46 tr 30% -$82 | 31 tr 32% -$32).
+Weak in Jan-Jun only: stops of $15-20 (17% win, -$386), a trade right after a winning zone trade (22%, -$252), buys.
+Big stops (over $20) are the best zone trades (48-62% win).
+Skip the 2nd zone trade (main + zone): Jan-Jun 38% +$1,586 drop -$378 | Jul-Nov 48% +$1,597 -$135 | year 41%
++$3,184 PF 1.58. More profit, higher win rate and profit factor, but the Jan-Jun drop grows from -$270 to -$378,
+so it fails the all-three test. Skip 2nd and 3rd: +$2,690, -$255. Not adopted.
