@@ -149,7 +149,7 @@ def find_signals(df: pd.DataFrame, max_setup_bars: int = 600, hi_level: float = 
                  h_after_g: bool = False, structure: str = "strict",
                  takeout_counts: bool = False, reversal_after: int = 0,
                  g2_must_be_swept: bool = False, cancel_on_g_sweep: bool = False,
-                 flip_on_cancel: bool = False) -> tuple[list[Signal], list[Swing]]:
+                 flip_on_cancel: bool = False, g2_levels: list | None = None) -> tuple[list[Signal], list[Swing]]:
     """Signals from the sweep rules. `tol` = how close (in $) a wick must come to a level to
     count as taking it out (broker feeds differ by cents). With `continuation`, the boss trend
     keeps trading after each entry without building a new A to F: it only needs a new F,
@@ -200,6 +200,7 @@ def find_signals(df: pd.DataFrame, max_setup_bars: int = 600, hi_level: float = 
     # reversal: after `reversal_after` lows taken in a row, buy the next break of the most recent high (mirror for sells)
     rev = {1: {"cnt": 0, "lvl": None, "ext": None, "level": None, "conf": -1},
            -1: {"cnt": 0, "lvl": None, "ext": None, "level": None, "conf": -1}}
+    g2_wait = {1: False, -1: False}
     known: list[Swing] = []
     setups: dict[int, _Setup | None] = {1: None, -1: None}
     signals: list[Signal] = []
@@ -260,6 +261,8 @@ def find_signals(df: pd.DataFrame, max_setup_bars: int = 600, hi_level: float = 
                 broke_h = h[t] > s.h if d == 1 else l[t] < s.h
                 if beyond_g and not broke_h and cancel_on_g_sweep:
                     setups[d] = None  # G swept before H broke: setup invalid
+                    if g2_levels is not None:
+                        g2_wait[d] = True  # the next low (buy) / high (sell) that forms is G2: remember its price
                     if flip_on_cancel:
                         # F -> G1 -> H -> G2 is already the other side's structure: keep it as an opposite setup.
                         # E = H (the high it must sweep), F = the new extreme (G2), which keeps extending.
@@ -283,6 +286,11 @@ def find_signals(df: pd.DataFrame, max_setup_bars: int = 600, hi_level: float = 
         # 2) swings confirmed at this bar's close
         for s in by_conf.get(t, []):
             known.append(s)
+            if g2_levels is not None:
+                for d in (1, -1):
+                    if g2_wait[d] and s.kind == ("L" if d == 1 else "H"):
+                        g2_levels.append((d, s.price, s.index, t))
+                        g2_wait[d] = False
             if reversal_after:
                 for d in (1, -1):
                     rv = rev[d]
