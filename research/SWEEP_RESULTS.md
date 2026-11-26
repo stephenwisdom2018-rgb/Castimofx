@@ -380,3 +380,5 @@ Only "target = structure size when F - G is under $20" (main trades) improves al
 **Both rules together improve win rate, profit AND drop in both halves.** Added to the chosen strategy:
 1. Skip any entry (main or zone) where RSI 14 is on the wrong side of 50: buys need RSI >= 50, sells RSI <= 50.
 2. Main trades: if the structure F - G is under $20, the target = F - G (minimum $5) instead of $20.
+Profit factor (money won / money lost): before 1.23 (Jan-Jun), 1.66 (Jul-Nov), 1.35 (year).
+Now (both rules): 1.33, 1.87, **1.48** (year). Won $9,473, lost $6,404.
