@@ -407,3 +407,14 @@ drop falls from 11.4 to 7.7. This replaces the alternating-lot idea in the earli
 | zone | 453 | +$1,803 | $15,251 |
 All 381 losers were full stop-outs; no early closes. Of 255 winners, 254 hit the full target.
 Loophole found: main first entries barely make money (+$129 from 114 trades); most main profit comes from re-entries.
+
+## Skip the main first entry (`research/skip_first_entry.py`)
+The bot watches the first entry without trading it, and takes the re-entries if it would have stopped out.
+| | Jan-Jun | Jul-Nov | Year |
+|---|---|---|---|
+| current (main + zone) | 37% +$1,504 -$270 PF 1.33 | 46% +$1,566 -$155 PF 1.87 | 40% +$3,070 -$270 PF 1.48 R 11.4 |
+| skip first entry | 33% +$1,472 -$318 PF 1.38 | 43% +$1,469 -$138 PF 2.00 | 37% +$2,941 -$318 PF 1.55 R 9.2 |
+| main only, current | 45% +$672 -$200 | 55% +$594 -$120 | 48% +$1,266 -$200 PF 1.66 |
+| main only, skip first | 32% +$640 -$160 | 45% +$497 -$80 | 36% +$1,137 -$160 PF 2.26 |
+Fails the all-three test: higher profit factor, but lower win rate, less profit and a bigger drop with the zone.
+**Keep the first entry.**
