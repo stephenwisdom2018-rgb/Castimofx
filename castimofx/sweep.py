@@ -101,6 +101,7 @@ class Signal:
     g: float  # sweep extreme (G)
     f: float  # F level
     second_g: bool
+    with_boss: bool = True  # False = taken against the boss trend (an unfinished trade)
 
 
 @dataclass
@@ -118,7 +119,8 @@ class _Setup:
 
 def find_signals(df: pd.DataFrame, max_setup_bars: int = 600, hi_level: float = 68.0, lo_level: float = 32.0,
                  tol: float = 0.0, continuation: bool = True,
-                 left_h: list | None = None, trend_changes: list | None = None) -> tuple[list[Signal], list[Swing]]:
+                 left_h: list | None = None, trend_changes: list | None = None,
+                 replace_on_new_trend: bool = True) -> tuple[list[Signal], list[Swing]]:
     """Signals from the sweep rules. `tol` = how close (in $) a wick must come to a level to
     count as taking it out (broker feeds differ by cents). With `continuation`, the boss trend
     keeps trading after each entry without building a new A to F: it only needs a new F,
@@ -159,7 +161,7 @@ def find_signals(df: pd.DataFrame, max_setup_bars: int = 600, hi_level: float = 
                     s.start = t
                     continue
                 if broke_h:
-                    signals.append(Signal(d, t, s.h, s.g, s.f, s.second))
+                    signals.append(Signal(d, t, s.h, s.g, s.f, s.second, boss == d))
                     setups[d] = None  # the opposite setup stays: it may be an unfinished trade
                     if continuation and boss == d:
                         setups[d] = _Setup(d, e=None, f=None, start=t)
@@ -202,8 +204,10 @@ def find_signals(df: pd.DataFrame, max_setup_bars: int = 600, hi_level: float = 
                     if ok:
                         if boss != d and trend_changes is not None:
                             trend_changes.append((t, d))  # a new trend is confirmed
+                        new_boss = boss != d
                         boss = d
-                        if setups[d] is None or setups[d].g is None:
+                        # a new trend replaces an unfinished setup of the same side
+                        if setups[d] is None or setups[d].g is None or (replace_on_new_trend and new_boss):
                             setups[d] = _Setup(d, e=p[4], f=p[5], start=t)
     return signals, sw
 
