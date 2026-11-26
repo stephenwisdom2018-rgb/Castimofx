@@ -167,6 +167,8 @@ RSI +$755 (drop -$247) and mixed +$701 (-$1,002); trading both sides it made RSI
 fresh setup stays best.**
 Bigger targets on the fresh-setup version ($20 stop, RSI re-entry): TP $20 +$861 (drop -$201), $40 +$741 (-$252),
 $60 +$706 (-$405), $80 +$632 (-$487), $100 +$871 (-$379). **$20 stays best.**
+G2 memory (`research/g2_memory_test.py`): after a cancelled setup, buy once when price first returns to G2 (sells
+mirror it), with a $20 stop and $20 target. Over full 2026: 134-152 trades, 41-42% win, -$440 to -$560. **Not used.**
 
 ## Final plan (saved 26 Nov 2026, owner's decision)
 - Re-entry swings: **mixed**. The 1st re-entry uses micro (3-candle) swings; the 2nd and later use RSI-confirmed swings (68/32).
