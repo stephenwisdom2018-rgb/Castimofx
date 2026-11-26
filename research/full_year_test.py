@@ -26,15 +26,11 @@ SIMS = {
                                                      for x in simulate_reentry(df, s, 20, 20, 10, 5, sp, pivot=3, later_pivot=0)],
 }
 if __name__ == '__main__':
-    for rule, fk, wb in [('OLD rules (strict 6-swing staircase)', {}, True),
-                         ('TAKEOUT structure', {'structure': 'takeout'}, True),
-                         ('TAKEOUT + H after G', {'structure': 'takeout', 'h_after_g': True}, True),
-                         ('Strict + takeout-counts-as-high', {'takeout_counts': True}, True),
-                         ('TAKEOUT + takeout-counts-as-high', {'structure': 'takeout', 'takeout_counts': True}, True),
-                         ('Strict + exception + 3rd-low reversal', {'takeout_counts': True, 'reversal_after': 3}, True),
-                         ('TAKEOUT + exception + 3rd-low reversal', {'structure': 'takeout', 'takeout_counts': True, 'reversal_after': 3}, True),
-                         ('Strict + exception + G2 must be swept', {'takeout_counts': True, 'g2_must_be_swept': True}, True),
-                         ('TAKEOUT + exception + G2 must be swept', {'structure': 'takeout', 'takeout_counts': True, 'g2_must_be_swept': True}, True)]:
+    for rule, fk, wb in [('Strict + exception (reference)', {'takeout_counts': True}, True),
+                         ('Cancel on G sweep, with boss', {'takeout_counts': True, 'cancel_on_g_sweep': True}, True),
+                         ('Cancel on G sweep, both sides', {'takeout_counts': True, 'cancel_on_g_sweep': True}, False),
+                         ('TAKEOUT + cancel, with boss', {'structure': 'takeout', 'takeout_counts': True, 'cancel_on_g_sweep': True}, True),
+                         ('TAKEOUT + cancel, both sides', {'structure': 'takeout', 'takeout_counts': True, 'cancel_on_g_sweep': True}, False)]:
         print(f'== {rule}')
         for name, sim in SIMS.items():
             net, dd, n, lm, months = run(fk, wb, sim)
