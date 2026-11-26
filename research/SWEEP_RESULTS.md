@@ -66,6 +66,20 @@ Warning: at 10% sizing, the prop mode would break typical prop limits (10% total
 - News filter (60 minutes around US news at 15:30 / 17:00 server time and FOMC): it cut profit and did not reduce drawdown. No filter.
 - Bigger target for trades that flip the position: $30 / $40 / $60 gave $940 / $990 / $931 against $950, from only 7 flips in 3 months. Kept $20.
 
+## Re-entry lot pattern (owner's decision: alternate)
+Base 0.01 per $1,000, 28 Aug - 25 Nov 2026:
+| Lots: first entry, then re-entries | Net | Max drawdown |
+|---|---|---|
+| all 0.01 | +$950 | 16-17% |
+| 0.01, then 0.02 for every re-entry | +$1,739 | 24-26% |
+| **0.01, then 0.02, 0.01, 0.02, 0.01, 0.02 (alternate, kept)** | **+$1,828** | **19-20%** |
+| 0.01, 0.02, then 0.01 | +$1,481 | 15-21% |
+| double every re-entry (0.02, 0.04, ...) | +$5,079 | 97%: do not use |
+
+Also tested and rejected: a first entry as a limit order $5 or $10 below (+$532 to +$744),
+and re-entering only when price is back at the first entry (+$354 to +$656).
+Swap, commission and slippage are not included.
+
 ## Next steps
 1. Owner exports XAUUSDb M1 from 1 Jan to 26 Aug 2026; run the final settings on it unchanged.
 2. Then build the MT5 Expert Advisor with the final settings, test in the Strategy Tester, then demo.
