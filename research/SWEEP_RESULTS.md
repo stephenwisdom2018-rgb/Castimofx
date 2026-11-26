@@ -288,3 +288,12 @@ Results: 33-57% wins, 1.1-1.5 trades/day. Best (RSI lows, $5 zone, 68): Jan-Jun 
 Not better than v2. We need the owner's real example trades to see what differs.
 - With "RSI 32 must" added (the sweep below the low must reach RSI 32, then the return to the level needs RSI 68+):
   RSI lows, $5 zone: Jan-Jun 79 tr, 44%, -$180 | Jul-Nov 80 tr, 57%, +$240. No better. 3-candle lows give almost no trades.
+
+## Owner's decision (26 Nov 2026): CHOSEN STRATEGY = main + E-A zone (up to 10 per structure)
+"Our zone works. Only entries. We are taking this one now. It's better than all of them."
+- Main strategy: takeout structure, RSI takeout exception, cancel on G sweep, RSI re-entries.
+- Plus zone entries: G sweeps into the zone between E and A; small H and I (3-candle swings); wick break of H;
+  stop $1 below G (min $5); target 2x risk; up to 10 trades per structure; structure memory 10 days.
+- Full 2026 at 0.01 lot: +$2,468, worst drop -$361, 3.2 trades/day, 1 of 11 months losing (`research/zone_multi.py`).
+- The retest, soldiers and reversal entries tested above are NOT used.
+- Next: build the MT5 EA for this combination.

@@ -19,4 +19,4 @@
 - Strategy code: `castimofx/sweep.py`. Backtests: `research/`. Data: `data/` (XAUUSDb M15 2 years, M1 from 26 Aug 2026)
 - Student notes with diagrams (Claude Docs): https://claude.ai/artifact/MhcF2HYEdSP8kLX1wkwuBE
 - The owner's server time is MT5 HF Markets (UTC+2 in winter); the owner is in Uganda (UTC+3).
-- Next step: test the final plan on XAUUSDb M1 from 1 Jan to 26 Aug 2026 (owner will export it), then build the MT5 EA.
+- CHOSEN (26 Nov 2026): main + E-A zone up to 10 per structure (+$2,468 in 2026 at 0.01). Next step: build the MT5 EA for it.
