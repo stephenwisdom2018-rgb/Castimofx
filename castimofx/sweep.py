@@ -363,7 +363,7 @@ def simulate_reentry(df: pd.DataFrame, signals: list[Signal], sl: float, tp: flo
                      max_reentries: int = 3, spread: np.ndarray | float = 0.05, hi_level: float = 68.0,
                      lo_level: float = 32.0, close_on_opposite: bool = True, pivot: int = 3,
                      reenter_at_entry: bool = False, trend_changes: list | None = None,
-                     hedge: bool = False) -> list[TradeResult]:
+                     hedge: bool = False, reentry_mode: str = "pivot") -> list[TradeResult]:
     """Owner's re-entry rule: after a stop loss, wait for price to make a high then a low (buy;
     mirror for sell), and re-enter when a wick takes out that most recent high. The re-entry
     aims for the original take-profit level plus `extra_tp`, with the same $ stop.
@@ -412,13 +412,22 @@ def simulate_reentry(df: pd.DataFrame, signals: list[Signal], sl: float, tp: flo
                     wait = {"d": d, "target": pos["tp0"], "n": pos["n"] + 1, "level": None, "sig": pos["sig"],
                             "seen": False, "entry0": pos["entry0"]}
                 pos = None
-        # a new signal cancels any waiting re-entry and opens a trade
+        # a new signal opens a trade; in "signal" mode a same-side signal after a stop is the re-entry
         if pos is None and sig_now is not None:
-            wait = None
             d = sig_now.direction
             entry = (max(o[t], sig_now.entry) + sp[t]) if d == 1 else min(o[t], sig_now.entry)
-            pos = {"d": d, "entry": entry, "sl": entry - d * sl, "tp": entry + d * tp, "tp0": entry + d * tp,
-                   "t": t, "sig": sig_now, "n": 0, "entry0": entry}
+            if reentry_mode == "signal" and wait is not None and wait["d"] == d:
+                target = wait["target"] + d * extra_tp
+                if (target - entry) * d < tp:
+                    target = entry + d * tp
+                pos = {"d": d, "entry": entry, "sl": entry - d * sl, "tp": target, "tp0": wait["target"],
+                       "t": t, "sig": sig_now, "n": wait["n"], "entry0": wait["entry0"]}
+            else:
+                pos = {"d": d, "entry": entry, "sl": entry - d * sl, "tp": entry + d * tp, "tp0": entry + d * tp,
+                       "t": t, "sig": sig_now, "n": 0, "entry0": entry}
+            wait = None
+            continue
+        if reentry_mode == "signal":
             continue
         # waiting to re-enter: a high (buy) then a low must form, then price takes out that high
         if wait is not None and pos is None:

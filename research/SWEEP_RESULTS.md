@@ -8,8 +8,10 @@ Student notes (with diagrams): https://claude.ai/artifact/MhcF2HYEdSP8kLX1wkwuBE
 - A sweep is always required: G takes out E or the last small (5-candle) low before F
 - Entry: a wick breaks H (sell = mirror)
 - Stop $20, target $20
-- After a stop loss: wait for a small high then a low, re-enter on the break of that high,
-  aiming for the original target + $10, up to 5 re-entries
+- After a stop loss: wait for a small high then a low (3-candle swings, the owner's choice),
+  re-enter on the break of that high, aiming for the original target + $10, up to 5 re-entries.
+  Alternative kept as a switch: RSI-confirmed swings (`pivot=0`): +$701 total, max drawdown about 8%
+  instead of about 17%.
 - An opposite signal closes the open trade and flips
 - Unfinished trades (against the boss trend): OFF
 
