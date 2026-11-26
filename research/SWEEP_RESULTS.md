@@ -428,3 +428,16 @@ Big stops (over $20) are the best zone trades (48-62% win).
 Skip the 2nd zone trade (main + zone): Jan-Jun 38% +$1,586 drop -$378 | Jul-Nov 48% +$1,597 -$135 | year 41%
 +$3,184 PF 1.58. More profit, higher win rate and profit factor, but the Jan-Jun drop grows from -$270 to -$378,
 so it fails the all-three test. Skip 2nd and 3rd: +$2,690, -$255. Not adopted.
+
+## Trades by hour of the day (`research/loss_by_hour.py`), chosen strategy, 2026, 0.01, server time
+Losing hours: 23:00 loses in BOTH halves (19 tr, 21% win, -$117). 15:00 is the worst hour (39 tr, 28% win, -$319,
+nearly all in Jan-Jun); 15:30 server is the US news time (8:30 New York). 13:00 -$117, 19:00 -$71, 07:00 -$24, 00:00 -$36.
+Best hours: 17:00 (+$1,152, 59% win), 03:00 (+$693), 02:00 (+$390), 18:00 (+$364).
+| No new trades at | Jan-Jun | Jul-Nov | Year |
+|---|---|---|---|
+| none (current) | 37% +$1,504 -$270 | 46% +$1,566 -$155 | +$3,070 -$270 PF 1.48 |
+| 23:00-00:59 | 38% +$1,638 -$253 | 46% +$1,585 -$155 | +$3,223 -$253 PF 1.52 |
+| 15:00 | 38% +$1,833 -$279 | 46% +$1,556 -$123 | +$3,389 -$279 PF 1.58 |
+| **23:00 and 15:00** | **39% +$1,930 -$263** | **46% +$1,575 -$123** | **+$3,506 -$263 PF 1.62** |
+Skipping 23:00 and 15:00 passes the all-three test in both halves. Caution: the hours were picked from the same
+data. 23:00 loses in both halves; 15:00 has a reason (US news). Waiting for the owner's decision.
