@@ -205,6 +205,16 @@ good trades along with bad ones. **No extra indicator.**
 | no limit (30 days) | +$2,174, drop -$663 | +$3,035, drop -$606, 4.4/day |
 Trades can overlap (several open at once). The limits were picked on the same year, so treat these as optimistic.
 
+### Owner's breakout-retest entry (`research/retest_entry.py`)
+After H breaks, wait for price to come back to H or below with RSI hooking at 32 or below, then buy the break of
+the last 3-candle high. Invalid below G. Full 2026, 0.01 lot:
+| Stop / target, buys per H | Jan - Jun | Jul - Nov (unseen) |
+|---|---|---|
+| **$20/$20, 1 per H** | **63 trades, 56% win, +$140, drop -$80** | **43 trades, 56% win, +$100, drop -$80** |
+| $20/$20, up to 3 | -$260 (drop -$420) | +$80 |
+| below G, 2x target, 1 | -$471 (drop -$1,036) | +$385 |
+Very steady (worst drop -$80), but small profit, about +$240 a year at 0.01.
+
 ## Final plan (saved 26 Nov 2026, owner's decision)
 - Re-entry swings: **mixed**. The 1st re-entry uses micro (3-candle) swings; the 2nd and later use RSI-confirmed swings (68/32).
   Code: `simulate_reentry(..., pivot=3, later_pivot=0)`.
