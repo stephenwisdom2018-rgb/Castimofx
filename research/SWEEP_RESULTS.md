@@ -56,6 +56,10 @@ Warning: at 10% sizing, the prop mode would break typical prop limits (10% total
 | 2 | +$1,327 | 58% (Sep) |
 | **5 (kept)** | **+$1,899** | **31%** |
 
+## Other checks (kept the original plan)
+- News filter (60 minutes around US news at 15:30 / 17:00 server time and FOMC): it cut profit and did not reduce drawdown. No filter.
+- Bigger target for trades that flip the position: $30 / $40 / $60 gave $940 / $990 / $931 against $950, from only 7 flips in 3 months. Kept $20.
+
 ## Next steps
 1. Owner exports XAUUSDb M1 from 1 Jan to 26 Aug 2026; run the final settings on it unchanged.
 2. Then build the MT5 Expert Advisor with the final settings, test in the Strategy Tester, then demo.
