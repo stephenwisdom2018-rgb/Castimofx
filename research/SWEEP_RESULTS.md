@@ -334,3 +334,7 @@ Filters (Jan-Jun | Jul-Nov):
 | first touch until close above E | +$972 | -$239 | 4/11 |
 First touch only makes less money. Zone alone, first touch with 1 trade wins more often (43% / 54%) but makes only
 +$871 for the year. **Keep any touch, up to 10.** Later touches of the zone are profitable too.
+
+## Zone trades by structure size (E-A distance), full 2026, 0.01
+Under $5: 7 tr, +$49 | $5-10: 13 tr, +$114 | $10-20: 45 tr, +$97 | $20-40: 110 tr, +$210 | over $40: 344 tr, +$1,138.
+Every size makes money, so short structures stay in (no minimum size). Most trades come from big structures.
