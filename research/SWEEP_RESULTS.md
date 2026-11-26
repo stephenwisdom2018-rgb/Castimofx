@@ -81,6 +81,13 @@ and re-entering only when price is back at the first entry (+$354 to +$656).
 Friday rules (alternating lots): as now +$1,828; no new trades after Fri 20:00 +$1,675; that plus closing at Friday's close +$1,521, with no drawdown improvement. **Kept: hold over the weekend.**
 Swap, commission and slippage are not included.
 
+## MT5 bot design notes (owner's decisions)
+- On start (or after a VPS restart), the bot loads the last 2-3 days of M1 and replays the rules, so it knows the
+  boss trend, swings, sweeps and the current G / H / I. It then takes any setup that triggers after it starts.
+- It never enters a trade that triggered before it started.
+- If a missed trade already hit its stop and a re-entry is waiting, the bot takes that re-entry at **0.01**
+  (no real loss to recover), aiming for the original target + $10.
+
 ## Next steps
 1. Owner exports XAUUSDb M1 from 1 Jan to 26 Aug 2026; run the final settings on it unchanged.
 2. Then build the MT5 Expert Advisor with the final settings, test in the Strategy Tester, then demo.
