@@ -261,3 +261,15 @@ Stop $20, target $20. The MA period and the meaning of "inside" were not given, 
 | 30 | EMA20 | MA touches all 3 | 136 tr, 46%, -$240 | 87 tr, 49%, -$20 |
 About 2-3 trades/day, but only about 50% wins at 1:1, so profit is thin; v1 (1 per H, pivot break) was steadier.
 Waiting for the owner's MA period and the exact meaning of "inside the MA".
+
+## Reversal entry (`research/reversal_entry.py`)
+Owner's rule: clean A-F, G sweeps the most recent low. Buy as soon as price comes back to the swept level while RSI is
+68+ (hooked), with no breakout needed. Stop $20, target $20. If stopped out below G, the next entry is at G with RSI 68+.
+Sells mirror. `find_signals(g_events=[])` now records each G sweep as (direction, swept level, G, G bar, confirm bar).
+| zone | RSI bars | RSI | per G | Jan-Jun | Jul-Nov |
+|---|---|---|---|---|---|
+| $2 | 3 | 70 | 1 | 57 tr, 47%, -$60, drop -$220 | 36 tr, 67%, +$240, drop -$60 |
+| $2 | 1 | 68 | 1 | 110 tr, 44%, -$280 | 58 tr, 59%, +$200 |
+| $5 | 1 | 70 | 3 | 196 tr, 40%, -$800 | 98 tr, 62%, +$480 |
+Promised 80%+ was not reached: 59-67% in Jul-Nov, but only 37-48% in Jan-Jun, and about 0.5 trades/day.
+Next step: compare with the owner's own example days to find what the code reads differently.

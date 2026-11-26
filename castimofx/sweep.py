@@ -150,7 +150,7 @@ def find_signals(df: pd.DataFrame, max_setup_bars: int = 600, hi_level: float = 
                  takeout_counts: bool = False, reversal_after: int = 0,
                  g2_must_be_swept: bool = False, cancel_on_g_sweep: bool = False,
                  flip_on_cancel: bool = False, g2_levels: list | None = None,
-                 a_levels: list | None = None) -> tuple[list[Signal], list[Swing]]:
+                 a_levels: list | None = None, g_events: list | None = None) -> tuple[list[Signal], list[Swing]]:
     """Signals from the sweep rules. `tol` = how close (in $) a wick must come to a level to
     count as taking it out (broker feeds differ by cents). With `continuation`, the boss trend
     keeps trading after each entry without building a new A to F: it only needs a new F,
@@ -322,6 +322,8 @@ def find_signals(df: pd.DataFrame, max_setup_bars: int = 600, hi_level: float = 
                         swept = past(s.price, level_to_sweep(st), d) or st.second
                         if swept or (trend_g_no_sweep and st.cont):
                             st.g, st.g_idx, st.g_swept = s.price, s.index, swept
+                            if g_events is not None and swept:
+                                g_events.append((d, level_to_sweep(st), s.price, s.index, t))
                         else:
                             st.e_pending = s.price  # staircase continues: a new higher low
                     elif st.second:
