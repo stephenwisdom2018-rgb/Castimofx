@@ -49,12 +49,12 @@ def zone(df, sp, max_per, mem_days):
             stop, target = entry - d * risk, entry + d * 2 * risk
             exit_t = None
             for v in range(u, n):
-                if (l[v] <= stop) if d == 1 else (h[v] + sp[v] >= stop): out.append((df.index[u], -risk, df.index[v])); exit_t = v; break
-                if v > u and ((h[v] >= target) if d == 1 else (l[v] + sp[v] <= target)): out.append((df.index[u], 2 * risk, df.index[v])); exit_t = v; break
+                if (l[v] <= stop) if d == 1 else (h[v] + sp[v] >= stop): out.append((df.index[u], -risk, df.index[v], 'zone', d, risk, taken)); exit_t = v; break
+                if v > u and ((h[v] >= target) if d == 1 else (l[v] + sp[v] <= target)): out.append((df.index[u], 2 * risk, df.index[v], 'zone', d, risk, taken)); exit_t = v; break
             if exit_t is None: break
             taken += 1; start = exit_t
     main = simulate_reentry(df, [s for s in sig if s.bar >= 600 and s.with_boss], 20, 20, 10, 5, sp, pivot=0)
-    return out, [(x.time, x.pnl, x.exit_time, id(x.signal)) for x in main]
+    return out, [(x.time, x.pnl, x.exit_time, id(x.signal), x.signal.direction) for x in main]
 
 def stats(tr):
     s = pd.Series([x[1] for x in tr], index=[x[0] for x in tr]).sort_index()
