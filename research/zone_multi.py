@@ -9,7 +9,8 @@ from castimofx.sweep import find_signals, simulate_reentry, Swing
 FILES = ['data/XAUUSDb_M1_2026-01_2026-04.csv', 'data/XAUUSDb_M1_2026-04_2026-08.csv', 'data/XAUUSDb_M1_2026-08_2026-11.csv']
 KW = dict(tol=1.0, minor_e=5, structure='takeout', takeout_counts=True, cancel_on_g_sweep=True)
 
-def zone(df, sp, max_per, mem_days):
+def zone(df, sp, max_per, mem_days, fresh=None):
+    c = df.close.to_numpy()
     h, l = df.high.to_numpy(), df.low.to_numpy(); n = len(df)
     lv = []; sig, _ = find_signals(df, **KW, a_levels=lv)
     sw = []
@@ -22,6 +23,15 @@ def zone(df, sp, max_per, mem_days):
         if A is None or E is None or (E - A) * d <= 0: continue
         depth = (E - A) * d; ok = lambda p: 0 < (E - p) * d < depth; lo = 'L' if d == 1 else 'H'
         start, end, taken = t0, t0 + mem_days * 1440, 0
+        if fresh:                                                        # first touch only: trade the first visit to the zone
+            tt = t0
+            while tt < min(end, n) and not ((l[tt] < E) if d == 1 else (h[tt] > E)): tt += 1
+            v = tt + 1
+            while v < min(end, n):
+                if fresh == 'close above E' and ((c[v] > E) if d == 1 else (c[v] < E)): break
+                if fresh == 'one zone-height above E' and ((h[v] > E + depth) if d == 1 else (l[v] < E - depth)): break
+                v += 1
+            end = min(end, v)
         while taken < max_per:
             j = int(np.searchsorted(conf, start, side='right'))
             G = H = None; I_ok = False; trade = None
@@ -40,6 +50,7 @@ def zone(df, sp, max_per, mem_days):
                     u = x.confirmed + 1; nxt = sw[j].confirmed if j < len(sw) else n
                     while u < min(nxt, n):
                         if (l[u] < G) if d == 1 else (h[u] > G): break
+                        if u >= end: break
                         if (h[u] > H) if d == 1 else (l[u] < H): trade = (u, H, G); break
                         u += 1
                     if trade: break
