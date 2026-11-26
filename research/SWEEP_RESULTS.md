@@ -196,6 +196,15 @@ Reversal indicators as extra filters on this entry (`research/indicator_filter.p
 engulfing / pin bar, MACD, Bollinger re-entry and volume spike. None beat "no filter" (+$636 / +$311). They removed
 good trades along with bad ones. **No extra indicator.**
 
+### More trades from the same structures (`research/zone_multi.py`), full 2026, 0.01 lot per trade
+| Zone trades per structure (memory) | Zone alone | Zone + main strategy |
+|---|---|---|
+| 1 (3 days) | +$947, drop -$163, 0.5/day | **+$1,808, drop -$236, 1.3/day, 2 of 11 months losing** |
+| 3 (3 days) | +$840, drop -$257 | +$1,701, drop -$344, 1.9/day |
+| 10 (10 days) | +$1,607, drop -$424 | **+$2,468, drop -$361, 3.2/day, 1 of 11 months losing** |
+| no limit (30 days) | +$2,174, drop -$663 | +$3,035, drop -$606, 4.4/day |
+Trades can overlap (several open at once). The limits were picked on the same year, so treat these as optimistic.
+
 ## Final plan (saved 26 Nov 2026, owner's decision)
 - Re-entry swings: **mixed**. The 1st re-entry uses micro (3-candle) swings; the 2nd and later use RSI-confirmed swings (68/32).
   Code: `simulate_reentry(..., pivot=3, later_pivot=0)`.
