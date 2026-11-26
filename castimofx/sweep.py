@@ -288,7 +288,8 @@ def excursions(df: pd.DataFrame, signals: list[Signal], bars: int = 240, spread:
 
 def simulate_reentry(df: pd.DataFrame, signals: list[Signal], sl: float, tp: float, extra_tp: float = 0.0,
                      max_reentries: int = 3, spread: np.ndarray | float = 0.05, hi_level: float = 68.0,
-                     lo_level: float = 32.0, close_on_opposite: bool = True, pivot: int = 3) -> list[TradeResult]:
+                     lo_level: float = 32.0, close_on_opposite: bool = True, pivot: int = 3,
+                     reenter_at_entry: bool = False) -> list[TradeResult]:
     """Owner's re-entry rule: after a stop loss, wait for price to make a high then a low (buy;
     mirror for sell), and re-enter when a wick takes out that most recent high. The re-entry
     aims for the original take-profit level plus `extra_tp`, with the same $ stop.
@@ -332,7 +333,7 @@ def simulate_reentry(df: pd.DataFrame, signals: list[Signal], sl: float, tp: flo
                                        reason + ("" if pos["n"] == 0 else f" (re-entry {pos['n']})")))
                 if reason == "SL" and pos["n"] < max_reentries:
                     wait = {"d": d, "target": pos["tp0"], "n": pos["n"] + 1, "level": None, "sig": pos["sig"],
-                            "seen": False}
+                            "seen": False, "entry0": pos["entry0"]}
                 pos = None
         # a new signal cancels any waiting re-entry and opens a trade
         if pos is None and sig_now is not None:
@@ -340,19 +341,23 @@ def simulate_reentry(df: pd.DataFrame, signals: list[Signal], sl: float, tp: flo
             d = sig_now.direction
             entry = (max(o[t], sig_now.entry) + sp[t]) if d == 1 else min(o[t], sig_now.entry)
             pos = {"d": d, "entry": entry, "sl": entry - d * sl, "tp": entry + d * tp, "tp0": entry + d * tp,
-                   "t": t, "sig": sig_now, "n": 0}
+                   "t": t, "sig": sig_now, "n": 0, "entry0": entry}
             continue
         # waiting to re-enter: a high (buy) then a low must form, then price takes out that high
         if wait is not None and pos is None:
             d = wait["d"]
-            if wait["level"] is not None and wait["seen"]:
-                broke = h[t] > wait["level"] if d == 1 else l[t] < wait["level"]
+            ready = wait["level"] is not None and wait["seen"]
+            back_at_entry = reenter_at_entry and ((h[t] >= wait["entry0"]) if d == 1 else (l[t] <= wait["entry0"]))
+            if back_at_entry and not (ready and ((h[t] > wait["level"]) if d == 1 else (l[t] < wait["level"]))):
+                wait["level"], ready = wait["entry0"], True  # price came back to the first entry: it is the recent high
+            if ready:
+                broke = h[t] >= wait["level"] if d == 1 else l[t] <= wait["level"]
                 if broke:
                     entry = (max(o[t], wait["level"]) + sp[t]) if d == 1 else min(o[t], wait["level"])
                     target = wait["target"] + d * extra_tp
                     if (target - entry) * d > 0:
                         pos = {"d": d, "entry": entry, "sl": entry - d * sl, "tp": target, "tp0": wait["target"],
-                               "t": t, "sig": wait["sig"], "n": wait["n"]}
+                               "t": t, "sig": wait["sig"], "n": wait["n"], "entry0": wait["entry0"]}
                     wait = None
             for s in conf_at.get(t, []):
                 if wait is None:
