@@ -117,7 +117,8 @@ class _Setup:
 
 
 def find_signals(df: pd.DataFrame, max_setup_bars: int = 600, hi_level: float = 68.0, lo_level: float = 32.0,
-                 tol: float = 0.0, continuation: bool = True) -> tuple[list[Signal], list[Swing]]:
+                 tol: float = 0.0, continuation: bool = True,
+                 left_h: list | None = None) -> tuple[list[Signal], list[Swing]]:
     """Signals from the sweep rules. `tol` = how close (in $) a wick must come to a level to
     count as taking it out (broker feeds differ by cents). With `continuation`, the boss trend
     keeps trading after each entry without building a new A to F: it only needs a new F,
@@ -152,6 +153,8 @@ def find_signals(df: pd.DataFrame, max_setup_bars: int = 600, hi_level: float = 
                 broke_h = h[t] > s.h if d == 1 else l[t] < s.h
                 if beyond_g and not s.second and not broke_h:
                     # first G swept: the next low is the second G; the latest high stays H
+                    if left_h is not None:
+                        left_h.append((d, s.h, t))  # an H left behind when its first G was swept
                     s.second, s.g = True, None
                     s.start = t
                     continue
