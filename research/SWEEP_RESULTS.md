@@ -465,3 +465,18 @@ Median minutes held: main losers 118, winners 162 | zone losers 78, winners 148.
 | over 1 day | 40 | 57% | +$1,945 |
 Time exits (close after N minutes, or only if losing) all make less: best is 480 min if losing, +$2,878 (vs +$3,070).
 Cutting long trades cuts the winners. The losses happen in the first 2 hours: the trade goes straight to the stop.
+
+## Better entry with a limit order (`research/better_entry.py`), same stop and target levels
+How far winners went against us before reaching target: $1+ 89%, $3+ 69%, $5+ 52%, $10+ 25%, $20+ 5%.
+Almost every trade goes into a loss first. Losers always fill a better limit (smaller loss); winners that never came
+back are missed.
+| Entry | Year win / profit / drop / PF |
+|---|---|
+| at signal (current) | 40% +$3,070 -$270 PF 1.48 |
+| $1 better | 37% +$3,130 -$288 PF 1.52 |
+| $2 better | 35% +$3,253 -$316 PF 1.58 |
+| $3 better | 32% +$3,202 -$278 PF 1.61 |
+| $5 better | 27% +$3,010 -$335 |
+| $10 better | 25% +$1,941 |
+| 10% of the stop better | 37% +$3,489 -$283 PF 1.61 (Jan-Jun +$1,915 -$283, Jul-Nov +$1,575 -$145) |
+None passes the all-three test: the win rate always falls, because winners are missed, and the drop is not smaller.
