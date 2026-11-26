@@ -78,6 +78,7 @@ Base 0.01 per $1,000, 28 Aug - 25 Nov 2026:
 
 Also tested and rejected: a first entry as a limit order $5 or $10 below (+$532 to +$744),
 and re-entering only when price is back at the first entry (+$354 to +$656).
+Friday rules (alternating lots): as now +$1,828; no new trades after Fri 20:00 +$1,675; that plus closing at Friday's close +$1,521, with no drawdown improvement. **Kept: hold over the weekend.**
 Swap, commission and slippage are not included.
 
 ## Next steps
