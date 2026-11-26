@@ -192,6 +192,9 @@ also profitable on the unseen months. Best:
 - Entry: wick break of H. **Stop $1 below G** (minimum $5). **Target 2x the risk.**
 - Jan - Jun: 65 trades, 45% win, **+$636**, worst drop -$149. Jul - Nov (unseen): 47 trades, 51% win, **+$311**,
   worst drop -$64. Total about +$947 at 0.01.
+Reversal indicators as extra filters on this entry (`research/indicator_filter.py`): RSI divergence, stochastic cross,
+engulfing / pin bar, MACD, Bollinger re-entry and volume spike. None beat "no filter" (+$636 / +$311). They removed
+good trades along with bad ones. **No extra indicator.**
 
 ## Final plan (saved 26 Nov 2026, owner's decision)
 - Re-entry swings: **mixed**. The 1st re-entry uses micro (3-candle) swings; the 2nd and later use RSI-confirmed swings (68/32).
