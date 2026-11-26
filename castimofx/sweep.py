@@ -369,7 +369,7 @@ def simulate_reentry(df: pd.DataFrame, signals: list[Signal], sl: float, tp: flo
                      be_at: float | None = None, reenter_after_be: bool = False,
                      limit_offset: float = 0.0, limit_tp: str = "own",
                      reentry_sl: float | None = None, friday_cutoff: int | None = None,
-                     friday_close: bool = False) -> list[TradeResult]:
+                     friday_close: bool = False, later_pivot: int | None = None) -> list[TradeResult]:
     """Owner's re-entry rule: after a stop loss, wait for price to make a high then a low (buy;
     mirror for sell), and re-enter when a wick takes out that most recent high. The re-entry
     aims for the original take-profit level plus `extra_tp`, with the same $ stop.
@@ -389,6 +389,21 @@ def simulate_reentry(df: pd.DataFrame, signals: list[Signal], sl: float, tp: flo
     conf_at: dict[int, list[Swing]] = {}
     for s in sw:
         conf_at.setdefault(s.confirmed, []).append(s)
+    # mixed mode: the 1st re-entry uses `pivot` swings, later re-entries use `later_pivot` (0 = RSI swings)
+    conf_later = conf_at
+    if later_pivot is not None and later_pivot != pivot:
+        if later_pivot:
+            sw2 = []
+            for i in range(later_pivot, len(df) - later_pivot):
+                if h[i] == h[i - later_pivot:i + later_pivot + 1].max():
+                    sw2.append(Swing("H", h[i], i, i + later_pivot))
+                if l[i] == l[i - later_pivot:i + later_pivot + 1].min():
+                    sw2.append(Swing("L", l[i], i, i + later_pivot))
+        else:
+            sw2 = rsi_swings(h, l, rsi(c), hi_level, lo_level)
+        conf_later = {}
+        for s2 in sw2:
+            conf_later.setdefault(s2.confirmed, []).append(s2)
     sigs = {s.bar: s for s in sorted(signals, key=lambda s: s.bar)}
     tc = dict(trend_changes or [])
     out: list[TradeResult] = []
@@ -494,7 +509,7 @@ def simulate_reentry(df: pd.DataFrame, signals: list[Signal], sl: float, tp: flo
                         pos = {"d": d, "entry": entry, "sl": entry - d * rsl, "tp": target, "tp0": wait["target"],
                                "t": t, "sig": wait["sig"], "n": wait["n"], "entry0": wait["entry0"]}
                     wait = None
-            for s in conf_at.get(t, []):
+            for s in ((conf_at if wait["n"] <= 1 else conf_later) if wait is not None else {}).get(t, []):
                 if wait is None:
                     break
                 if s.kind == ("H" if d == 1 else "L"):

@@ -81,6 +81,19 @@ and re-entering only when price is back at the first entry (+$354 to +$656).
 Friday rules (alternating lots): as now +$1,828; no new trades after Fri 20:00 +$1,675; that plus closing at Friday's close +$1,521, with no drawdown improvement. **Kept: hold over the weekend.**
 Swap, commission and slippage are not included.
 
+## Final plan (saved 26 Nov 2026, owner's decision)
+- Re-entry swings: **mixed**. The 1st re-entry uses micro (3-candle) swings; the 2nd and later use RSI-confirmed swings (68/32).
+  Code: `simulate_reentry(..., pivot=3, later_pivot=0)`.
+- Lots: re-entries alternate double / normal (first entry L, then 2L, L, 2L, L, 2L).
+- Base lot L = the bigger of:
+  - the cushion rule: 0.01 until the balance is $100 above the client's own starting balance, then 0.02
+  - the scaling rule: 0.01 per $500 of balance ($1,000 = 0.02, $1,500 = 0.03, $3,000 = 0.06)
+- Re-entry results with alternating lots at base 0.01, 28 Aug - 25 Nov: micro +$1,828 (worst drop $286);
+  RSI +$1,043 ($100); **mixed +$1,643 ($160)**.
+- Lot rule, single run from 28 Aug: $200 -> $5,461 (dipped to $60 first); $1,000 -> $10,576 (worst drop 19%).
+  $100 accounts were wiped out on 7% of start days, including a start on 28 Aug. Results are optimistic
+  (one mostly winning period, compounding, no swap, commission or slippage).
+
 ## MT5 bot design notes (owner's decisions)
 - On start (or after a VPS restart), the bot loads the last 2-3 days of M1 and replays the rules, so it knows the
   boss trend, swings, sweeps and the current G / H / I. It then takes any setup that triggers after it starts.
