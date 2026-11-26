@@ -30,7 +30,9 @@ if __name__ == '__main__':
                          ('TAKEOUT structure', {'structure': 'takeout'}, True),
                          ('TAKEOUT + H after G', {'structure': 'takeout', 'h_after_g': True}, True),
                          ('Strict + takeout-counts-as-high', {'takeout_counts': True}, True),
-                         ('TAKEOUT + takeout-counts-as-high', {'structure': 'takeout', 'takeout_counts': True}, True)]:
+                         ('TAKEOUT + takeout-counts-as-high', {'structure': 'takeout', 'takeout_counts': True}, True),
+                         ('Strict + exception + 3rd-low reversal', {'takeout_counts': True, 'reversal_after': 3}, True),
+                         ('TAKEOUT + exception + 3rd-low reversal', {'structure': 'takeout', 'takeout_counts': True, 'reversal_after': 3}, True)]:
         print(f'== {rule}')
         for name, sim in SIMS.items():
             net, dd, n, lm, months = run(fk, wb, sim)

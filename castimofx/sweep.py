@@ -146,7 +146,7 @@ def find_signals(df: pd.DataFrame, max_setup_bars: int = 600, hi_level: float = 
                  trend_g_no_sweep: bool = False, i_sweep: int = 0,
                  i_sweep_level: str = "recent", hybrid: bool = False,
                  h_after_g: bool = False, structure: str = "strict",
-                 takeout_counts: bool = False) -> tuple[list[Signal], list[Swing]]:
+                 takeout_counts: bool = False, reversal_after: int = 0) -> tuple[list[Signal], list[Swing]]:
     """Signals from the sweep rules. `tol` = how close (in $) a wick must come to a level to
     count as taking it out (broker feeds differ by cents). With `continuation`, the boss trend
     keeps trading after each entry without building a new A to F: it only needs a new F,
@@ -194,6 +194,9 @@ def find_signals(df: pd.DataFrame, max_setup_bars: int = 600, hi_level: float = 
     # smaller swings in between are ignored. Two highs taken = buy bias (two lows taken = sell bias).
     trk = {1: {"lvl": None, "base": None, "pull": None, "cnt": 0, "last_opp": None},
            -1: {"lvl": None, "base": None, "pull": None, "cnt": 0, "last_opp": None}}
+    # reversal: after `reversal_after` lows taken in a row, buy the next break of the most recent high (mirror for sells)
+    rev = {1: {"cnt": 0, "lvl": None, "ext": None, "level": None, "conf": -1},
+           -1: {"cnt": 0, "lvl": None, "ext": None, "level": None, "conf": -1}}
     known: list[Swing] = []
     setups: dict[int, _Setup | None] = {1: None, -1: None}
     signals: list[Signal] = []
@@ -204,6 +207,15 @@ def find_signals(df: pd.DataFrame, max_setup_bars: int = 600, hi_level: float = 
         return price < level + tol if d == 1 else price > level - tol
 
     for t in range(len(df)):
+        # 0) reversal breakouts
+        if reversal_after:
+            for d in (1, -1):
+                rv = rev[d]
+                if rv["cnt"] >= reversal_after and rv["level"] is not None and t > rv["conf"]:
+                    if (h[t] > rv["level"]) if d == 1 else (l[t] < rv["level"]):
+                        signals.append(Signal(d, t, rv["level"], rv["ext"], rv["ext"], True, True))
+                        rv["cnt"], rv["level"], rv["lvl"] = 0, None, None
+                        setups[d] = None
         # 1) wick triggers on this bar (levels known before this bar)
         for d in (1, -1):
             s = setups[d]
@@ -258,6 +270,21 @@ def find_signals(df: pd.DataFrame, max_setup_bars: int = 600, hi_level: float = 
         # 2) swings confirmed at this bar's close
         for s in by_conf.get(t, []):
             known.append(s)
+            if reversal_after:
+                for d in (1, -1):
+                    rv = rev[d]
+                    take_kind = "L" if d == 1 else "H"  # a buy reversal counts lows taken
+                    if s.kind == take_kind:
+                        lower = (rv["lvl"] is None) or ((s.price < rv["lvl"]) if d == 1 else (s.price > rv["lvl"]))
+                        if rv["lvl"] is not None and lower:
+                            rv["cnt"] += 1
+                        if lower:
+                            rv["lvl"], rv["ext"] = s.price, s.price
+                    else:
+                        if rv["cnt"] >= reversal_after:
+                            rv["level"], rv["conf"] = s.price, t  # the most recent high: break it to buy
+                        elif rv["level"] is None and rv["lvl"] is not None and rv["cnt"] == 0:
+                            pass
             for d in (1, -1):
                 st = setups[d]
                 if st is None:
