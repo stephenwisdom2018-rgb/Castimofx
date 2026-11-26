@@ -365,7 +365,8 @@ def simulate_reentry(df: pd.DataFrame, signals: list[Signal], sl: float, tp: flo
                      max_reentries: int = 3, spread: np.ndarray | float = 0.05, hi_level: float = 68.0,
                      lo_level: float = 32.0, close_on_opposite: bool = True, pivot: int = 3,
                      reenter_at_entry: bool = False, trend_changes: list | None = None,
-                     hedge: bool = False, reentry_mode: str = "pivot", flip_tp: float | None = None) -> list[TradeResult]:
+                     hedge: bool = False, reentry_mode: str = "pivot", flip_tp: float | None = None,
+                     be_at: float | None = None) -> list[TradeResult]:
     """Owner's re-entry rule: after a stop loss, wait for price to make a high then a low (buy;
     mirror for sell), and re-enter when a wick takes out that most recent high. The re-entry
     aims for the original take-profit level plus `extra_tp`, with the same $ stop.
@@ -401,13 +402,18 @@ def simulate_reentry(df: pd.DataFrame, signals: list[Signal], sl: float, tp: flo
             px = reason = None
             if hit_sl:
                 gap = (o[t] < pos["sl"]) if d == 1 else (o[t] + sp[t] > pos["sl"])
-                px, reason = (o[t] if gap else pos["sl"]), "SL"
+                px, reason = (o[t] if gap else pos["sl"]), ("BE" if pos.get("be") else "SL")
             elif hit_tp:
                 px, reason = pos["tp"], "TP"
             elif close_on_opposite and sig_now is not None and sig_now.direction != d:
                 px, reason = sig_now.entry, "opposite"
             elif tc.get(t, d) != d:
                 px, reason = c[t], "new trend"
+            # break-even: once the trade is $be_at in profit (checked after this bar), the stop moves to entry
+            if not reason and be_at and not pos.get("be") and t > pos["t"]:
+                best = (h[t] - pos["entry"]) if d == 1 else (pos["entry"] - (l[t] + sp[t]))
+                if best >= be_at:
+                    pos["sl"], pos["be"] = pos["entry"], True
             if reason:
                 flipped = reason == "opposite"
                 out.append(TradeResult(pos["sig"], df.index[pos["t"]], pos["entry"], px, (px - pos["entry"]) * d,

@@ -40,6 +40,9 @@ together (+$859). Left-behind H levels as stop orders: 71% TP rate vs 62% random
 Stop sizes compared with a $20 target (same period): $10 stop +$951 (119 stop losses), $15 stop +$945,
 **$20 stop +$950 (61 stop losses, kept)**, $30 stop +$835, $40 stop +$727 (deepest drawdown).
 
+$5 stop / $20 target: +$881, but 205 stop losses out of 261 trades, and live slippage would hurt it. Not used.
+Break-even (stop to entry at +$5 / +$10 / +$15): +$415 / +$385 / +$514, against +$950 without it. **No break-even.**
+
 Boss-trend filter stays on: trades against the boss trend are skipped (owner's decision, 26 Nov 2026).
 
 ## Account modes (owner's decision, 26 Nov 2026)
