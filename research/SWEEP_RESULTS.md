@@ -297,3 +297,18 @@ Not better than v2. We need the owner's real example trades to see what differs.
 - Full 2026 at 0.01 lot: +$2,468, worst drop -$361, 3.2 trades/day, 1 of 11 months losing (`research/zone_multi.py`).
 - The retest, soldiers and reversal entries tested above are NOT used.
 - Next: build the MT5 EA for this combination.
+
+## Lot sizing on the chosen combination (`research/lot_sizing.py`)
+Main + E-A zone (up to 10 per structure), 686 trades, 1 Jan - 25 Nov 2026. The balance grows as trades close
+(closed trades only, so the real floating drop is a bit bigger).
+| Start | Rule | End balance | Worst drop | Lowest balance |
+|---|---|---|---|---|
+| $100 / $200 | any rule | wiped out | | |
+| $500 | fixed 0.01 | $2,968 | -53% | $245 |
+| $500 | owner's rule (cushion + 0.01 per $500 + alternating re-entries) | $12,493 | -71% | $150 |
+| $1,000 | fixed 0.01 | $3,468 | -27% | $745 |
+| $1,000 | 0.01 per $1,000 | $5,349 | -27% | $745 |
+| $1,000 | 0.01 per $500 | $8,143 | -59% | $738 |
+| $1,000 | owner's rule | $12,282 | -65% | $644 |
+The early-2026 loss (about -$255 at 0.01) wipes out $100 and $200 accounts. The safest growth is 0.01 per $1,000,
+with a $1,000 minimum.
