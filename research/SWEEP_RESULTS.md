@@ -357,3 +357,15 @@ The tests run the small and big groups separately, so the "current" figure here 
 | **target = structure size (min $5)** | **+$1,246, 48% win** | **+$2,854** | -$360 |
 With size = H - G instead, neither change helps. Best: target = F - G size when it is under $20 (Jan-Jun about the same,
 Jul-Nov +$217 better).
+
+## Hunting other losses: the rule must improve win rate, profit AND drop in both halves (owner's test)
+Chosen combination now: Jan-Jun 433 tr, 34%, +$1,175, drop -$361 | Jul-Nov 253 tr, 43%, +$1,293, drop -$201.
+Day / open-trade limits (`research/loss_controls.py`), none pass:
+- stop after 3 losses in a day: +$1,477, 38%, -$359 | +$901, 44%, -$237 (2nd half worse)
+- stop after 2 losses, -$40 or -$60 a day: less profit, bigger drops
+- no buy while a sell is open: +$861, -$616 | +$1,378 ; max 3 open or max 2 same side: about the same or worse
+Zone-trade changes (`zone(..., rr, be, g_rsi)`), none pass:
+- G must reach RSI 32: +$350 | +$395 (much less)
+- target 1.5R: 40% / 48% win, +$1,287 | +$1,062, drop -$369 | -$183 (higher win rate, but less profit in Jul-Nov)
+- target 3R: +$654 (drop -$819) | +$1,710 ; breakeven at 1R: +$1,552 | +$947
+Only "target = structure size when F - G is under $20" (main trades) improves all three for the main trades.
