@@ -284,3 +284,81 @@ def excursions(df: pd.DataFrame, signals: list[Signal], bars: int = 240, spread:
         rows.append({"time": df.index[a], "dir": "BUY" if s.direction == 1 else "SELL", "entry": round(s.entry, 2),
                      "mfe": round(mfe, 2), "mae": round(mae, 2), "second_g": s.second_g})
     return pd.DataFrame(rows)
+
+
+def simulate_reentry(df: pd.DataFrame, signals: list[Signal], sl: float, tp: float, extra_tp: float = 0.0,
+                     max_reentries: int = 3, spread: np.ndarray | float = 0.05, hi_level: float = 68.0,
+                     lo_level: float = 32.0, close_on_opposite: bool = True, pivot: int = 3) -> list[TradeResult]:
+    """Owner's re-entry rule: after a stop loss, wait for price to make a high then a low (buy;
+    mirror for sell), and re-enter when a wick takes out that most recent high. The re-entry
+    aims for the original take-profit level plus `extra_tp`, with the same $ stop.
+    The high and low after the stop are small swings: `pivot` candles on each side (0 = RSI swings).
+    Each re-entry is recorded as its own trade."""
+    o, h, l, c = (df[k].to_numpy(float) for k in ("open", "high", "low", "close"))
+    sp = spread if isinstance(spread, np.ndarray) else np.full(len(df), spread)
+    if pivot:
+        sw = []
+        for i in range(pivot, len(df) - pivot):
+            if h[i] == h[i - pivot:i + pivot + 1].max():
+                sw.append(Swing("H", h[i], i, i + pivot))
+            if l[i] == l[i - pivot:i + pivot + 1].min():
+                sw.append(Swing("L", l[i], i, i + pivot))
+    else:
+        sw = rsi_swings(h, l, rsi(c), hi_level, lo_level)
+    conf_at: dict[int, list[Swing]] = {}
+    for s in sw:
+        conf_at.setdefault(s.confirmed, []).append(s)
+    sigs = {s.bar: s for s in sorted(signals, key=lambda s: s.bar)}
+    out: list[TradeResult] = []
+    pos = None  # open trade
+    wait = None  # waiting to re-enter: {"d", "target", "left", "level", "sig", "seen_high"}
+    for t in range(len(df)):
+        sig_now = sigs.get(t)
+        # manage an open trade
+        if pos is not None:
+            d = pos["d"]
+            hit_sl = (l[t] <= pos["sl"]) if d == 1 else (h[t] + sp[t] >= pos["sl"])
+            hit_tp = ((h[t] >= pos["tp"]) if d == 1 else (l[t] + sp[t] <= pos["tp"])) and t > pos["t"]
+            px = reason = None
+            if hit_sl:
+                gap = (o[t] < pos["sl"]) if d == 1 else (o[t] + sp[t] > pos["sl"])
+                px, reason = (o[t] if gap else pos["sl"]), "SL"
+            elif hit_tp:
+                px, reason = pos["tp"], "TP"
+            elif close_on_opposite and sig_now is not None and sig_now.direction != d:
+                px, reason = sig_now.entry, "opposite"
+            if reason:
+                out.append(TradeResult(pos["sig"], df.index[pos["t"]], pos["entry"], px, (px - pos["entry"]) * d,
+                                       reason + ("" if pos["n"] == 0 else f" (re-entry {pos['n']})")))
+                if reason == "SL" and pos["n"] < max_reentries:
+                    wait = {"d": d, "target": pos["tp0"], "n": pos["n"] + 1, "level": None, "sig": pos["sig"],
+                            "seen": False}
+                pos = None
+        # a new signal cancels any waiting re-entry and opens a trade
+        if pos is None and sig_now is not None:
+            wait = None
+            d = sig_now.direction
+            entry = (max(o[t], sig_now.entry) + sp[t]) if d == 1 else min(o[t], sig_now.entry)
+            pos = {"d": d, "entry": entry, "sl": entry - d * sl, "tp": entry + d * tp, "tp0": entry + d * tp,
+                   "t": t, "sig": sig_now, "n": 0}
+            continue
+        # waiting to re-enter: a high (buy) then a low must form, then price takes out that high
+        if wait is not None and pos is None:
+            d = wait["d"]
+            if wait["level"] is not None and wait["seen"]:
+                broke = h[t] > wait["level"] if d == 1 else l[t] < wait["level"]
+                if broke:
+                    entry = (max(o[t], wait["level"]) + sp[t]) if d == 1 else min(o[t], wait["level"])
+                    target = wait["target"] + d * extra_tp
+                    if (target - entry) * d > 0:
+                        pos = {"d": d, "entry": entry, "sl": entry - d * sl, "tp": target, "tp0": wait["target"],
+                               "t": t, "sig": wait["sig"], "n": wait["n"]}
+                    wait = None
+            for s in conf_at.get(t, []):
+                if wait is None:
+                    break
+                if s.kind == ("H" if d == 1 else "L"):
+                    wait["level"], wait["seen"] = s.price, False
+                elif wait["level"] is not None:
+                    wait["seen"] = True  # the low after the high has formed
+    return out
