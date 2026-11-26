@@ -502,3 +502,15 @@ same data (nearby bands 25-30 and 27-33 also help). Waiting for the owner's deci
 | sells | 377 | 43% | -$3,162 | +$4,818 | +$1,656 | +$285 | +$1,371 |
 Zone buys are the weakest (31% win). By month: buys make money Jan-Mar (gold rising), lose Apr-May; sells lose
 Jan-Mar and win May-Nov (no buys at all Aug-Nov). Losses cluster in trades against the bigger trend of the month.
+
+## Daily (big) trend handling (`research/daily_trend.py`)
+Daily trend from finished days: EMA20 of daily closes, or the direction of the last 20-day breakout.
+Trades against the daily trend still make money: EMA20 against 253 tr 35% +$1,263 (with 383 tr 44% +$1,806);
+Breakout20 against 196 tr 40% +$1,019.
+| Rule | EMA20 year | Breakout20 year |
+|---|---|---|
+| current | +$3,070 -$270 PF 1.48 | same |
+| skip against | +$1,806 -$321 | +$2,050 -$642 |
+| half lot against | +$2,438 -$210 (Jul-Nov drop worse: -$195) | +$2,560 -$435 |
+| skip zone against | +$2,412 -$260 (Jul-Nov drop -$257) | +$2,600 -$446 |
+None passes the all-three test. Counter-trend trades are profitable, so cutting them loses money. **No daily trend filter.**
