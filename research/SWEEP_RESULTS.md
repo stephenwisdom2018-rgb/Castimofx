@@ -280,3 +280,9 @@ becomes that swept low. Buy only inside the zone, with RSI 68+. Stop and target 
 Best: zone $5, RSI 68, 1 bar, wait 3 days: Jan-Jun 245 tr, 52%, +$180, drop -$440 | Jul-Nov 97 tr, 61%, +$420, drop -$140.
 Other variants: 45-63% wins. Still far from the owner's 80%+ and 2-4 trades/day, so the code probably reads the setup
 differently. We need the owner's example trades to compare.
+
+## Reversal entry v3: always the most recent low taken out, no time limit (`research/reversal_recent_low.py`)
+Active from a buy G sweep until an opposite trend forms (a sell G sweep or a sell signal). The level is the most recent
+low price took out (RSI swing lows, or 3-candle lows). Buy in the zone with RSI 68+. Stop and target $20.
+Results: 33-57% wins, 1.1-1.5 trades/day. Best (RSI lows, $5 zone, 68): Jan-Jun 118 tr, 47%, -$160 | Jul-Nov 88 tr, 57%, +$240.
+Not better than v2. We need the owner's real example trades to see what differs.
