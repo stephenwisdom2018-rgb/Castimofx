@@ -44,7 +44,7 @@ Results for 1 Oct to 25 Nov 2026 (`research/grid_stack_test.py`). Each position 
 | Mode | Positions | Sizing | Net | Max drawdown | Worst day |
 |---|---|---|---|---|---|
 | Personal | 10, $1 apart | full | +367% | about 45% from peak | about 63% of start |
-| Clients | 2, $5 apart | full | +103% | 22% | |
+| Clients | 1 position (no stacking) | 0.01 lot per $500 of balance (0.01 up to $500, 0.02 up to $1,000, 0.03 at $1,500, 0.12 at $6,000) | about +120% | about 32% | |
 | Prop firm | 10, $1 apart | 10% of balance | +37% | 16.5% of account | 6.3% |
 | (Prop at 6%, for reference) | 10, $1 apart | 6% of balance | +22% | 9.9% | 3.8% |
 Warning: at 10% sizing, the prop mode would break typical prop limits (10% total, 5% daily). Check the firm's rules.
