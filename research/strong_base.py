@@ -18,7 +18,7 @@ def rsi_base(g):
         out += [(x[0], x[1]) for x in zone(df, sp, 40, 20, main=False, reent=RE, region='FE', g_rsi=g)[0] if M.keep(fi, x[0], x[4])]
     return out
 
-def double_bottom(tol, mem=20):
+def double_bottom(tol, mem=20, detail=False):
     out = []
     for fi, (df, sp, *_) in enumerate(R.prep):
         h, l = df.high.to_numpy(), df.low.to_numpy(); n = len(df); idx = df.index
@@ -43,8 +43,8 @@ def double_bottom(tol, mem=20):
                         entry = top + (sp[i] if d == 1 else 0); risk = max(abs(entry - base) + 1, 5)
                         stop, tgt = entry - d * risk, entry + d * 2 * risk
                         for v in range(i, n):
-                            if (l[v] <= stop) if d == 1 else (h[v] + sp[v] >= stop): out.append((idx[i], -risk)); break
-                            if v > i and ((h[v] >= tgt) if d == 1 else (l[v] + sp[v] <= tgt)): out.append((idx[i], 2 * risk)); break
+                            if (l[v] <= stop) if d == 1 else (h[v] + sp[v] >= stop): out.append((idx[i], -risk) + ((fi, i, d, entry, 2 * risk) if detail else ())); break
+                            if v > i and ((h[v] >= tgt) if d == 1 else (l[v] + sp[v] <= tgt)): out.append((idx[i], 2 * risk) + ((fi, i, d, entry, 2 * risk) if detail else ())); break
                         break
     return out
 
