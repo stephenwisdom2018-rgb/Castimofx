@@ -1190,3 +1190,8 @@ Bad streak,5,5,8,6
 Profit 20d,84%,85%,91%,88%
 ```
 Max: 2025 $4,380 (PF 1.15, 1 losing month) and 2026 $10,753 (PF 1.22). Cost: ~30-46 trades/day, min balance $818-$1,342, worst day ~-$450-$490, 2026 drop -74%.
+
+## OWNER DECISION (27 Nov 2026): KEEP C+3m+MZ+FE ($10,276 in 2026)
+"We keep this since we are not trading 2025 any more." Robust and Max stay ON HOLD as calmer-market options.
+Risk noted to the owner: in a calm market like 2025 Jan-Jul this version broke even ($82, -$16 per-trade method).
+Watch live results; if gold's daily range falls toward 2025 levels (~$40-65), switch to Max or Robust.

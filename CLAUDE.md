@@ -25,3 +25,4 @@
 - F-E zone: ADOPTED into the chosen version on 27 Nov 2026 (no longer on hold).
 - ON HOLD #2, remind the owner: double bottom $2 above E (+$1,029, total +$7,329, 41% win, 8 trades/day; `research/strong_base.py`). Maybe for the owner's own account.
 - ON HOLD #3, remind the owner: "+ both" with close-on-opposite exit (no stop / +$100 / +$50 stop): +$16.2k / +$14.3k / +$11.0k, win 62-66%, min balance at 0.01 $3,767 / $1,813 / $1,315 (`research/opposite_exit.py`, `research/min_balance.py`).
+- ON HOLD #4 (calm-market options, tested on 2025+2026): Robust (2025 $1,957 / 2026 $8,527) and Max (2025 $4,380 / 2026 $10,753, no consolidation filter, 30-46 trades/day, safe balance ~$2,000) (`research/both_eval.py`). Owner kept C+3m+MZ+FE because 2026 matters most; switch if gold calms down.
