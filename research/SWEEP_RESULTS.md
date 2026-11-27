@@ -768,3 +768,17 @@ Trades stay open until the target (main: first entries only). Floating losses ma
 | + both | 94% | 215 trades (-$65,853) | +$2,646 | -$1,176 | **-$52,224** |
 A 91-94% "win rate", but the few trades that never come back are enormous (held up to 102 days, $1,176 against).
 At 0.01 a $1,000 account would be wiped out many times. Never trade without a stop.
+
+## Close on an opposite trade instead of a stop (`research/opposite_exit.py`), 0.01, main first entries only
+| Version | Year | Win | Drop | PF | Worst day | Worst open loss |
+|---|---|---|---|---|---|---|
+| chosen (normal stops, reference) | +$6,300 | 46% | -17.5% | 2.06 | -$148 | |
+| chosen, opposite exit, no stop | -$2,246 | 77% | -257% | 0.87 | -$4,785 | -$11,502 |
+| chosen, opposite + $100 safety stop | +$5,472 | 74% | -64% | 1.61 | -$700 | -$1,662 |
+| chosen, opposite + $50 safety stop | +$5,106 | 69% | -36% | 1.64 | -$350 | -$413 |
+| + both, opposite exit, no stop | **+$16,165** | 66% | -69% | 1.76 | -$1,732 | -$2,609 |
+| + both, opposite + $100 safety stop | +$14,197 | 65% | -41% | 1.63 | -$784 | -$1,223 |
+| + both, opposite + $50 safety stop | +$10,923 | 62% | -31% | 1.47 | -$594 | -$807 |
+Win rate rises a lot (62-77%) and "+ both" makes much more, but drops and worst days are 2-10x bigger. Profit per
+1% of drop is about the same as the chosen version (~$350), so it behaves like a bigger lot, not a better edge.
+Fails the owner's rule for clients. Possibly for the owner's own account.
