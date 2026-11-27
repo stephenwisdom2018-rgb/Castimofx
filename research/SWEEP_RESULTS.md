@@ -596,3 +596,9 @@ Version B stays as first reported: +$5,671 at 0.01, 45% win, PF 2.04, worst drop
 take the same setup, every copy is traded (up to 4 at one price). Note for the EA and the lot-size step: stacked copies
 mean up to ~4x the base lot on one setup, so the real exposure per setup can be 0.04 on a 0.01 base.
 "Clean B" (+$3,994) is kept only as a reference.
+
+## Owner's funded account: Top One Trader $50,000 (passed 24 Nov 2026). Rules: daily loss 4% ($2,000), max drawdown 10% ($5,000)
+Version B at 0.01 (2026): worst drawdown -$380, worst day -$145, year +$5,671 (closed trades only).
+Lot that just touches the limits: 0.13 (2026 would be about +$74,600). Half the limits for safety: 0.07 (about +$37,300).
+Optimistic: closed trades only (floating losses are bigger), stacking can open up to 4 copies, and one past year.
+Do not run the bot on the funded account until it is tested live on demo.
