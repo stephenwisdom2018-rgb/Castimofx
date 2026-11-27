@@ -1314,3 +1314,18 @@ Owner (27 Nov 2026): keep ALL modes in the EA, including the $100 mode; the bot 
 (even $10-$20), using the smallest mode, and only skip a trade when the broker's free margin is not enough.
 EA ladder: below $200 -> C+3m+MZ, 1 trade at a time, stops <= $10 | $200-399 -> same, stops <= $15 |
 $400-999 -> C without copies | $1,000+ -> full, 0.01, then 0.01 per $2,000 (half lot after 3 losses).
+
+## Stop-and-reverse after a stop (owner's idea; `research/flip_after_stop.py`), 2026, 0.01
+When a trade hits its stop, trade the other way at once from the stop price, same risk, target 1x or 2x that risk.
+| | Chosen | +flip 1R | +flip 1R filt | | +Both | +flip 1R |
+|---|---|---|---|---|---|---|
+| Profit | $10,276 | **$11,769** | $11,260 | | $11,310 | $13,177 |
+| Win | 41% | 44% | 44% | | 39% | 43% |
+| PF | 1.54 | 1.47 | 1.48 | | 1.41 | 1.36 |
+| Drop (% of a $1,000 start) | -27% | -42% | -35% | | -27% | -50% |
+| Min balance (biggest $ drop) | $813 | **$676** | $686 | | $851 | $682 |
+| Worst day | -$282 | -$407 | -$418 | | -$367 | -$413 |
+| Worst month | -$262 | **+$53** | -$132 | | -$696 | -$311 |
+| Losing months | 1/10 | **0/10** | 1/10 | | 1/10 | 1/10 |
+Flips: 895, 54% win, +$1,493 (1R); 2R flips win only 34% (+$361). Flip 1R on Chosen: +$1,493, higher win rate,
+smaller biggest $ drop, no losing month; but a deeper early % drop and worse worst day. Waiting for the owner.
