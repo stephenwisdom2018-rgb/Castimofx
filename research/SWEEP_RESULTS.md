@@ -841,3 +841,7 @@ Levers: stop cap ($10/15/20/none), 1 trade open at a time, daily loss limit ($20
 | ~$560 | chosen (stacking, all trades) | +$6,300 | $374 | 46% |
 Real fix for $100 clients: a CENT account (100x smaller contract), where 0.01 risks 1/100: the chosen version's
 $374 drop becomes $3.74. Or set a $300-$600 minimum and use the 1-open mode for small accounts.
+
+**Owner (27 Nov 2026): keep the 4-version table (Chosen, +F-E, +DB, +Both). From now on every test runs on BOTH
+"Chosen" and "+Both" (normal stops).** Reference: Chosen $6,300 46% PF 2.06 -18% min bal $440 | +Both $7,979 40%
+PF 1.41 -22% min bal $900.
