@@ -561,3 +561,5 @@ All filters stay. 2026 at 0.01: 652 trades, 45% win, **+$5,671**, PF 2.04, worst
 | + zone between F and E | 39% +$3,845 -16.2% | 47% +$3,003 -6.1% | +$6,847 PF 1.58, 1,344 trades |
 F-E zone alone: 692 tr, 39%, +$1,176, PF 1.19. It adds +$1,176 and lowers the drop, but the win rate (45% -> 42%) and
 profit factor (2.04 -> 1.58) fall, so it fails the all-three test. Against-boss signals: harmless, almost no trades.
+**ON HOLD (owner: "keep reminding me"):** the F-E zone (+$1,176, total +$6,847, drop -16.2%, but win 42%, PF 1.58).
+Remind the owner of it at each decision point.
