@@ -1248,3 +1248,10 @@ Lot sizing: $1,000 -> $54,009 (-27%), $2,000 -> $67,704 (-25%) with 0.01 per $2,
 Prop $100k at 0.07: +$71,931, worst drop 4.2%.
 Caveats: one year of data (2026); in calm 2025 this version broke even (Robust/Max on hold for that case);
 closed-trade results, no extra slippage. Next: build the MT5 EA and run it on demo.
+
+## $100 mode details (C+3m+MZ, 1 trade at a time, stops <= $15), 2026, 0.01
+401 trades: 1.8/day, 9.1/week, 40/month. Wins 47% (avg +$18.6), losses avg -$9.1, PF 1.84. Profit $1,606:
+$7.4/day, $36/week, $156/month. Best day $99, worst day -$50, worst week -$22, worst month +$73: NO losing month.
+Win / lose / empty days 46 / 24 / 31%. From $100 on 1 Jan: $1,706 at the end, lowest $81, biggest peak-to-low drop
+$85. From any start day: worst dip -$70, typical -$11. Monthly: Jan $81, Feb $157, Mar $166, Apr $83, May $257,
+Jun $73, Jul $394, Sep $136, Oct $122, Nov $87.
