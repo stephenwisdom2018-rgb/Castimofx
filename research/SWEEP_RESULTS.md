@@ -1105,3 +1105,12 @@ PF 2026 1.92 | 1.89 | 1.80 | 1.50 vs 2025 1.08 | 1.04 | 1.02 | 1.01;
 min balance 2026 $374 | $536 | $552 | $813 vs 2025 $503 | $715 | $749 | $1,038;
 avg month 2026 $696 | $826 | $971 | $1,185 vs 2025 $37 | $22 | $17 | $10.
 Both years lose in April; 2025 also loses in June. The strategy earns about 20x more in 2026 than in 2025.
+
+## Trying to fix 2025 (`research/scaled_main.py`, `research/regime.py`)
+Daily range: 2025 $36-64 (1.3-1.9% of price) vs 2026 $92-167 (2.3-3.4%).
+1. Main stop/target/extra scaled by 20-day range / $110: 2025 C $292 -> $193, Full $82 -> -$11; 2026 unchanged
+   (C $6,374, Full $10,233). Does not help.
+2. Trade only when the 20-day range is >= 1.5% or 2% of price: 2025 C -$328 / -$117, Full -$872 / -$441 (worse:
+   calm Q1 2025 was the good part); 2026 C $5,874 / $5,689, Full $9,649 / $9,038. Does not help.
+Conclusion: the 2026 results are much better than what 2025 shows. The core C keeps a small edge in 2025 (PF 1.08);
+the 2026 additions (3m, MZ, F-E) do not. Next: tune on 2025 + 2026 together and keep only rules that help BOTH years.
