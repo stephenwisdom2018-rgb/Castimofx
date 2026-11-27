@@ -47,7 +47,7 @@ The bot keeps trading on any balance; it only skips a trade when the free margin
   last hour is tight (< 0.6x normal) or when ADX(14) on M15 is between 25 and 35.
 - A new main trade closes an open main trade in the other direction.
 - Flip: when a main or zone trade hits its stop, the bot trades the other way at once (stop = half the stopped
-  trade's risk, target = 1.5x that stop). Full mode ($1,000+) and prop only.
+  trade's risk, target = 1.5x that stop). From $200 up and on prop accounts (not in the $100 mode).
 
 ## Differences from the Python backtest (expected small)
 - The backtest ran several main-trade tracks in parallel (one per target size); the EA runs one main track.

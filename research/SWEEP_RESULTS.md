@@ -1354,3 +1354,12 @@ The EA (v1.10) turns flips off below $1,000 by design (flips were only tested on
 | $200 mode, no flips (EA today) | $200 -> $222 (lowest $159), 23 trades | $200 -> $1,030 (lowest $159) |
 | $200 mode with flips | $200 -> $191 (lowest $157), 30 trades, 7 flips | $200 -> $1,133 (lowest $157), 101 flips |
 Flips in the $200 mode: worse in January, +$103 over the year, win 43% vs 41%. Small gain; kept off for small accounts.
+
+## Flips in every account mode (`research/flip_all_modes.py`), 2026, 0.01, every start day
+| Mode | Flips off | Flips on | Blown (off / on) | Worst dip (off / on) | Jan (off / on) |
+|---|---|---|---|---|---|
+| $100 mode | $225 | $248 | 0% / 1.9% at $100 | -$94 / -$103 | $11 / -$9 |
+| $200 mode | $830 | $933 | 0% / 0% | -$121 / -$100 | $22 / -$9 |
+| $400 mode | $4,409 | $4,740 | 0% / 0% | -$193 / -$204 | $168 / $231 |
+| Full | $10,276 | $11,276 | 0% / 0% | -$745 / -$577 | $529 / $634 |
+EA v1.11: flips ON from $200 up (and prop), OFF in the $100 mode (it adds blow-ups there).
