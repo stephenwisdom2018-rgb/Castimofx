@@ -1148,3 +1148,16 @@ Bad streak,5,6,6,5
 Profit 20d,45%,70%,93%,85%
 ```
 (Chosen here = $10,563 / -$16 because re-entries are counted per trade; earlier runs gave $10,276 / $82.)
+
+## Own chart review of 6 Jun 2025 (worst 2025 day) -> two fixes tested on both years (`research/both_fixes.py`)
+6 Jun 2025: gold fell all day (3375 -> 3307). Main correctly SOLD at 09:44 (-$30), but the E-A zone took 9 BUYS
+(4 setups + stacked copies), all lost (-$115). Fix A: no stacked copies. Fix B: no zone-type trade against the
+main strategy's latest direction.
+| | C 25 | C 25 A+B | C 26 | C 26 A+B | Robust 25 | Robust 25 B | Robust 26 | Robust 26 B |
+|---|---|---|---|---|---|---|---|---|
+| Profit | $292 | $232 | $6,300 | $3,918 | $1,957 | $1,280 | $8,527 | $7,516 |
+| PF | 1.08 | 1.17 | 2.06 | 2.24 | 1.13 | 1.17 | 1.46 | 1.64 |
+| Min bal | $503 | $264 | $374 | $203 | $616 | $630 | $774 | $555 |
+| Worst month | -$251 | -$103 | -$73 | +$14 | -$391 | -$103 | -$475 | -$174 |
+Both fixes make the bot SAFER (smaller worst months, higher PF) but cost profit in both years. Under the owner's
+profit-first rule they are not adopted; kept as a "safe mode" option.
