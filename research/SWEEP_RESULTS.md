@@ -669,3 +669,12 @@ Owner dropped the after-target trades.
 Double bottoms are seen by many overlapping structures (with copies: $2 = 1,819 trades, +$8,057), so copies were
 removed. They add profit, but the win rate falls (46% -> 40-42%) and many more trades (about 8/day for $2).
 Waiting for the owner.
+
+## Base inside the entry-target band after a win (`research/band_base.py`)
+After a winning target, price pulls back below the target but never back to the entry, builds a base (30-240 min,
+range any / <=$10 / <=$15), then continues: enter on the break of the base high or of the post-target high; stop $1
+below the base low, 2x risk. Results swing between -$214 and +$164 depending on the settings (fragile):
+- base high, 60 min, range <=$10: 36 tr, 44%, +$111 -> total +$6,411, 46% win, drop -15.8%, PF 2.04
+- base high, 120 min, range <=$15: 46 tr, 39%, +$107 -> total +$6,407, 46% win, drop -14.7%, PF 2.01
+- post-target high, 60 min, any range: 87 tr, 36%, +$164 -> total +$6,465, 45% win, drop -13.5%, PF 1.90
+Neighbouring settings lose money, so these small gains may be luck. Waiting for the owner.
