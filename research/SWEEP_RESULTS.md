@@ -1434,3 +1434,18 @@ Chosen 2026 at 0.01: own TP $10,249 | first-trade TP $11,106 (unbalanced: Jul-No
 +Both: own $11,282 | first $12,374 | newest $10,276 (`research/shared_tp.py`).
 Newest-TP effect on older trades: 186 of 1,525 changed; of 169 winners, 79 became smaller wins and 19 became losses;
 17 losers became wins; none closed at a tiny profit (<$3; TP is never set below entry). Net -$673.
+
+## Second EA tester run (owner, v1.12), XAUUSDb M1, 1-29 Jan 2026, $3,000 (full mode, 0.01), 1-min OHLC
+Report: net +$102 (+$136 before commission/swap), 148 trades, win 36%, PF 1.08, max equity drop $629 (18.6%).
+Trades: `research/ea_test_jan2026_3k_trades.csv`. Python backtest same days: +$608, 159 trades.
+| Jan 1-29 | EA | Backtest |
+|---|---|---|
+| main + re | 12, -$188 | 14, -$110 |
+| zone E-A + re | 28, +$210 | 24, +$289 |
+| zone F-E + re | 24, -$60 | 42, +$161 |
+| 3 micro | 28, +$246 | 17, +$210 |
+| MZ | 22, +$15 | 13, +$51 |
+| flips | 34, -$87 (won 29%) | 49, +$7 |
+The double-fill bug is gone. Biggest gap: F-E zone - the EA placed no F-E orders on 8-9, 14, 23, 27 Jan where the
+backtest traded (+$100 there), and took some the backtest did not. Likely a filter/zone difference; needs the tester
+Journal log (zone lines) to find. Flips lost again (2nd test).
