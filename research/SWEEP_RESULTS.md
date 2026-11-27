@@ -988,3 +988,31 @@ After H breaks, price comes back below H (G not broken), then 3 micro inside SMA
 | B+3m | $10,089, 39%, -25% | |
 | + after-H (any) | $8,403-$10,175, drops -33 to -56% | -$1,686 to +$86 |
 Much weaker than the 3-micro zone entry before the H break (MZ: +$1,221, drop -26%). After-H rejected.
+
+## Improvers side by side (`research/full_report_mz_afterh.csv`): C+3m / +MZ / +AfterH (1 per H, stop at lowest) / both
+```
+,C+3m,+MZ,+AfterH,+MZ+AfterH
+Profit,"$7,288","$8,509","$7,850","$9,071"
+Jan-Jun,"$4,109","$4,991","$4,703","$5,585"
+Jul-Nov,"$3,179","$3,518","$3,147","$3,486"
+Win,45%,44%,42%,42%
+PF,1.99,1.88,1.70,1.67
+Drop,-22%,-26%,-33%,-48%
+Min bal,$536,$552,$615,$674
+Safe bal,$804,$828,$922,"$1,011"
+Trades/day,4.1,5.4,6.1,7.4
+Avg day,$34,$39,$36,$42
+Avg week,$166,$193,$178,$206
+Avg month,$689,$792,$750,$853
+Best day,$547,$670,$586,$709
+Worst day,$-220,$-190,$-298,$-348
+Worst week,$-155,$-137,$-224,$-219
+Worst month,$-5,$-17,$-199,$-332
+Losing months,1/10,1/10,1/10,1/10
+Win days,47%,52%,49%,49%
+Lose days,26%,29%,31%,36%
+Empty days,26%,19%,19%,14%
+Bad streak,7,7,6,6
+Profit 20d,95%,97%,95%,98%
+```
+MZ is the clear improver; AfterH lowers Jul-Nov and raises drop/worst day; together the drop is -48%.
