@@ -9,7 +9,7 @@ from castimofx.sweep import find_signals, simulate_reentry, Swing
 FILES = ['data/XAUUSDb_M1_2026-01_2026-04.csv', 'data/XAUUSDb_M1_2026-04_2026-08.csv', 'data/XAUUSDb_M1_2026-08_2026-11.csv']
 KW = dict(tol=1.0, minor_e=5, structure='takeout', takeout_counts=True, cancel_on_g_sweep=True)
 
-def zone(df, sp, max_per, mem_days, fresh=None, rr=2.0, be=None, g_rsi=None, main=True, big_rr=None, reent=None, region='EA'):
+def zone(df, sp, max_per, mem_days, fresh=None, rr=2.0, be=None, g_rsi=None, main=True, big_rr=None, reent=None, region='EA', hot_rr=None):
     c = df.close.to_numpy()
     from castimofx.sweep import rsi as _rsi
     r = _rsi(c)
@@ -102,6 +102,7 @@ def zone(df, sp, max_per, mem_days, fresh=None, rr=2.0, be=None, g_rsi=None, mai
             u, lvl, g = trade
             entry = lvl + (sp[u] if d == 1 else 0); risk = max(abs(entry - g) + 1, 5)
             trr = big_rr if (big_rr and risk > 20) else rr                 # bigger target for big-stop trades
+            if hot_rr and ((r[u] >= 68) if d == 1 else (r[u] <= 32)): trr = hot_rr   # RSI already hot at entry
             stop, target = entry - d * risk, entry + d * trr * risk
             exit_t = None; info = ('zone', d, risk, taken, depth, abs(F - E), (E - g) * d / depth, (u - t0) / 60, abs(lvl - g), u, entry)
             for v in range(u, n):

@@ -703,3 +703,14 @@ The losers are spread evenly; after all the filters, the remaining losses look l
 Strong groups found: RSI 68-80 at entry (buys; 20-32 for sells): 61% / 73% win, +$2,792. Trades against today's move
 make most of the money (+$4,665), which fits the sweep (reversal) nature of the strategy.
 Weak only in Jan-Jun: main first entries (-$152), trades $5-20 with today's move (24% win), 2nd trade of the day (29%).
+
+## Bigger target when RSI is already 68+ at entry (`research/hot_rsi_target.py`, `zone(..., hot_rr)`)
+| Variant | Jan-Jun | Jul-Nov | Year |
+|---|---|---|---|
+| chosen | 42% +$3,674 -17.5% | 53% +$2,626 | +$6,300, 46%, PF 2.06 |
+| zone hot target 2.5x | +$3,619 | +$2,816 | +$6,434, 45%, PF 2.05 |
+| zone hot target 3x | +$3,306 | +$3,059 | +$6,365 |
+| zone hot target 4x | 40% +$3,354 | 51% +$3,242 | +$6,596, 44%, -17.5%, PF 2.06 |
+| main hot target $30 / $40 | | | +$5,797 / +$5,801, drop -31% |
+Zone 4x adds +$296 for the year, but Jan-Jun makes $320 less and the win rate falls to 44% (gain only in Jul-Nov).
+Main: much worse. Not convincing.
