@@ -620,3 +620,12 @@ More profit, same worst drop, win rate and PF the same or higher. Waiting for th
 Version B + zone up to 40 per structure (20 days) + main stop $30 + main re-entry target = first target + $15.
 2026 at 0.01: 713 trades (3.3/day), 46% win, **+$6,300**, PF 2.06, worst drop -17.5%; 101 winning days, 59 losing.
 Code: `research/more_profit3.py` -> `zones(40, 20) + mains(sl=30, extra=15)`.
+
+## Client view: winning / losing / no-trade days and bad streaks (`research/bad_days.py`)
+Chosen version, 217 trading days: winning 101 (47%), losing 59 (27%), no trade 57 (26%).
+Bad-day streaks (losing OR no trade): longest 7 days (25 Sep - 5 Oct); 3+ days 18 times, 5+ days 6 times.
+Losing-day streaks only: longest 4; 3+ days 5 times.
+A client connecting on any day is in profit after 1 day 47% | 3 days 65% | 5 days 72% | 10 days 82% | 20 days 93%
+(worst: -$148 after 1 day, -$210 after 5 days, at 0.01).
+With the on-hold F-E zone added: no-trade days fall to 13%, winning days 53%, but losing days 34%, longest bad streak 6,
+and worse client losses (-$319 after 1 day). Year +$6,951 but PF 1.51.
