@@ -1114,3 +1114,37 @@ Daily range: 2025 $36-64 (1.3-1.9% of price) vs 2026 $92-167 (2.3-3.4%).
    calm Q1 2025 was the good part); 2026 C $5,874 / $5,689, Full $9,649 / $9,038. Does not help.
 Conclusion: the 2026 results are much better than what 2025 shows. The core C keeps a small edge in 2025 (PF 1.08);
 the 2026 additions (3m, MZ, F-E) do not. Next: tune on 2025 + 2026 together and keep only rules that help BOTH years.
+
+## BOTH YEARS as one test set (`research/both_build.py`, `both_eval.py`, `both_search.py`, `both_report.py`)
+Every part built without filters on 2025 Jan-Jul and 2026 Jan-Nov, tagged, then combined. With filters:
+- Profitable in BOTH years: main (+$151 / +$1,540), E-A zone 40 (+$142 / +$4,761), MZ (+$35 / +$515), double bottom (+$968 / +$1,029), 3m after MZ (+$78 / +$670), 3m after F-E (+$74 / +$989), 3m after DB (+$584 / +$13). F-E zone itself +$10 / +$650.
+- Losing in 2025: 3m re-entry after main (-$100) and after E-A zone (-$327).
+- Filters: RSI-50 and hours help both years overall; the consolidation filter costs 2025 money but raises 2026 PF.
+Search over 4,096 valid combinations (re-entries only with their own base part), PF 2025 >= 1.1 and 2026 >= 1.4.
+**Robust = main + E-A zone 40 + MZ + double bottom + 3m after MZ + 3m after DB, all filters.**
+```
+,Chosen 25,Robust 25,Chosen 26,Robust 26
+Profit,$-16,"$1,957","$10,563","$8,527"
+Jan-Jun,$-16,"$1,957","$5,962","$4,409"
+Jul-Nov,$0,$0,"$4,601","$4,118"
+Win,36%,37%,40%,38%
+PF,1.00,1.13,1.50,1.46
+Drop,-62%,-20%,-33%,-28%
+Min bal,"$1,301",$616,$951,$774
+Safe bal,"$1,952",$925,"$1,426","$1,161"
+Trades/day,13.6,23.4,11.0,12.1
+Avg day,$-0,$13,$49,$39
+Avg week,$-1,$63,$240,$194
+Avg month,$-2,$245,$981,$790
+Best day,$211,$276,$878,$743
+Worst day,$-285,$-280,$-433,$-164
+Worst week,$-411,$-399,$-294,$-199
+Worst month,$-471,$-391,$-658,$-475
+Losing months,4/8,3/8,1/10,1/10
+Win days,48%,58%,55%,55%
+Lose days,48%,39%,34%,39%
+Empty days,4%,3%,12%,6%
+Bad streak,5,6,6,5
+Profit 20d,45%,70%,93%,85%
+```
+(Chosen here = $10,563 / -$16 because re-entries are counted per trade; earlier runs gave $10,276 / $82.)

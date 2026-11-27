@@ -7,6 +7,9 @@ import research.reentry_v2 as R, research.more_profit3 as P
 
 def daily(tr):
     days = sorted({d for df, *_ in R.prep for d in set(df.index.date)})
+    tdays = {t.date() for t, p in tr}
+    if not tdays & set(days):                                            # trades from other data: use weekdays
+        days = [d.date() for d in pd.bdate_range(min(tdays), max(tdays))]
     s = pd.Series([p for t, p in tr], index=[t.date() for t, p in tr]).groupby(level=0).sum()
     return pd.Series([s.get(d, np.nan) for d in days], index=days)       # NaN = no trade
 
