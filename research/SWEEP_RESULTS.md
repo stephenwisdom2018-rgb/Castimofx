@@ -1383,3 +1383,20 @@ Flips in the EA test (Jan 2026): 24 flips, only 5 won (21%), -$61. The backtest 
 the stop (it ignored the rest of the stop bar). Worst case (the stop bar counts): flips win 38% and add only +$319
 for 2026 (not +$1,001); Jan +$82. So the flip gain was partly a backtest artifact; real flips look weaker.
 Watch flips in the next EA test before trusting them.
+
+## Hedge at the stop instead of closing (owner's question; `research/hedge_at_stop.py`), 2026, 0.01
+At the stop level the trade stays open and an opposite hedge (same lot) opens. Hedge target k x risk; the hedge closes
+at -1R if price returns to the entry; re-hedge only after price comes back above the stop level and crosses it again
+(the first version re-hedged beyond the stop level and gave impossible results: fixed). Original closes at its target
+or a hard stop m x risk. Worst-case order inside each bar (bad events first).
+| | Chosen | k0.5 m2 | k0.5 m3 | k1 m2 | k1 m3 |
+|---|---|---|---|---|---|
+| Profit | $10,276 | $12,225 | $14,472 | $11,800 | $13,686 |
+| Jan-Jun / Jul-Nov | $6,017 / $4,259 | $7,088 / $5,137 | $7,958 / $6,513 | $6,750 / $5,049 | $7,125 / $6,561 |
+| Win / PF | 41% / 1.54 | 49% / 1.59 | 56% / 1.61 | 48% / 1.60 | 54% / 1.61 |
+| Biggest $ drop | $813 | $1,339 | $1,806 | $1,138 | $1,609 |
+| Worst day | -$282 | -$509 | -$849 | -$517 | -$766 |
+| Worst month / losing months | -$262 / 1 | +$5 / 0 | -$144 / 1 | -$414 / 1 | -$533 / 1 |
++Both: $11,310 -> $14,733 (k0.5 m2) / $18,859 (k0.5 m3). Hedging adds money in both halves and raises the win rate,
+but the account carries 2 positions per stopped trade, so the biggest $ drop and worst day grow a lot. Caveats:
+brokers with FIFO / no-hedge rules (and some prop firms) do not allow it; swaps on longer holds not counted.
