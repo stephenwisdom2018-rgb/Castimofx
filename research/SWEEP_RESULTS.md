@@ -859,3 +859,18 @@ candles above the line (sell: below). As an entry filter (`research/sma10_side.p
 | +Both, last 3 candles | $6,597 | 41% | 1.5 | $526 | 7.4 |
 As a filter on our entries it cuts profit. The owner uses it differently: "3 micro" re-entries inside the SMA 10 after
 a stop (23 Mar example). That is the next test. (EMA/SMA 20/50 guesses in `research/ma_side.py`, also worse.)
+
+## Owner's '3 micro inside SMA 10' re-entry after a stop (`research/micro3_reentry.py`), 0.01
+After a stop, within 24 h: 3 rising candles (each closing higher, all closes above SMA 10; sells mirror), enter at the
+3rd close, stop $1 beyond the extreme since the stop (min $5), target = first target ('orig') or 2x risk.
+| Version | Profit | Jan-Jun | Jul-Nov | Win | PF | Min bal | Trades/day |
+|---|---|---|---|---|---|---|---|
+| Chosen | $6,300 | $3,674 | $2,626 | 46% | 2.1 | $374 | 3.3 |
+| Chosen + 3micro x1, 2R | **$7,288** | $4,109 | $3,179 | 45% | 2.0 | $536 | 4.1 |
+| Chosen + 3micro x1, orig | $6,525 | $3,472 | $3,053 | 44% | 1.9 | $536 | 4.1 |
+| +Both | $7,979 | $3,770 | $4,210 | 40% | 1.4 | $797 | 11.7 |
+| +Both + 3micro x1, 2R | **$10,089** | $5,132 | $4,957 | 39% | 1.4 | $923 | 15.1 |
+| +Both + 3micro x2, 2R | $10,175 | $5,014 | $5,161 | 38% | 1.4 | $971 | 16.2 |
+Best: one 3-micro re-entry with a 2x-risk target. Extra trades win 41% (Chosen) / 36% (+Both) and add +$988 /
++$2,110, with gains in BOTH halves. Cost: min balance up ($374 -> $536; $797 -> $923), win rate down ~1 point.
+Real edge (profit in both halves), but fails the strict owner rule (drop must fall). Waiting for the owner.
