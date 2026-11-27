@@ -1332,3 +1332,12 @@ smaller biggest $ drop, no losing month; but a deeper early % drop and worse wor
 Flip with a DOUBLE lot (0.02 on the flip, normal lot elsewhere), Chosen 2026: $13,262 (vs $11,769 at 0.01 flips,
 $10,276 without), 44% win, PF 1.43, drop -60%, biggest $ drop $937, worst day -$691, worst week -$418, worst month
 +$13, no losing month, clients up after 20 days 92%. More money, but the worst day more than doubles.
+
+## Flip grid: stop size and target, both versions, both halves (`research/flip_grid.py`, `research/flip_grid.csv`)
+Flip stop = 0.5x / 1x / 1.5x the losing trade's risk; target = 0.5x-2x the flip stop. Most settings add money only in
+Jan-Jun and slightly reduce Jul-Nov (e.g. Chosen 1x/1x: H1 +$1,761, H2 -$268). Balanced settings (both halves up):
+- Chosen, flip stop 0.5x, target 1.5x: $11,276 (H1 $6,970 / H2 $4,306 vs $6,017 / $4,259), win 42%, PF 1.50,
+  biggest $ drop $610 (vs $813), worst day -$352, worst month -$251, better in 8 of 10 months.
+- +Both, flip stop 0.5x, target 2x: $12,900 (H1 $7,571 / H2 $5,328 vs $6,013 / $5,296), PF 1.39, biggest $ drop $766
+  (vs $851), worst month -$617 (vs -$696), better in 9 of 10 months.
+Highest profit but unbalanced: Chosen 1.5x/0.75x $12,089 (H2 flat, worst day -$484); 1x/1x $11,769 (H2 lower).
