@@ -1289,3 +1289,9 @@ Sep $58,341, Oct $60,359, Nov $68,261. Worst drop -55% (largest $4,350), lowest 
 | Full chosen | $1,000 | $175,168 | -64% | $644 |
 Without the cap the full version reaches millions with -93 to -94% drops (not realistic). With this rule the
 one-trade / two-trade modes stay safe (-17% to -35%); the full version and $400 mode become too risky.
+
+## FINAL PLAN (owner: "we go back to our best"), 27 Nov 2026
+Strategy: C+3m+MZ+FE. Lot sizing: 0.01 per $2,000 of balance, half lot after 3 losses in a row (back after a win).
+Small accounts use automatic modes at 0.01: $100-199 $100 mode | $200-399 $200 mode | $400-999 $400 mode |
+$1,000-1,999 full 0.01 | $2,000+ full, 0.01 per $2,000. Prop $100k: 0.07 fixed.
+2026: $1,000 -> ~$54,000 (-27%), $2,000 -> ~$67,700 (-25%), prop +$72k (-4.2%). Next: build the MT5 EA.
