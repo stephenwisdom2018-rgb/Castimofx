@@ -1363,3 +1363,19 @@ Flips in the $200 mode: worse in January, +$103 over the year, win 43% vs 41%. S
 | $400 mode | $4,409 | $4,740 | 0% / 0% | -$193 / -$204 | $168 / $231 |
 | Full | $10,276 | $11,276 | 0% / 0% | -$745 / -$577 | $529 / $634 |
 EA v1.11: flips ON from $200 up (and prop), OFF in the $100 mode (it adds blow-ups there).
+
+## First EA tester run (owner, "Castimofx Jesus" = CastimofxSweep v1.11), XAUUSDb M1, Jan 2026, $1,000, 1-min OHLC
+Report: net -$118.77, 85 trades, PF 0.84, max equity drop $477 (37%). Compared with the Python backtest for January
+(+$561 at 0.01; `research/backtest_jan2026_trades.csv` vs `research/ea_test_jan2026_trades.csv`):
+| Jan 2026 | EA trades | EA $ | Backtest trades | Backtest $ |
+|---|---|---|---|---|
+| main + re-entries | 12 | -$89 | 14 | -$110 |
+| zone E-A (+ re) | 20 | +$74 | 26 | +$298 |
+| zone F-E (+ re) | 15 | +$68 | 50 | +$327 |
+| 3 micro | 4 | -$37 | 19 | +$73 |
+| MZ | 10 | -$52 | 17 | -$133 |
+| flips | 24 | -$61 | 52 | +$105 |
+Causes found: (1) the balance fell below $1,000, so the EA switched to the $400 mode (no F-E, 3 micro or MZ) for
+much of the month: by design, but not comparable with the backtest; (2) BUG: a setup could be traded twice when the
+broker filled the pending order but the bar check did not see the break (Z23, F42, F36, Z43 ...). Fixed in v1.12:
+a key that got a real fill since it was armed is not placed again. Next test: deposit $3,000 (full mode, 0.01).
