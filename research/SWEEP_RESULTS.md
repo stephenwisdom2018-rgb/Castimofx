@@ -602,3 +602,16 @@ Version B at 0.01 (2026): worst drawdown -$380, worst day -$145, year +$5,671 (c
 Lot that just touches the limits: 0.13 (2026 would be about +$74,600). Half the limits for safety: 0.07 (about +$37,300).
 Optimistic: closed trades only (floating losses are bigger), stacking can open up to 4 copies, and one past year.
 Do not run the bot on the funded account until it is tested live on demo.
+
+## More profit on version B (`research/more_profit3.py`), stacking kept, 0.01, all filters
+| Variant | Year |
+|---|---|
+| version B | 45% +$5,671 -17.5% PF 2.04 |
+| main re-entry target +$5 / +$15 / +$20 (vs +$10) | +$5,467 / +$5,725 / +$5,436 |
+| main stop $15 / $25 / $30 (vs $20) | +$5,273 (-21.6%) / +$5,667 (-16.1%) / +$5,725 (46%) |
+| zone 30 / 40 / 50 per structure, 20 days | +$6,045 / **+$6,212** / +$6,092 (all -17.5%) |
+| zone memory 30 days | less |
+| zone re-entry target 2.5x / 3x | +$5,549 / +$5,249, drop -20.2% |
+| **zone 40 + main stop $30 + main re-entry target +$15** | **46% +$6,300 -17.5% PF 2.06** (Jan-Jun 42% +$3,674; Jul-Nov 53% +$2,626 -6.1%) |
+Best: zone up to 40 per structure (20 days), main stop $30, main re-entry target = first target + $15.
+More profit, same worst drop, win rate and PF the same or higher. Waiting for the owner's OK.

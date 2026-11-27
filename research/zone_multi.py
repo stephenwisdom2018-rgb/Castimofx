@@ -50,7 +50,7 @@ def zone(df, sp, max_per, mem_days, fresh=None, rr=2.0, be=None, g_rsi=None, mai
             entry = lvl + (sp[ent] if d == 1 else 0)
             ext = l[v0:ent + 1].min() if d == 1 else h[v0:ent + 1].max()
             risk = max(abs(entry - ext) + 1, 5); stop = entry - d * risk
-            target = tgt0 if cfg['target'] == 'orig' else entry + d * 2 * risk
+            target = tgt0 if cfg['target'] == 'orig' else entry + d * cfg.get('rr', 2) * risk
             if (target - entry) * d <= 0: break
             ex = None
             for v in range(ent, n):
