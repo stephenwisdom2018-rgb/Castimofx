@@ -759,3 +759,12 @@ a third of the profit. Keep all tests.
 | client worst after 1 / 20 days | -$148 / -$154 | -$319 / -$465 | -$182 / -$435 | -$356 / -$653 |
 Both together: +$1,679 more profit and almost no empty days, but lower win rate (40%), bigger drop (-21.5%) and
 deeper client losses. Fails the owner's rule (drop and win rate get worse). Still on hold.
+
+## No stop loss (`research/no_stop.py`), 0.01 -- DANGEROUS, rejected
+Trades stay open until the target (main: first entries only). Floating losses marked at each day's end.
+| | Hit target | Still open at data end | Total | Worst trade against | Worst floating loss |
+|---|---|---|---|---|---|
+| chosen | 91% | 65 trades (-$25,481) | **-$7,456** | -$1,176 | **-$18,616** |
+| + both | 94% | 215 trades (-$65,853) | +$2,646 | -$1,176 | **-$52,224** |
+A 91-94% "win rate", but the few trades that never come back are enormous (held up to 102 days, $1,176 against).
+At 0.01 a $1,000 account would be wiped out many times. Never trade without a stop.
