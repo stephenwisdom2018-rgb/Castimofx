@@ -590,3 +590,9 @@ Worst days of clean B: 23 Mar -$145 (2 zone sells, $80 and $65 stops), 29 Jul -$
 turns, 8 trades: two opposite structures active together), 21 Apr -$72 (4 zone buys + 1 main buy in a fall).
 No main and zone trade at the same minute. Blocking a zone trade against an opposite zone trade: +$3,590 to +$3,749
 (less profit), rejected.
+
+## OWNER DECISION (27 Nov 2026): KEEP STACKING
+Version B stays as first reported: +$5,671 at 0.01, 45% win, PF 2.04, worst drop -17.5%. When overlapping structures
+take the same setup, every copy is traded (up to 4 at one price). Note for the EA and the lot-size step: stacked copies
+mean up to ~4x the base lot on one setup, so the real exposure per setup can be 0.04 on a 0.01 base.
+"Clean B" (+$3,994) is kept only as a reference.

@@ -19,5 +19,5 @@
 - Strategy code: `castimofx/sweep.py`. Backtests: `research/`. Data: `data/` (XAUUSDb M15 2 years, M1 from 26 Aug 2026)
 - Student notes with diagrams (Claude Docs): https://claude.ai/artifact/MhcF2HYEdSP8kLX1wkwuBE
 - The owner's server time is MT5 HF Markets (UTC+2 in winter); the owner is in Uganda (UTC+3).
-- CHOSEN (27 Nov 2026): main + E-A zone (up to 20 per structure, 20 days, 1 zone re-entry on a 3-candle high break, 2x risk) + RSI-50 side filter + small-structure target + skip 15:00 & 23:00 + consolidation filters (tight last hour, ADX M15 25-35). 2026 at 0.01: +$5,671, 45% win, PF 2.04, worst drop -17.5%. Code: `research/more_trades.py`. Owner target: +$20,000 (lot size is the last step) before building the MT5 EA.
+- CHOSEN (27 Nov 2026): main + E-A zone (up to 20 per structure, 20 days, 1 zone re-entry on a 3-candle high break, 2x risk, stacked copies KEPT by owner) + RSI-50 side filter + small-structure target + skip 15:00 & 23:00 + consolidation filters (tight last hour, ADX M15 25-35). 2026 at 0.01: +$5,671, 45% win, PF 2.04, worst drop -17.5%. Code: `research/more_trades.py`. Owner target: +$20,000 (lot size is the last step) before building the MT5 EA.
 - ON HOLD, remind the owner at each decision: F-E zone option (+$1,176 more, win 42%, PF 1.58; `research/more_trades2.py`).
