@@ -814,3 +814,17 @@ Losers' targets hit within 24 h after the stop: 57%. Come-back re-entry at the o
 +$683 (total +$8,662, but Jan-Jun lower and drop -21.9%); within 24 h: +$37. Not convincing.
 Idea for the lot-size step: wins follow wins (59%), losses follow losses (73%), so a smaller lot after a loss and
 normal after a win may cut drops.
+
+## Smaller lot after losses, chosen version (`research/lot_after_loss.py`), base 0.02, reduced 0.01
+Chosen version streaks: after a loss the next trade wins 32%, after a win 63%. Live rule (closed trades only):
+| Rule | Profit | Biggest $ drop (= min balance) | Worst day | Profit per $1 drop |
+|---|---|---|---|---|
+| always 0.01 | $6,300 | $374 | -$148 | 16.9 |
+| always 0.02 | $12,601 | $747 | -$295 | 16.9 |
+| 0.01 after 1 loss | $8,287 | $468 | -$269 | 17.7 |
+| 0.01 after 2 losses | $8,687 | $468 | -$269 | 18.6 |
+| **0.01 after 3 losses in a row** | **$11,069** | **$531** | -$269 | **20.8** |
+| 0.01 after 4 losses | $11,382 | $596 | -$290 | 19.1 |
+| 0.01 after 5 / 6 losses | $11,450 / $12,320 | $745 / $721 | | 15.4 / 17.1 |
+Best: base 0.02, drop to 0.01 after 3 losses in a row until the next win. 23% more profit per $1 of drop than a
+fixed lot; gains in both halves. Min balance about $531 (closed trades; safe ~$800). For the lot-size step.
