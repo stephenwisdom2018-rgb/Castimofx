@@ -9,7 +9,7 @@ from castimofx.sweep import find_signals, simulate_reentry, Swing
 FILES = ['data/XAUUSDb_M1_2026-01_2026-04.csv', 'data/XAUUSDb_M1_2026-04_2026-08.csv', 'data/XAUUSDb_M1_2026-08_2026-11.csv']
 KW = dict(tol=1.0, minor_e=5, structure='takeout', takeout_counts=True, cancel_on_g_sweep=True)
 
-def zone(df, sp, max_per, mem_days, fresh=None, rr=2.0, be=None, g_rsi=None, main=True, big_rr=None, reent=None):
+def zone(df, sp, max_per, mem_days, fresh=None, rr=2.0, be=None, g_rsi=None, main=True, big_rr=None, reent=None, region='EA'):
     c = df.close.to_numpy()
     from castimofx.sweep import rsi as _rsi
     r = _rsi(c)
@@ -63,6 +63,9 @@ def zone(df, sp, max_per, mem_days, fresh=None, rr=2.0, be=None, g_rsi=None, mai
     for d, A, t0, E, F in lv:
         if A is None or E is None or (E - A) * d <= 0: continue
         depth = (E - A) * d; ok = lambda p: 0 < (E - p) * d < depth; lo = 'L' if d == 1 else 'H'
+        if region == 'FE':                                                # shallow pullback: G between F and E
+            if (F - E) * d <= 0: continue
+            ok = lambda p: 0 < (F - p) * d < (F - E) * d
         start, end, taken = t0, t0 + mem_days * 1440, 0
         if fresh:                                                        # first touch only: trade the first visit to the zone
             tt = t0
