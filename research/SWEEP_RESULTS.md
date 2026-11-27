@@ -1061,3 +1061,21 @@ Sep $446 | Oct $365 | Nov $582. Best days: 2 Feb $740, 3 Mar $644, 26 Mar $531. 
 23 Mar -$264, 15 Oct -$250. Winning / losing / empty days 56 / 35 / 10%. Longest losing-day streak 4 (twice),
 longest bad streak 6. Losing trades in a row: longest 28 (many open together in one move); 10+ in a row 36 times.
 Client in profit after 1/5/10/20 days: 56/73/86/96%; worst after 10 days -$544.
+
+## OUT-OF-SAMPLE TEST: 2025 Q1 (2 Jan - 1 Apr 2025), never seen before (`research/run_chosen.py`)
+Data: `data/XAUUSDb_M1_2025-01_2025-04.csv` (owner export). Run: CASTIMO_FILES=<file> python research/run_chosen.py.
+Nothing changed in the rules.
+| | C+3m+MZ | C+3m+MZ+FE |
+|---|---|---|
+| Profit (3 months) | $406 | **$763** |
+| Win / PF | 39% / 1.30 | 41% / 1.38 |
+| Drop / min balance | -13% / $173 | -13% / $159 (safe $238) |
+| Trades/day | 5.4 | 8.5 |
+| Avg month | $102 | $191 |
+| Worst day / week | -$110 / -$90 | -$110 / -$110 |
+| Losing months | 0/3 | 0/3 |
+| Win / lose / empty days | 56 / 31 / 12% | 61 / 31 / 6% |
+| Client up after 20 days | 93% | 100% |
+Monthly (C+3m+MZ+FE): Jan $130, Feb $316, Mar $297. The rules STILL WORK on unseen data (every month positive,
+PF 1.38), but profit is much smaller than 2026 (2026 Q1 = $4,422). Gold was ~$2,600-3,100 and much calmer in 2025,
+and our stops/targets are fixed dollars ($20/$30), so fewer and smaller moves. Profit scales with gold volatility.

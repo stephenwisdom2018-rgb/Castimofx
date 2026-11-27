@@ -6,7 +6,9 @@ import numpy as np, pandas as pd
 from castimofx import load_csv
 from castimofx.sweep import find_signals, simulate_reentry, Swing
 
-FILES = ['data/XAUUSDb_M1_2026-01_2026-04.csv', 'data/XAUUSDb_M1_2026-04_2026-08.csv', 'data/XAUUSDb_M1_2026-08_2026-11.csv']
+import os
+FILES = os.environ['CASTIMO_FILES'].split(',') if os.environ.get('CASTIMO_FILES') else \
+    ['data/XAUUSDb_M1_2026-01_2026-04.csv', 'data/XAUUSDb_M1_2026-04_2026-08.csv', 'data/XAUUSDb_M1_2026-08_2026-11.csv']
 KW = dict(tol=1.0, minor_e=5, structure='takeout', takeout_counts=True, cancel_on_g_sweep=True)
 
 def zone(df, sp, max_per, mem_days, fresh=None, rr=2.0, be=None, g_rsi=None, main=True, big_rr=None, reent=None, region='EA', hot_rr=None, need_i=True, ba_frac=1.0):

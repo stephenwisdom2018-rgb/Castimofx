@@ -9,7 +9,7 @@ sys.path.insert(0, '.')
 import numpy as np, pandas as pd
 import research.reentry_v2 as R
 from research.zone_multi import zone
-from research.consolidation import adx
+from research.indicators import adx
 from castimofx.sweep import simulate_reentry
 
 FEAT = []
