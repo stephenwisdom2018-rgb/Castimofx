@@ -585,3 +585,8 @@ Chart review, more checks:
 - Many buys in a falling market (21 Apr, 7 trades): max 1 zone trade open per side +$3,559; max 2 +$3,973.
   Pause 60 min after a zone loss: 46% win, +$3,570, -14.6%, PF 2.07. Pause 240 min: **48% win, +$3,635, -14.7%,
   PF 2.21** (higher win rate and PF, slightly smaller drop, but $359 less profit).
+Owner rule from now: **anything that lowers profit is rejected.**
+Worst days of clean B: 23 Mar -$145 (2 zone sells, $80 and $65 stops), 29 Jul -$73 (zone buys and sells taken in
+turns, 8 trades: two opposite structures active together), 21 Apr -$72 (4 zone buys + 1 main buy in a fall).
+No main and zone trade at the same minute. Blocking a zone trade against an opposite zone trade: +$3,590 to +$3,749
+(less profit), rejected.
