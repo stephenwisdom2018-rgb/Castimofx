@@ -730,3 +730,20 @@ Below-A zone with a smaller drop (0.5 depth, 5/structure):
 - stop a structure after its 1st loss: 65 tr +$638 -> +$6,938, -22.4% | after 2 losses: +$6,899, -23.2%
 - **only when RSI is 68+ at entry (32- for sells): 9 tr, 89% win, +$318 -> +$6,618, 47% win, -17.5%, PF 2.11.**
   Passes the all-three test (same drop), but only 9 trades in the year: could be luck.
+
+**Owner's adoption rule for new ideas (27 Nov 2026):** clients may connect prop-firm accounts (via Duplikium /
+Castimofx.com, any MT5), so a new idea must add MORE than $1,000 AND lower the drop AND raise the win rate.
+Small gains are not worth it. The number of trades also matters: clients want to see the bot trading.
+
+## How many times the zone was tested before a zone trade (`research/level_tests.py`)
+Zone trades by number of separate visits below E (buys) before entry:
+1st 51 tr (+$527) | 2nd 44 (+$504) | 3rd 36 (+$220) | 4th-5th 67 (-$4) | 6th+ 415 tr (+$3,515, most of the zone money).
+Price usually tests the zone many times before the trade comes.
+| Rule | Year | Trades/day |
+|---|---|---|
+| all (chosen) | +$6,300, 46%, -17.5%, PF 2.06 | 3.3 |
+| only the 1st test | +$2,066, 56%, -14.7%, PF 2.39 | 0.7 |
+| 2+ tests | +$5,774, 47%, -16.6% | 3.0 |
+| 3+ tests | +$5,270, 46%, -16.9% | 2.8 |
+Requiring more tests cuts trades and profit; the first test only gives a higher win rate but far fewer trades and
+a third of the profit. Keep all tests.
