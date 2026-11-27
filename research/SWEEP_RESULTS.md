@@ -1449,3 +1449,15 @@ Trades: `research/ea_test_jan2026_3k_trades.csv`. Python backtest same days: +$6
 The double-fill bug is gone. Biggest gap: F-E zone - the EA placed no F-E orders on 8-9, 14, 23, 27 Jan where the
 backtest traded (about +$120 there), and took some the backtest did not. Likely a filter/zone difference; needs the tester
 Journal log (zone lines) to find. Flips lost again (2nd test).
+
+## Commission and swap (from the owner's v1.12 tester report, HFM XAUUSDb)
+Real costs at 0.01: commission $0.10 per trade; swap on buys -$0.74 per night (x3 Wednesday night); sells paid no swap
+in the test (worst case assumed -$0.74 too). Backtest already includes the spread. 2026 at 0.01:
+| | Chosen | +Both |
+|---|---|---|
+| Gross (backtest) | $10,276 | $11,310 |
+| Commission | -$222 | -$359 |
+| Swap (sells free / sells charged) | -$176 / -$388 | -$191 / -$483 |
+| Net | $9,878 / $9,666 | $10,760 / $10,467 |
+Costs take 4-7%, not the profit. The EA vs backtest gap in the Jan test ($136 vs $608 gross) is trade differences
+(F-E zone, flips, mains), not costs: costs were only $34 that month.
