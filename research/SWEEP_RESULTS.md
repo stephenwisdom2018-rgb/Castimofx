@@ -542,3 +542,4 @@ Drops are % of a $1,000 start in each half. `zone(..., big_rr, reent)` added.
 | 99 per, 30 days + same re-entry | 40% +$3,182 -17.5% | 52% +$2,750 -5.7% | +$5,933 PF 1.94 |
 Passes the all-three test: up to 20 per structure, 20 days (+$4,269). Biggest gain with a small extra drop:
 20 per, 20 days + one 3-candle zone re-entry (2x risk target), +$5,671, Jan-Jun drop -17.5% vs -14.3%.
+Zone re-entries with 20 per structure, 20 days: 1 = +$5,671, drop -17.5%, PF 2.04 | 2 = +$6,053, drop -19.4%, PF 1.93.
