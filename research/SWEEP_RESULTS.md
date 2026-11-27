@@ -846,3 +846,16 @@ $374 drop becomes $3.74. Or set a $300-$600 minimum and use the 1-open mode for 
 "Chosen" and "+Both" (normal stops).** Reference: Chosen $6,300 46% PF 2.06 -18% min bal $440 | +Both $7,979 40%
 PF 1.41 -22% min bal $900.
 Owner: cent accounts are NOT an option (27 Nov 2026).
+
+## Owner's moving average = SMA 10 on close (M1), confirmed (4272.969 at 2026.03.23 13:03). "Inside" for buys =
+candles above the line (sell: below). As an entry filter (`research/sma10_side.py`), 0.01:
+| | Profit | Win | PF | Min balance (closed) | Trades/day |
+|---|---|---|---|---|---|
+| Chosen | $6,300 | 46% | 2.1 | $374 | 3.3 |
+| Chosen, last candle on the right side | $5,940 | 46% | 2.0 | $374 | 3.1 |
+| Chosen, last 3 candles on the right side | $4,768 | 47% | 2.1 | $326 | 2.3 |
+| +Both | $7,979 | 40% | 1.4 | $797 | 11.7 |
+| +Both, last candle | $7,795 | 40% | 1.4 | $751 | 11.2 |
+| +Both, last 3 candles | $6,597 | 41% | 1.5 | $526 | 7.4 |
+As a filter on our entries it cuts profit. The owner uses it differently: "3 micro" re-entries inside the SMA 10 after
+a stop (23 Mar example). That is the next test. (EMA/SMA 20/50 guesses in `research/ma_side.py`, also worse.)
