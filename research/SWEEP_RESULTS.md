@@ -1237,3 +1237,14 @@ Best never-blown modes with worst dip <= $70: C+3m+MZ, 1 trade at a time, skip s
 Margin note: one 0.01 gold position needs ~$45 margin at 1:100 (gold ~$4,500), so $100 accounts need 1 trade at a
 time or higher leverage. The EA can switch modes automatically by balance before each trade:
 $100-199 -> $100 mode | $200-399 -> $200 mode | $400-999 -> $400 mode | $1,000+ -> full 0.01 | $2,000+ -> 0.01 per $2,000.
+
+## FINAL CHECK (27 Nov 2026, `research/final_check.py`): everything re-run from scratch, all numbers reproduced
+Tests: 15 passed. Chosen C+3m+MZ+FE 2026 at 0.01: $10,276, 41% win, PF 1.54, drop -27%, min balance $813 (safe
+$1,219), 10.2 trades/day, 1 losing month (Apr -$262), 96% of clients up after 20 days. Chosen + double bottom:
+$11,310, PF 1.41, worst month -$696 (on hold).
+Modes (every start day, 0.01): $100 mode $1,606 (worst dip -$70) | $200 mode $2,000 (-$112) | $400 mode $4,378
+(-$193) | $1,000 full $10,276 (-$745); none blown.
+Lot sizing: $1,000 -> $54,009 (-27%), $2,000 -> $67,704 (-25%) with 0.01 per $2,000 + half after 3 losses.
+Prop $100k at 0.07: +$71,931, worst drop 4.2%.
+Caveats: one year of data (2026); in calm 2025 this version broke even (Robust/Max on hold for that case);
+closed-trade results, no extra slippage. Next: build the MT5 EA and run it on demo.
