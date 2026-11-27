@@ -15,16 +15,16 @@ def losers(tr, main_ids):
         out.append((fi, d, e - d * risk, risk, ex))
     return out
 
-def flips(L, rr, filt):
+def flips(L, rr, filt, sm=1.0):
     out = []
     for fi, d, px, risk, ex in L:
         df, sp = R.prep[fi][0], R.prep[fi][1]; h, l = df.high.to_numpy(), df.low.to_numpy(); n = len(h)
         j = df.index.get_loc(ex); fd = -d
         if filt and not M.keep(fi, ex, fd): continue
-        ent = px + (sp[j] if fd == 1 else 0); stop, tgt = ent - fd * risk, ent + fd * rr * risk
+        ent = px + (sp[j] if fd == 1 else 0); rk = risk * sm; stop, tgt = ent - fd * rk, ent + fd * rr * rk
         for v in range(j + 1, n):
-            if (l[v] <= stop) if fd == 1 else (h[v] + sp[v] >= stop): out.append((ex, -risk)); break
-            if (h[v] >= tgt) if fd == 1 else (l[v] + sp[v] <= tgt): out.append((ex, rr * risk)); break
+            if (l[v] <= stop) if fd == 1 else (h[v] + sp[v] >= stop): out.append((ex, -rk)); break
+            if (h[v] >= tgt) if fd == 1 else (l[v] + sp[v] <= tgt): out.append((ex, rr * rk)); break
     return out
 
 if __name__ == '__main__':
