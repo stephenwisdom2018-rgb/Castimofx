@@ -615,3 +615,8 @@ Do not run the bot on the funded account until it is tested live on demo.
 | **zone 40 + main stop $30 + main re-entry target +$15** | **46% +$6,300 -17.5% PF 2.06** (Jan-Jun 42% +$3,674; Jul-Nov 53% +$2,626 -6.1%) |
 Best: zone up to 40 per structure (20 days), main stop $30, main re-entry target = first target + $15.
 More profit, same worst drop, win rate and PF the same or higher. Waiting for the owner's OK.
+
+## ADOPTED (owner, 27 Nov 2026): the NEW version
+Version B + zone up to 40 per structure (20 days) + main stop $30 + main re-entry target = first target + $15.
+2026 at 0.01: 713 trades (3.3/day), 46% win, **+$6,300**, PF 2.06, worst drop -17.5%; 101 winning days, 59 losing.
+Code: `research/more_profit3.py` -> `zones(40, 20) + mains(sl=30, extra=15)`.
