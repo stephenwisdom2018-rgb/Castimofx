@@ -640,3 +640,10 @@ Live rule: extra trades only if the bot has taken no trade yet today (max 1, 2 o
 | both, all | 541 | 37% | -$958 | +$5,343, drop -37.8% | 8% |
 Every quiet-day pool LOSES money: the days are quiet because the setups there are poor. Fewer no-trade days, but more
 losing days (27% -> 32-40%). Rejected (owner's rule: nothing that lowers profit).
+
+## After the target is hit (`research/after_tp.py`)
+235 winning targets. In the next 4 hours price went $10+ further our way 69% and $10+ back against 69%; $20+ either
+way 40%; median $16.7 both ways. After the target, price is a coin flip: it does not clearly continue or reverse.
+- Pullback continuation trade (3-candle low then high break, 2x risk): 127 tr, 31% win, -$67 -> total +$6,233.
+- Reversal trade (3-candle high then low break the other way, 2x risk): 105 tr, 28% win, -$233 -> total +$6,067.
+Both lose money. Rejected.
