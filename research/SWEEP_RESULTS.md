@@ -747,3 +747,15 @@ Price usually tests the zone many times before the trade comes.
 | 3+ tests | +$5,270, 46%, -16.9% | 2.8 |
 Requiring more tests cuts trades and profit; the first test only gives a higher win rate but far fewer trades and
 a third of the profit. Keep all tests.
+
+## Both on-hold ideas together (`research/combo_hold.py`), 0.01
+| | Chosen | + F-E | + double bottom | + both |
+|---|---|---|---|---|
+| year | +$6,300 | +$6,951 | +$7,329 | **+$7,979** |
+| win / PF | 46% / 2.06 | 41% / 1.51 | 41% / 1.62 | 40% / 1.41 |
+| worst drop | -17.5% | -18.0% | -17.4% | -21.5% |
+| trades/day | 3.3 | 7.0 | 8.0 | 11.7 |
+| winning / losing / no-trade days | 47/27/26% | 53/34/13% | 56/37/7% | 56/39/5% |
+| client worst after 1 / 20 days | -$148 / -$154 | -$319 / -$465 | -$182 / -$435 | -$356 / -$653 |
+Both together: +$1,679 more profit and almost no empty days, but lower win rate (40%), bigger drop (-21.5%) and
+deeper client losses. Fails the owner's rule (drop and win rate get worse). Still on hold.
