@@ -1226,3 +1226,7 @@ Every possible start day checked (closed trades). Chosen version: a $200 account
 | **C+3m+MZ, max 2 open, stop <= $15** | **$2,000** | **0%** | **0%** | **-$112** |
 Recommended $200 mode: C+3m+MZ, at most 2 trades open, skip trades with stops over $15, 0.01 lot.
 About $2,000 a year on $200 (+1,000%), worst dip -$112 from any start day. Move to the full version at ~$1,200+.
+$400 start at 0.01 (2026, every start day): Chosen blows on 5.5% of start days (worst dip -$745), C+3m+MZ 2.8%
+(-$581), C 0% (-$331, too close). "$400 mode" = C without copies: $4,378/yr, never blown, worst dip -$193
+(keeps ~$200 left). Alternative C+3m+MZ one trade at a time: $3,135, worst dip -$229.
+Levels: $200-399 -> $200 mode; $400-1,199 -> $400 mode; $1,200-1,999 -> full 0.01; $2,000+ -> 0.01 per $2,000.
