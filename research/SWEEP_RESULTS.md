@@ -1329,3 +1329,6 @@ When a trade hits its stop, trade the other way at once from the stop price, sam
 | Losing months | 1/10 | **0/10** | 1/10 | | 1/10 | 1/10 |
 Flips: 895, 54% win, +$1,493 (1R); 2R flips win only 34% (+$361). Flip 1R on Chosen: +$1,493, higher win rate,
 smaller biggest $ drop, no losing month; but a deeper early % drop and worse worst day. Waiting for the owner.
+Flip with a DOUBLE lot (0.02 on the flip, normal lot elsewhere), Chosen 2026: $13,262 (vs $11,769 at 0.01 flips,
+$10,276 without), 44% win, PF 1.43, drop -60%, biggest $ drop $937, worst day -$691, worst week -$418, worst month
++$13, no losing month, clients up after 20 days 92%. More money, but the worst day more than doubles.
