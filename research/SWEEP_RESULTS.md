@@ -1215,3 +1215,14 @@ Prop $100,000 (fixed lots, limits 4%/day, 10% total): 0.05 = +$51k, max drop $3.
 0.07 = +$72k, $4.2k (4.2%), worst day ~$2.0k | 0.09 = +$92k, $5.1k, worst day ~$2.5k | 0.12 = +$123k, $6.3k,
 worst day ~$3.4k. Time to +8% ($8,000): 0.07 median 30 days (worst 79); 0.09 median 23 days (worst 70).
 Recommended prop lot: 0.07 (half the drawdown limit, worst day half the daily limit).
+
+## $200 clients (`research/start_200.py`, `research/mode_200.py`, grid in `research/mode_200.csv`), 2026, 0.01
+Every possible start day checked (closed trades). Chosen version: a $200 account blows on 23% of start days
+(C+3m+MZ 11%, C 6%). "$200 mode" search (version, no copies, max open trades, stop cap):
+| $200 mode | Profit | Blown | Lose $150+ | Worst dip |
+|---|---|---|---|---|
+| C, no copies | $4,378 | 0% | 6% | -$193 (almost all of $200) |
+| C, 1 trade at a time | $2,786 | 0% | 7% | -$187 |
+| **C+3m+MZ, max 2 open, stop <= $15** | **$2,000** | **0%** | **0%** | **-$112** |
+Recommended $200 mode: C+3m+MZ, at most 2 trades open, skip trades with stops over $15, 0.01 lot.
+About $2,000 a year on $200 (+1,000%), worst dip -$112 from any start day. Move to the full version at ~$1,200+.
