@@ -43,8 +43,8 @@ def double_bottom(tol, mem=20, detail=False):
                         entry = top + (sp[i] if d == 1 else 0); risk = max(abs(entry - base) + 1, 5)
                         stop, tgt = entry - d * risk, entry + d * 2 * risk
                         for v in range(i, n):
-                            if (l[v] <= stop) if d == 1 else (h[v] + sp[v] >= stop): out.append((idx[i], -risk) + ((fi, i, d, entry, 2 * risk) if detail else ())); break
-                            if v > i and ((h[v] >= tgt) if d == 1 else (l[v] + sp[v] <= tgt)): out.append((idx[i], 2 * risk) + ((fi, i, d, entry, 2 * risk) if detail else ())); break
+                            if (l[v] <= stop) if d == 1 else (h[v] + sp[v] >= stop): out.append((idx[i], -risk) + ((fi, i, d, entry, 2 * risk, idx[v]) if detail else ())); break
+                            if v > i and ((h[v] >= tgt) if d == 1 else (l[v] + sp[v] <= tgt)): out.append((idx[i], 2 * risk) + ((fi, i, d, entry, 2 * risk, idx[v]) if detail else ())); break
                         break
     return out
 

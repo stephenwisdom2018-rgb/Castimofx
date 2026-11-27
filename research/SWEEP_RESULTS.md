@@ -802,3 +802,15 @@ A $100 stop does not cap the account drop at $100: about 15 trades a day, severa
 **ON HOLD #3 (owner, 27 Nov 2026):** "+ both" with opposite exit (no stop / + $100 stop / + $50 stop). Owner's view:
 lot sizing would make these worse; the chosen version with its stops, properly lot-sized, can reach the money target
 with less drawdown. Remind the owner.
+
+## '+ both' losing streaks and pauses (`research/loss_streaks.py`), 0.01, normal stops
+2,560 trades, 40% win, +$7,979. Losses come in clusters: after a loss the next trade wins only 27% (after 2, 3 or 5
+losses: 25-27%), after a win the next trade wins 59%. Longest losing streak 25 trades; 10+ in a row 22 times
+(many trades open at once in the same move, so they lose together).
+Pause after N losses in a row (live: closed trades), year profit: after 1 loss 1/2/5/24 h: $5,497 / $5,243 / $4,578 /
+$2,730; after 2: $5,790 / $5,016 / $4,390 / $2,724; after 3: $7,547 / $6,933 / $6,791 / $5,026. All lower than no pause
+($7,979), drops mostly worse. Rejected: when a loss closes, the next trades of the same move are already open.
+Losers' targets hit within 24 h after the stop: 57%. Come-back re-entry at the original entry within 4 h: 634 tr, 37%,
++$683 (total +$8,662, but Jan-Jun lower and drop -21.9%); within 24 h: +$37. Not convincing.
+Idea for the lot-size step: wins follow wins (59%), losses follow losses (73%), so a smaller lot after a loss and
+normal after a win may cut drops.
