@@ -1428,3 +1428,9 @@ Rules for main, E-A and F-E trades open in the same direction: own TP (today; re
 | Biggest $ drop | $813 | $874 | $686 | | $862 | $904 | $820 |
 'First TP' adds ~$860-1,090 but only in Jul-Nov (Jan-Jun slightly lower), win rate not higher, drop slightly bigger.
 'Newest TP' is worse. Each trade keeping its own TP stays. Not adopted.
+
+## Shared TP test (27 Nov 2026) - REJECTED, keep each trade's own TP
+Chosen 2026 at 0.01: own TP $10,249 | first-trade TP $11,106 (unbalanced: Jul-Nov weaker) | newest TP $9,576.
++Both: own $11,282 | first $12,374 | newest $10,276 (`research/shared_tp.py`).
+Newest-TP effect on older trades: 186 of 1,525 changed; of 169 winners, 79 became smaller wins and 19 became losses;
+17 losers became wins; none closed at a tiny profit (<$3; TP is never set below entry). Net -$673.
