@@ -692,3 +692,5 @@ Neighbouring settings lose money, so these small gains may be luck. Waiting for 
 | longest losing streak | 4 (once) | 4 (5 times) |
 | client in profit after 1 / 5 / 10 / 20 days | 47 / 72 / 82 / 93% | 56 / 72 / 80 / 89% |
 | client worst after 10 / 20 days | -$180 / -$154 | -$310 / -$435 |
+**ON HOLD #2 (owner, 27 Nov 2026):** double bottom $2 above E (+$1,029; total +$7,329, 41% win, 8 trades/day).
+Good for the owner's own account, but win rate falls and clients' worst stretches deepen. Remind the owner.
