@@ -1346,3 +1346,11 @@ Highest profit but unbalanced: Chosen 1.5x/0.75x $12,089 (H2 flat, worst day -$4
 Flip after a stop of a main/zone trade: opposite trade, stop 0.5x the stopped trade's risk, target 1.5x (full mode
 and prop). Lot: <= $10k 0.01 per $2,000; $10k-50k 0.05 + 0.01 per $4,000; > $50k 0.15 + 0.01 per $8,000
 ($100k = 0.21, $500k = 0.71); half lot after 3 losses; small-account modes unchanged; prop 0.07 per $100k.
+
+## $200 account: flips in the $200 mode? (`research/mode200_flip.py`), 0.01
+The EA (v1.10) turns flips off below $1,000 by design (flips were only tested on the full version). Checked now:
+| | January 2026 | All 2026 |
+|---|---|---|
+| $200 mode, no flips (EA today) | $200 -> $222 (lowest $159), 23 trades | $200 -> $1,030 (lowest $159) |
+| $200 mode with flips | $200 -> $191 (lowest $157), 30 trades, 7 flips | $200 -> $1,133 (lowest $157), 101 flips |
+Flips in the $200 mode: worse in January, +$103 over the year, win 43% vs 41%. Small gain; kept off for small accounts.
