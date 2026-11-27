@@ -678,3 +678,17 @@ below the base low, 2x risk. Results swing between -$214 and +$164 depending on 
 - base high, 120 min, range <=$15: 46 tr, 39%, +$107 -> total +$6,407, 46% win, drop -14.7%, PF 2.01
 - post-target high, 60 min, any range: 87 tr, 36%, +$164 -> total +$6,465, 45% win, drop -13.5%, PF 1.90
 Neighbouring settings lose money, so these small gains may be luck. Waiting for the owner.
+
+## Client report: chosen vs chosen + double bottom $2 (`research/client_report.py`), 0.01
+| | Chosen | + double bottom $2 |
+|---|---|---|
+| year | +$6,300, 46%, -17.5%, PF 2.06 | +$7,329, 41%, -17.4%, PF 1.62 |
+| trades / day | 3.3 | 8.0 |
+| wins / day, avg win | 1.5, +$37 | 3.3, +$27 |
+| losses / day, avg loss | 1.8, -$16 | 4.7, -$12 |
+| avg day | +$29 | +$34 |
+| winning / losing / no-trade days | 47% / 27% / 26% | 56% / 37% / 7% |
+| longest bad streak (loss or no trade) | 7 | 5 |
+| longest losing streak | 4 (once) | 4 (5 times) |
+| client in profit after 1 / 5 / 10 / 20 days | 47 / 72 / 82 / 93% | 56 / 72 / 80 / 89% |
+| client worst after 10 / 20 days | -$180 / -$154 | -$310 / -$435 |
