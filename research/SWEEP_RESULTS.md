@@ -1275,3 +1275,17 @@ $2,208), lowest $178. At 0.20 a typical month is +$800 to +$4,500 (Jul +$10,900)
 $400 mode (C, no copies) with 0.01 per $200 capped at 0.20, from $400 (`research/mode_ladder.py 400 400`):
 Jan $492, Feb $9,771, Mar $17,338, Apr $16,800 (-$538), May $22,406, Jun $29,369, Jul $44,772, Aug $46,037,
 Sep $58,341, Oct $60,359, Nov $68,261. Worst drop -55% (largest $4,350), lowest $199 (half the start).
+
+## Owner's lot rule: 0.01 below $500, 0.02 at $500, +0.01 per extra $500 (lot = floor(balance/500)+1), 2026
+| Mode | Start | Cap 0.20: end | Worst drop | Lowest |
+|---|---|---|---|---|
+| $100 mode | $200 | $8,277 | -25% | $181 |
+| $100 mode | $1,000 | $19,414 | -17% | $949 |
+| $200 mode | $200 | $15,140 | -35% | $178 |
+| $200 mode | $1,000 | $25,767 | -26% | $941 |
+| $400 mode | $200 | $53,632 | -83% | $37 |
+| $400 mode | $1,000 | $66,902 | -40% | $636 |
+| Full chosen | $200 | $152,076 | -85% | $54 |
+| Full chosen | $1,000 | $175,168 | -64% | $644 |
+Without the cap the full version reaches millions with -93 to -94% drops (not realistic). With this rule the
+one-trade / two-trade modes stay safe (-17% to -35%); the full version and $400 mode become too risky.
