@@ -1052,3 +1052,12 @@ Bad streak,7,6,4
 Profit 20d,97%,96%,87%
 ```
 C+3m+MZ+FE reaches $10,276 (both halves up), but win 41%, PF 1.54, min balance $813, worst month -$262.
+
+## ADOPTED (owner, 27 Nov 2026): C+3m+MZ+FE = $10,276 at 0.01 (target reached)
+C+3m+MZ plus the F-E zone (zone trades with G between F and E, 3-micro re-entries after their stops too).
+2,221 trades, 41% win, PF 1.54, drop -27%, min balance $813 (safe $1,219), 10.2 trades/day.
+Monthly: Jan $456 | Feb $2,383 | Mar $1,583 | Apr -$262 | May $1,237 | Jun $620 | Jul $2,274 | Aug* $591 |
+Sep $446 | Oct $365 | Nov $582. Best days: 2 Feb $740, 3 Mar $644, 26 Mar $531. Worst: 6 Apr -$282,
+23 Mar -$264, 15 Oct -$250. Winning / losing / empty days 56 / 35 / 10%. Longest losing-day streak 4 (twice),
+longest bad streak 6. Losing trades in a row: longest 28 (many open together in one move); 10+ in a row 36 times.
+Client in profit after 1/5/10/20 days: 56/73/86/96%; worst after 10 days -$544.
