@@ -1415,3 +1415,16 @@ Test: when a trade goes a x risk against us, add a trade there (same stop level,
 | Worst day / month | -$282 / -$262 | -$369 / -$558 | -$393 / -$709 | -$438 / -$697 | -$481 / -$933 |
 Adds win about half the time with 1x targets but add little money (best +$776) and make worst days and months much
 deeper (same on +Both). Not adopted.
+
+## Shared take profit for trades open together (owner; `research/shared_tp.py`), 2026, 0.01
+Rules for main, E-A and F-E trades open in the same direction: own TP (today; replica $10,249 vs $10,276), 'first'
+(a new trade takes the oldest open trade's TP), 'newest' (all move to the newest trade's TP). Own stops kept.
+| | own | first | newest | | +Both own | first | newest |
+|---|---|---|---|---|---|---|---|
+| Profit | $10,249 | $11,106 | $9,576 | | $11,282 | $12,374 | $10,276 |
+| Jan-Jun | $5,990 | $5,733 | $6,042 | | $5,986 | $5,912 | $5,535 |
+| Jul-Nov | $4,259 | $5,373 | $3,534 | | $5,296 | $6,462 | $4,741 |
+| Win / PF | 41% / 1.54 | 40% / 1.58 | 40% / 1.51 | | 39% / 1.41 | 38% / 1.46 | 38% / 1.38 |
+| Biggest $ drop | $813 | $874 | $686 | | $862 | $904 | $820 |
+'First TP' adds ~$860-1,090 but only in Jul-Nov (Jan-Jun slightly lower), win rate not higher, drop slightly bigger.
+'Newest TP' is worse. Each trade keeping its own TP stays. Not adopted.
