@@ -1341,3 +1341,8 @@ Jan-Jun and slightly reduce Jul-Nov (e.g. Chosen 1x/1x: H1 +$1,761, H2 -$268). B
 - +Both, flip stop 0.5x, target 2x: $12,900 (H1 $7,571 / H2 $5,328 vs $6,013 / $5,296), PF 1.39, biggest $ drop $766
   (vs $851), worst month -$617 (vs -$696), better in 9 of 10 months.
 Highest profit but unbalanced: Chosen 1.5x/0.75x $12,089 (H2 flat, worst day -$484); 1x/1x $11,769 (H2 lower).
+
+## EA v1.10 (27 Nov 2026, owner): balanced flip added; no maximum lot; risk shrinks as the account grows
+Flip after a stop of a main/zone trade: opposite trade, stop 0.5x the stopped trade's risk, target 1.5x (full mode
+and prop). Lot: <= $10k 0.01 per $2,000; $10k-50k 0.05 + 0.01 per $4,000; > $50k 0.15 + 0.01 per $8,000
+($100k = 0.21, $500k = 0.71); half lot after 3 losses; small-account modes unchanged; prop 0.07 per $100k.

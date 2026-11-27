@@ -22,6 +22,8 @@
 //|   3M    after a taken losing trade: 3 rising candles closing     |
 //|         above SMA 10 -> enter, stop beyond the low, 2x risk.     |
 //|   MZ    G in the E-A zone at RSI 32 -> 3 micro -> enter early.   |
+//|   FLIP  a main/zone trade hits its stop -> trade the other way:   |
+//|         stop = half its risk, target = 1.5x that stop.           |
 //|  Filters: RSI side of 50, no new trades at 15:00 / 23:00 server, |
 //|  no trades when the last hour is tight (< 0.6x normal) or when   |
 //|  ADX(14) on M15 is 25-35.                                        |
@@ -31,7 +33,7 @@
 //+------------------------------------------------------------------+
 #property copyright "Castimofx.com"
 #property link      "https://castimofx.com"
-#property version   "1.00"
+#property version   "1.10"
 #property description "Castimofx gold sweep bot (C+3m+MZ+FE). Logic on M1, any chart timeframe."
 
 #include <Trade/Trade.mqh>
@@ -57,10 +59,14 @@ input bool             InpTrade          = true;         // Trading on (false = 
 input bool             InpLog            = true;         // Log signals in the Experts tab
 
 //--- lot settings (automatic, not inputs)
-const double LOT_BAL_PER_001 = 2000;    // 0.01 lot per $2,000 of balance (so 0.01 up to $3,999, 0.02 from $4,000)
+// The lot grows with the balance, but more slowly as the account gets bigger (less risk on big money):
+//   up to $10,000      : 0.01 per $2,000             ($2k 0.01, $4k 0.02, $10k 0.05)
+//   $10,000 - $50,000  : 0.05 + 0.01 per $4,000      ($30k 0.10, $50k 0.15)
+//   above $50,000      : 0.15 + 0.01 per $8,000      ($100k 0.21, $250k 0.40, $500k 0.71)
 const int    LOT_HALF_AFTER  = 3;       // half lot after 3 losses in a row
-const double LOT_MAX         = 0.20;    // maximum lot per trade (normal accounts)
 const double PROP_LOT_PER_1K = 0.0007;  // prop: 0.07 lot per $100,000
+const double FLIP_STOP       = 0.5;     // flip: stop = half the stopped trade's risk
+const double FLIP_TARGET     = 1.5;     // flip: target = 1.5x the flip stop
 
 //--- strategy constants (from the backtest)
 #define CAP          65536
@@ -93,7 +99,8 @@ const double MZ_RSI     = 32.0;
 #define T_M3C     64
 #define T_M3FE    128
 #define T_MZ      256
-#define T_ALL     511
+#define T_FLIP    512
+#define T_ALL     1023
 #define T_C       (T_MAIN | T_MAINRE | T_ZEA | T_ZEARE)
 
 //--- bar ring buffer (closed M1 bars), absolute index t = 0..N-1
@@ -938,16 +945,23 @@ double NormLot(double lot)
    double mn = SymbolInfoDouble(_Symbol, SYMBOL_VOLUME_MIN);
    double mx = SymbolInfoDouble(_Symbol, SYMBOL_VOLUME_MAX);
    lot = MathFloor(lot / step + 1e-9) * step;
-   if(InpAccount != CFX_PROP) lot = MathMin(lot, LOT_MAX);
    lot = MathMax(mn, MathMin(mx, lot));
    return NormalizeDouble(lot, 2);
+  }
+
+double LotUnits(double bal)
+  {
+   double u;
+   if(bal <= 10000) u = MathFloor(bal / 2000.0);
+   else if(bal <= 50000) u = 5 + MathFloor((bal - 10000) / 4000.0);
+   else u = 15 + MathFloor((bal - 50000) / 8000.0);
+   return MathMax(1.0, u);
   }
 
 double LotNow()
   {
    if(InpAccount == CFX_PROP) return NormLot(InpPropStart / 1000.0 * PROP_LOT_PER_1K);
-   double bal = AccountInfoDouble(ACCOUNT_BALANCE);
-   double units = MathMax(1.0, MathFloor(bal / LOT_BAL_PER_001));
+   double units = LotUnits(AccountInfoDouble(ACCOUNT_BALANCE));
    if(LOT_HALF_AFTER > 0 && LossesInARow() >= LOT_HALF_AFTER) units = MathMax(1.0, MathFloor(units / 2));
    return NormLot(units * 0.01);
   }
@@ -1180,6 +1194,49 @@ void MainOpposite()
       int d = PositionGetInteger(POSITION_TYPE) == POSITION_TYPE_BUY ? 1 : -1;
       if(d != nd) trade.PositionClose(tk);
      }
+  }
+
+//+------------------------------------------------------------------+
+//| flip: when a main / zone trade hits its stop, trade the other way |
+//+------------------------------------------------------------------+
+void OnTradeTransaction(const MqlTradeTransaction &trans, const MqlTradeRequest &request, const MqlTradeResult &result)
+  {
+   if(trans.type != TRADE_TRANSACTION_DEAL_ADD || !g_live) return;
+   ulong deal = trans.deal;
+   if(!HistoryDealSelect(deal)) return;
+   if(HistoryDealGetInteger(deal, DEAL_MAGIC) != InpMagic || HistoryDealGetString(deal, DEAL_SYMBOL) != _Symbol) return;
+   if(HistoryDealGetInteger(deal, DEAL_ENTRY) != DEAL_ENTRY_OUT) return;
+   if(HistoryDealGetInteger(deal, DEAL_REASON) != DEAL_REASON_SL) return;
+   double outPrice = HistoryDealGetDouble(deal, DEAL_PRICE);
+   long posId = HistoryDealGetInteger(deal, DEAL_POSITION_ID);
+   if(!HistorySelectByPosition(posId)) return;
+   double openPrice = 0, sl = 0; string cmt = ""; int dOld = 0;
+   for(int i = 0; i < HistoryDealsTotal(); i++)
+     {
+      ulong tk = HistoryDealGetTicket(i);
+      if(HistoryDealGetInteger(tk, DEAL_ENTRY) != DEAL_ENTRY_IN) continue;
+      openPrice = HistoryDealGetDouble(tk, DEAL_PRICE);
+      sl = HistoryDealGetDouble(tk, DEAL_SL);
+      cmt = HistoryDealGetString(tk, DEAL_COMMENT);
+      dOld = HistoryDealGetInteger(tk, DEAL_TYPE) == DEAL_TYPE_BUY ? 1 : -1;
+     }
+   if(dOld == 0) return;
+   // flips only follow main and zone trades (not 3-micro, MZ or other flips), as in the backtest
+   if(StringFind(cmt, "CFX 3M") == 0 || StringFind(cmt, "CFX ZM") == 0 || StringFind(cmt, "CFX FL") == 0) return;
+   double risk = sl > 0 ? MathAbs(openPrice - sl) : MathAbs(openPrice - outPrice);
+   if(risk <= 0) return;
+   if(!CanTrade()) return;
+   SetMode();
+   if((g_mask & T_FLIP) == 0 || g_maxOpen < 999) return;   // flips only in the full mode and on prop accounts
+   int d = -dOld;
+   double fr = risk * FLIP_STOP;
+   double lot = LotNow();
+   double price = d == 1 ? SymbolInfoDouble(_Symbol, SYMBOL_ASK) : SymbolInfoDouble(_Symbol, SYMBOL_BID);
+   if(!MarginOk(d, lot, price)) { if(InpLog) Print("CFX: not enough margin for a flip"); return; }
+   int digits = (int)SymbolInfoInteger(_Symbol, SYMBOL_DIGITS);
+   double fsl = NormalizeDouble(price - d * fr, digits), ftp = NormalizeDouble(price + d * FLIP_TARGET * fr, digits);
+   bool r = d == 1 ? trade.Buy(lot, _Symbol, 0, fsl, ftp, "CFX FL") : trade.Sell(lot, _Symbol, 0, fsl, ftp, "CFX FL");
+   if(InpLog) PrintFormat("CFX flip %s after a stop: lot %.2f stop $%.1f target $%.1f %s", d == 1 ? "BUY" : "SELL", lot, fr, FLIP_TARGET * fr, r ? "sent" : "FAILED");
   }
 
 //+------------------------------------------------------------------+

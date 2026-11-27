@@ -21,8 +21,14 @@ Everything is automatic. The only choice is the **account type**.
 | History replayed | Days of M1 the bot replays at start (31) |
 | Trading on | false = the bot only logs signals (good for a first check) |
 
-Normal accounts: lot is automatic. Small-account modes below $1,000, then 0.01 per $2,000 of balance
-(0.02 from $4,000, 0.03 from $6,000 ...), half lot after 3 losses in a row, maximum 0.20.
+Normal accounts: lot is automatic, with no maximum. Small-account modes below $1,000, then the lot grows with the
+balance but more slowly on big accounts (less risk on money already made); half lot after 3 losses in a row.
+| Balance | Lot |
+|---|---|
+| $1,000 - $3,999 | 0.01 |
+| $4,000 / $6,000 / $10,000 | 0.02 / 0.03 / 0.05 |
+| $30,000 / $50,000 | 0.10 / 0.15 |
+| $100,000 / $250,000 / $500,000 | 0.21 / 0.40 / 0.71 |
 
 ## Account modes (Auto lot mode, normal account)
 | Balance | Trades taken | Max open | Stop cap |
@@ -40,6 +46,8 @@ The bot keeps trading on any balance; it only skips a trade when the free margin
 - Filters: RSI 14 on the right side of 50, no new trades at 15:00 and 23:00 server time, no trades when the
   last hour is tight (< 0.6x normal) or when ADX(14) on M15 is between 25 and 35.
 - A new main trade closes an open main trade in the other direction.
+- Flip: when a main or zone trade hits its stop, the bot trades the other way at once (stop = half the stopped
+  trade's risk, target = 1.5x that stop). Full mode ($1,000+) and prop only.
 
 ## Differences from the Python backtest (expected small)
 - The backtest ran several main-trade tracks in parallel (one per target size); the EA runs one main track.
