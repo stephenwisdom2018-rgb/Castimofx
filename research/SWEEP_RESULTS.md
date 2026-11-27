@@ -647,3 +647,11 @@ way 40%; median $16.7 both ways. After the target, price is a coin flip: it does
 - Pullback continuation trade (3-candle low then high break, 2x risk): 127 tr, 31% win, -$67 -> total +$6,233.
 - Reversal trade (3-candle high then low break the other way, 2x risk): 105 tr, 28% win, -$233 -> total +$6,067.
 Both lose money. Rejected.
+
+## Owner's idea: after the target, let price run $X more, then trade (`research/after_tp_ext.py`)
+Reversal after the run (3-candle high then low break, the other way, stop beyond the top, 2x risk):
+run $10: 59 tr 19% win -$480 | $20: 49 tr 16% -$488 | $20 + RSI 68/32: 40 tr 18% -$401 | $30: 23 tr 17% -$310.
+A run usually keeps going: reversals fail badly. Rejected.
+Continuation after the run (pullback, then 3-candle high break the same way, 2x risk):
+$10: 83 tr 23% -$191 | $20: 53 tr 30% -$13 | **$30: 28 tr 36% +$124 -> total +$6,425, 46% win, -17.5%, PF 2.04**.
+Small gain from only 28 trades (could be luck). Waiting for the owner.
