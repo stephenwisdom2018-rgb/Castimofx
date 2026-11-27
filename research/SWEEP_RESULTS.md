@@ -1272,3 +1272,6 @@ Worst drop -47%, lowest $178. Lots pass 1.00 from July: not realistic (slippage,
 Same with the lot CAPPED at 0.20 (owner): Jan $309, Feb $417, Mar $709, Apr $752, May $2,728, Jun $3,160, Jul $14,092,
 Aug $15,631, Sep $19,614, Oct $24,123, Nov $24,928. $200 -> ~$24,900 in 2026. Worst drop -47% (largest $ drop
 $2,208), lowest $178. At 0.20 a typical month is +$800 to +$4,500 (Jul +$10,900).
+$400 mode (C, no copies) with 0.01 per $200 capped at 0.20, from $400 (`research/mode_ladder.py 400 400`):
+Jan $492, Feb $9,771, Mar $17,338, Apr $16,800 (-$538), May $22,406, Jun $29,369, Jul $44,772, Aug $46,037,
+Sep $58,341, Oct $60,359, Nov $68,261. Worst drop -55% (largest $4,350), lowest $199 (half the start).
