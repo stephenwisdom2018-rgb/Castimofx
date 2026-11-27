@@ -10,9 +10,9 @@ from research.zone_multi import zone
 from castimofx.sweep import simulate_reentry
 
 RE = dict(swings='3', target='2R', max=1)
-CH, EX, FE, DB = [], [], [], []          # (entry time, pnl, file, d, entry, target price, exit time)
+CH, EX, FE, DB, EAZ, MAIN = [], [], [], [], [], []   # (entry time, pnl, file, d, entry, target price, exit time)
 for fi, (df, sp, *_) in enumerate(R.prep):
-    for region, lst in (('EA', CH), ('FE', FE)):
+    for region, lst in (('EA', EAZ), ('FE', FE)):
         for x in zone(df, sp, 40, 20, main=False, reent=RE, region=region)[0]:
             if M.keep(fi, x[0], x[4]):
                 dist = x[1] if x[1] > 0 else -2 * x[1]
@@ -24,11 +24,12 @@ for fi, (df, sp, *_) in enumerate(R.prep):
             d = x.signal.direction
             if not M.keep(fi, x.time, d): continue
             T = x.signal.entry + d * (tp + (15 if 're-entry' in x.reason else 0))
-            CH.append((x.time, x.pnl, fi, d, x.entry, T, x.exit_time))
+            MAIN.append((x.time, x.pnl, fi, d, x.entry, T, x.exit_time))
 seen = set()
 for x in sorted(S.double_bottom(2, detail=True)):
     if x[0] not in seen: seen.add(x[0]); DB.append((x[0], x[1], x[2], x[4], x[5], x[5] + x[4] * x[6], x[7]))
 EX = FE + DB
+CH = EAZ + MAIN
 
 ARR = []
 for df, sp, *_ in R.prep:
