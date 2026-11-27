@@ -976,3 +976,15 @@ Bad streak,7,7,4,4
 Profit 20d,95%,97%,89%,92%
 ```
 C+3m+MZ gains in both halves, min balance only +$16, worst day/week better, 97% of clients up after 20 days, fewer empty days (19%). Win -1 point, PF 1.99 -> 1.88, drop % -22 -> -26. Waiting for the owner.
+
+## Owner's version: 3 micro AFTER the H break, on a pullback below H (`research/micro3_after_h.py`)
+After H breaks, price comes back below H (G not broken), then 3 micro inside SMA 10 -> enter, 2x risk, 24 h window.
+| Version | Year | Extra |
+|---|---|---|
+| C+3m | $7,288, 45%, -22%, PF 1.99 | |
+| + after-H, 1 per H, stop at G | $7,619, -61% | 431 tr 35% +$331 |
+| + after-H, 1 per H, stop below lowest since break | $7,850, -33%, PF 1.70 | 433 tr 36% +$562 |
+| + after-H, 3 per H | $7,370-$7,441, -52 to -56% | +$82 to +$152 |
+| B+3m | $10,089, 39%, -25% | |
+| + after-H (any) | $8,403-$10,175, drops -33 to -56% | -$1,686 to +$86 |
+Much weaker than the 3-micro zone entry before the H break (MZ: +$1,221, drop -26%). After-H rejected.
