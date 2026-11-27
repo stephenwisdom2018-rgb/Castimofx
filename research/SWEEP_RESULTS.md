@@ -1099,3 +1099,9 @@ very volatile); 2025 gold was $2,600-3,300. Next idea: scale stops/targets with 
 2025 Jan-Jul full table (`research/report_2025.py`): C $292 (PF 1.08, drop -31%, min bal $503) | C+3m $176 |
 C+3m+MZ $135 | C+3m+MZ+FE $82 (PF 1.01, min bal $1,038). Every addition makes 2025 worse. Losing months: Apr, Jun
 (and 1-day Aug) for all versions; Jun 2025 is the worst month (-$251 to -$468).
+Same months compared, Jan-Jul 2026 vs Jan-Jul 2025 (C | C+3m | C+3m+MZ | +FE):
+profit 2026 $4,870 | $5,785 | $6,799 | $8,292 vs 2025 $292 | $176 | $135 | $82;
+PF 2026 1.92 | 1.89 | 1.80 | 1.50 vs 2025 1.08 | 1.04 | 1.02 | 1.01;
+min balance 2026 $374 | $536 | $552 | $813 vs 2025 $503 | $715 | $749 | $1,038;
+avg month 2026 $696 | $826 | $971 | $1,185 vs 2025 $37 | $22 | $17 | $10.
+Both years lose in April; 2025 also loses in June. The strategy earns about 20x more in 2026 than in 2025.
