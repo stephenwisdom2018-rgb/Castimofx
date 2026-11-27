@@ -1,0 +1,86 @@
+time,key,side,profit,how,kind
+2026.01.02 11:42:40,CFX F40,buy,-7.09,sl,zone F-E
+2026.01.02 15:24:40,CFX FL,sell,-3.55,sl,flip
+2026.01.02 20:58:20,CFX Z23,buy,12.44,tp,zone E-A
+2026.01.02 20:28:40,CFX Z23,buy,20.88,tp,zone E-A
+2026.01.02 22:53:20,CFX Z39,buy,11.64,tp,zone E-A
+2026.01.05 08:21:40,CFX Z31,buy,16.74,tp,zone E-A
+2026.01.05 19:24:40,CFX F42,buy,-15.25,sl,zone F-E
+2026.01.06 02:40:40,CFX FL,sell,-7.63,sl,flip
+2026.01.06 01:31:40,CFX F36,sell,-12.32,sl,zone F-E
+2026.01.06 01:31:40,CFX FR36,sell,-12.32,sl,zone F-E
+2026.01.06 03:37:00,CFX ZM,buy,22.38,tp,MZ
+2026.01.06 04:30:20,CFX FL,buy,-6.16,sl,flip
+2026.01.06 04:30:20,CFX FL,buy,-6.16,sl,flip
+2026.01.06 04:40:00,CFX 3M,sell,-9.53,sl,3 micro
+2026.01.06 04:40:00,CFX 3M,sell,-9.53,sl,3 micro
+2026.01.06 03:10:40,CFX FR32,buy,26.52,tp,zone F-E
+2026.01.06 03:10:40,CFX FR42,buy,26.52,tp,zone F-E
+2026.01.06 07:39:40,CFX FR36,sell,14.92,tp,zone F-E
+2026.01.06 10:41:40,CFX F36,sell,21.64,tp,zone F-E
+2026.01.06 10:41:40,CFX FR36,sell,21.64,tp,zone F-E
+2026.01.06 12:18:40,CFX F42,buy,21.76,tp,zone F-E
+2026.01.06 12:18:40,CFX Z43,buy,21.76,tp,zone E-A
+2026.01.06 16:20:40,CFX FR36,sell,-8.02,sl,zone F-E
+2026.01.06 16:32:20,CFX FL,buy,6.02,tp,flip
+2026.01.06 17:13:00,CFX 3M,sell,-11.9,sl,3 micro
+2026.01.06 20:25:00,CFX ZM,sell,-6.49,sl,MZ
+2026.01.06 20:25:00,CFX 3M,sell,-6.49,sl,3 micro
+2026.01.07 09:14:40,CFX F42,buy,20.76,tp,zone F-E
+2026.01.07 09:14:40,CFX FR42,buy,20.76,tp,zone F-E
+2026.01.07 09:14:40,CFX Z43,buy,20.76,tp,zone E-A
+2026.01.07 09:14:40,CFX ZR43,buy,20.76,tp,zone E-A
+2026.01.07 09:14:40,CFX ZR45,buy,20.76,tp,zone E-A
+2026.01.07 11:50:00,CFX ZM,buy,-5.78,sl,MZ
+2026.01.07 21:32:00,CFX ZM,buy,-11.65,sl,MZ
+2026.01.08 03:11:00,CFX ZM,buy,-16.2,sl,MZ
+2026.01.08 04:41:00,CFX ZM,buy,-8.5,sl,MZ
+2026.01.08 01:02:40,CFX R,buy,-30.0,sl,main
+2026.01.07 17:30:00,CFX ZM,buy,-19.7,sl,MZ
+2026.01.07 18:00:40,CFX F42,buy,-25.62,sl,zone F-E
+2026.01.07 18:00:40,CFX FR42,buy,-25.62,sl,zone F-E
+2026.01.08 07:30:40,CFX FL,sell,-12.81,sl,flip
+2026.01.08 07:30:40,CFX FL,sell,-12.81,sl,flip
+2026.01.08 12:34:00,CFX ZM,buy,-9.2,sl,MZ
+2026.01.08 06:45:40,CFX FL,sell,22.5,tp,flip
+2026.01.08 13:48:40,CFX M-1,sell,-30.0,sl,main
+2026.01.08 17:17:20,CFX FL,buy,22.5,tp,flip
+2026.01.09 10:08:00,CFX ZM,buy,-10.96,sl,MZ
+2026.01.09 04:32:40,CFX Z47,sell,-7.5,sl,zone E-A
+2026.01.09 11:20:40,CFX FL,buy,-3.75,sl,flip
+2026.01.09 11:53:40,CFX Z47,sell,-6.98,sl,zone E-A
+2026.01.09 11:53:40,CFX ZR47,sell,-6.98,sl,zone E-A
+2026.01.09 07:29:00,CFX ZM,buy,14.0,tp,MZ
+2026.01.09 14:00:40,CFX FL,buy,-3.49,sl,flip
+2026.01.09 14:00:40,CFX FL,buy,-3.49,sl,flip
+2026.01.09 14:20:40,CFX Z47,sell,-9.42,sl,zone E-A
+2026.01.09 14:20:40,CFX ZR47,sell,-9.42,sl,zone E-A
+2026.01.09 15:32:40,CFX FL,buy,-4.71,sl,flip
+2026.01.09 15:32:40,CFX FL,buy,-4.71,sl,flip
+2026.01.09 08:46:20,CFX M1,buy,20.0,tp,main
+2026.01.09 16:32:40,CFX Z47,sell,-13.99,sl,zone E-A
+2026.01.09 16:32:40,CFX ZR47,sell,-13.99,sl,zone E-A
+2026.01.09 16:36:40,CFX FL,buy,-6.99,sl,flip
+2026.01.09 16:36:40,CFX FL,buy,-6.99,sl,flip
+2026.01.09 22:41:40,CFX Z35,sell,-6.96,sl,zone E-A
+2026.01.09 23:22:40,CFX FL,buy,-3.48,sl,flip
+2026.01.12 17:26:40,CFX M1,buy,-30.0,sl,main
+2026.01.12 23:44:40,CFX FL,sell,-19.8,,flip
+2026.01.13 05:12:40,CFX R,buy,-15.0,sl,main
+2026.01.13 14:23:40,CFX M-1,sell,-30.0,sl,main
+2026.01.13 15:30:40,CFX FL,buy,-15.0,sl,flip
+2026.01.14 18:05:40,CFX Z53,buy,-20.89,sl,zone E-A
+2026.01.15 03:24:40,CFX FL,sell,-10.45,sl,flip
+2026.01.15 03:45:40,CFX ZR53,buy,-20.81,sl,zone E-A
+2026.01.15 05:22:20,CFX FL,sell,-10.41,sl,flip
+2026.01.15 06:14:40,CFX Z53,buy,28.96,tp,zone E-A
+2026.01.16 05:07:40,CFX Z53,buy,16.7,tp,zone E-A
+2026.01.14 16:38:40,CFX R,sell,76.18,tp,main
+2026.01.21 11:26:40,CFX M1,buy,-30.0,sl,main
+2026.01.21 16:12:40,CFX FL,sell,-15.0,sl,flip
+2026.01.22 11:33:20,CFX R,sell,-30.0,sl,main
+2026.01.22 17:26:40,CFX FL,buy,22.5,tp,flip
+2026.01.23 01:55:40,CFX M1,buy,-30.0,sl,main
+2026.01.23 10:22:40,CFX FL,sell,22.5,tp,flip
+2026.01.28 14:22:20,CFX M1,buy,20.0,tp,main
+2026.01.29 08:00:40,CFX M1,buy,20.0,tp,main

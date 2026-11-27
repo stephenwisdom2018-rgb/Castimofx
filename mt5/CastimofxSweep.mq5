@@ -33,7 +33,7 @@
 //+------------------------------------------------------------------+
 #property copyright "Castimofx.com"
 #property link      "https://castimofx.com"
-#property version   "1.11"
+#property version   "1.12"
 #property description "Castimofx gold sweep bot (C+3m+MZ+FE). Logic on M1, any chart timeframe."
 
 #include <Trade/Trade.mqh>
@@ -541,6 +541,7 @@ struct MainPos { bool open; int d; double entry, sl, tp, tp0; int t; int n; bool
 struct MainWait { bool on; int d; double target; int n; bool hasLvl; double lvl; bool seen; };
 MainPos  mpos;
 MainWait mwait;
+datetime mwait_armed = 0;
 double   MainTargetSize(double f, double g)
   {
    double size = MathAbs(f - g);
@@ -604,7 +605,7 @@ void MainStep(int t, MainSignal &sig, Swing &bsw[], int nb)
          for(int i = 0; i < nb; i++)
            {
             if(bsw[i].kind == (d == 1 ? 1 : -1)) { mwait.lvl = bsw[i].price; mwait.hasLvl = true; mwait.seen = false; }
-            else if(mwait.hasLvl) mwait.seen = true;
+            else if(mwait.hasLvl) { mwait.seen = true; mwait_armed = Tt(t); }
            }
      }
   }
@@ -1017,12 +1018,27 @@ bool CanTrade() { return InpTrade && g_live && !g_dayStop && !g_hardStop; }
 //+------------------------------------------------------------------+
 //| orders                                                            |
 //+------------------------------------------------------------------+
-struct Want { string key; int d; int type; double price, sl, tp, risk; };
-Want want[];
-void AddWant(string key, int d, int type, double price, double sl, double tp, double risk)
+struct Want { string key; int d; int type; double price, sl, tp, risk; datetime armed; };
+string   fill_key[];
+datetime fill_time[];
+void RegisterFill(string key, datetime t)
   {
+   int n = ArraySize(fill_key);
+   for(int i = 0; i < n; i++) if(fill_key[i] == key) { fill_time[i] = t; return; }
+   ArrayResize(fill_key, n + 1, 100); ArrayResize(fill_time, n + 1, 100); fill_key[n] = key; fill_time[n] = t;
+  }
+// a setup that already got a real fill since it was armed must not be placed again
+bool FilledSince(string key, datetime armed)
+  {
+   for(int i = 0; i < ArraySize(fill_key); i++) if(fill_key[i] == key) return fill_time[i] >= armed;
+   return false;
+  }
+Want want[];
+void AddWant(string key, int d, int type, double price, double sl, double tp, double risk, datetime armed)
+  {
+   if(FilledSince(key, armed)) return;
    int n = ArraySize(want); ArrayResize(want, n + 1, 50);
-   want[n].key = key; want[n].d = d; want[n].type = type; want[n].price = price; want[n].sl = sl; want[n].tp = tp; want[n].risk = risk;
+   want[n].armed = armed; want[n].key = key; want[n].d = d; want[n].type = type; want[n].price = price; want[n].sl = sl; want[n].tp = tp; want[n].risk = risk;
   }
 
 void DeletePendings(string keepPrefix)
@@ -1048,7 +1064,7 @@ void BuildWants(int t)
       if(mpos.open && mpos.d == d) continue;
       double entry = setup_[k].h + (d == 1 ? sp : 0);
       double tp = MainTargetSize(setup_[k].f, setup_[k].g);
-      AddWant(StringFormat("CFX M%d", d), d, T_MAIN, entry, entry - d * MAIN_SL, entry + d * tp, MAIN_SL);
+      AddWant(StringFormat("CFX M%d", d), d, T_MAIN, entry, entry - d * MAIN_SL, entry + d * tp, MAIN_SL, Tt(setup_[k].h_conf));
      }
    // main RSI re-entry
    if(mwait.on && !mpos.open && mwait.hasLvl && mwait.seen)
@@ -1056,7 +1072,7 @@ void BuildWants(int t)
       int d = mwait.d;
       double entry = mwait.lvl + (d == 1 ? sp : 0);
       double target = mwait.target + d * MAIN_EXTRA;
-      if((target - entry) * d > 0) AddWant("CFX R", d, T_MAINRE, entry, entry - d * MAIN_SL, target, MAIN_SL);
+      if((target - entry) * d > 0) AddWant("CFX R", d, T_MAINRE, entry, entry - d * MAIN_SL, target, MAIN_SL, mwait_armed);
      }
    // zones
    for(int i = 0; i < ArraySize(zones); i++)
@@ -1067,7 +1083,7 @@ void BuildWants(int t)
         {
          double entry = z.Hl + (d == 1 ? sp : 0);
          double risk = MathMax(MathAbs(entry - z.G) + 1.0, RISK_MIN);
-         AddWant(StringFormat("CFX %s%d", z.region == 0 ? "Z" : "F", z.id), d, z.region == 0 ? T_ZEA : T_ZFE, entry, entry - d * risk, entry + d * 2 * risk, risk);
+         AddWant(StringFormat("CFX %s%d", z.region == 0 ? "Z" : "F", z.id), d, z.region == 0 ? T_ZEA : T_ZFE, entry, entry - d * risk, entry + d * 2 * risk, risk, Tt(z.armConf));
         }
       if(z.reOn && z.reArmed && !z.rt.open)
         {
@@ -1075,7 +1091,7 @@ void BuildWants(int t)
          for(int j = z.reV0; j <= t; j++) ext = d == 1 ? MathMin(ext, Ll(j)) : MathMax(ext, Hh(j));
          double entry = z.reLvl + (d == 1 ? sp : 0);
          double risk = MathMax(MathAbs(entry - ext) + 1.0, RISK_MIN);
-         AddWant(StringFormat("CFX %sR%d", z.region == 0 ? "Z" : "F", z.id), d, z.region == 0 ? T_ZEARE : T_ZFERE, entry, entry - d * risk, entry + d * 2 * risk, risk);
+         AddWant(StringFormat("CFX %sR%d", z.region == 0 ? "Z" : "F", z.id), d, z.region == 0 ? T_ZEARE : T_ZFERE, entry, entry - d * risk, entry + d * 2 * risk, risk, Tt(z.reArmConf));
         }
      }
   }
@@ -1205,6 +1221,8 @@ void OnTradeTransaction(const MqlTradeTransaction &trans, const MqlTradeRequest 
    ulong deal = trans.deal;
    if(!HistoryDealSelect(deal)) return;
    if(HistoryDealGetInteger(deal, DEAL_MAGIC) != InpMagic || HistoryDealGetString(deal, DEAL_SYMBOL) != _Symbol) return;
+   if(HistoryDealGetInteger(deal, DEAL_ENTRY) == DEAL_ENTRY_IN)
+     { RegisterFill(HistoryDealGetString(deal, DEAL_COMMENT), (datetime)HistoryDealGetInteger(deal, DEAL_TIME)); return; }
    if(HistoryDealGetInteger(deal, DEAL_ENTRY) != DEAL_ENTRY_OUT) return;
    if(HistoryDealGetInteger(deal, DEAL_REASON) != DEAL_REASON_SL) return;
    double outPrice = HistoryDealGetDouble(deal, DEAL_PRICE);
