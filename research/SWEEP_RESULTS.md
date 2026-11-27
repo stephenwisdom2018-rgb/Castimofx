@@ -714,3 +714,15 @@ Weak only in Jan-Jun: main first entries (-$152), trades $5-20 with today's move
 | main hot target $30 / $40 | | | +$5,797 / +$5,801, drop -31% |
 Zone 4x adds +$296 for the year, but Jan-Jun makes $320 less and the win rate falls to 44% (gain only in Jul-Nov).
 Main: much worse. Not convincing.
+
+## Two more options (`research/two_options.py`; `zone(..., region='BA', ba_frac, need_i)`)
+1. Zone below A (G past A, then the same zone trade rules), added to the chosen version:
+| Below-A zone | Extra | Total | Win | Drop | PF |
+|---|---|---|---|---|---|
+| up to 1 depth, 40/structure | 274 tr 45% +$1,082 | +$7,382 | 46% | **-35.6%** | 1.84 |
+| up to 0.25 depth, 1/structure | 41 tr +$239 | +$6,539 | 46% | -19.6% | 2.02 |
+| up to 0.5 depth, 1/structure | 48 tr 46% +$451 | +$6,751 | 46% | -19.6% | 2.03 |
+| **up to 0.5 depth, 5/structure** | 114 tr 46% +$1,016 | **+$7,316** | 46% | -23.2% | 2.04 |
+The 0.5-depth, 5-per-structure version gains in BOTH halves (Jan-Jun +$756, Jul-Nov +$260), same win rate and PF,
+but the Jan-Jun drop grows from -17.5% to -23.2%.
+2. Faster zone entry (first H break after G, no I): +$5,843, drop -20.3%, 43% win. Worse. Rejected.
