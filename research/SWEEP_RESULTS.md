@@ -629,3 +629,14 @@ A client connecting on any day is in profit after 1 day 47% | 3 days 65% | 5 day
 (worst: -$148 after 1 day, -$210 after 5 days, at 0.01).
 With the on-hold F-E zone added: no-trade days fall to 13%, winning days 53%, but losing days 34%, longest bad streak 6,
 and worse client losses (-$319 after 1 day). Year +$6,951 but PF 1.51.
+
+## Trades for quiet days (`research/quiet_days.py`)
+Live rule: extra trades only if the bot has taken no trade yet today (max 1, 2 or all per day).
+| Extra pool on quiet days | Extra trades | Win | Extra $ | Year | No-trade days |
+|---|---|---|---|---|---|
+| F-E zone, max 1 | 92 | 37% | -$223 | +$6,078 | 13% |
+| blocked trades (filters), max 1 | 78 | 41% | -$253 | +$6,047, drop -15.5% | 18% |
+| both, max 1 | 133 | 41% | -$258 | +$6,043 | 8% |
+| both, all | 541 | 37% | -$958 | +$5,343, drop -37.8% | 8% |
+Every quiet-day pool LOSES money: the days are quiet because the setups there are poor. Fewer no-trade days, but more
+losing days (27% -> 32-40%). Rejected (owner's rule: nothing that lowers profit).
