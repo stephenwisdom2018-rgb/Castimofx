@@ -1400,3 +1400,18 @@ or a hard stop m x risk. Worst-case order inside each bar (bad events first).
 +Both: $11,310 -> $14,733 (k0.5 m2) / $18,859 (k0.5 m3). Hedging adds money in both halves and raises the win rate,
 but the account carries 2 positions per stopped trade, so the biggest $ drop and worst day grow a lot. Caveats:
 brokers with FIFO / no-hedge rules (and some prop firms) do not allow it; swaps on longer holds not counted.
+**ON HOLD #5 (owner, 27 Nov 2026):** hedge at the stop (k0.5, hard stop 2x): $12,225 / +Both $14,733, win 49%,
+no losing month, but biggest $ drop $1,339 and worst day -$509; needs hedging allowed by the broker.
+
+## Scale-in at different prices, each add with its own target (owner; `research/scale_in.py`), 2026, 0.01
+How the bot stacks today: copies from overlapping structures are the SAME trade (same price, stop and target); other
+trades (zones, re-entries, MZ, 3 micro) are at different prices and each has its own stop and target.
+Test: when a trade goes a x risk against us, add a trade there (same stop level, own target rr x its own risk).
+| | Chosen | add 0.5R, 1x | add 0.5R, 2x | add 0.33R x2, 1x | add 0.33R x2, 2x |
+|---|---|---|---|---|---|
+| Profit | $10,276 | $10,176 | $10,718 | $11,052 | $10,863 |
+| Win / PF | 41% / 1.54 | 44% / 1.43 | 38% / 1.43 | 46% / 1.40 | 37% / 1.35 |
+| Biggest $ drop | $813 | $931 | $833 | $876 | $1,451 |
+| Worst day / month | -$282 / -$262 | -$369 / -$558 | -$393 / -$709 | -$438 / -$697 | -$481 / -$933 |
+Adds win about half the time with 1x targets but add little money (best +$776) and make worst days and months much
+deeper (same on +Both). Not adopted.
