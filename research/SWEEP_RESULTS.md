@@ -563,3 +563,17 @@ F-E zone alone: 692 tr, 39%, +$1,176, PF 1.19. It adds +$1,176 and lowers the dr
 profit factor (2.04 -> 1.58) fall, so it fails the all-three test. Against-boss signals: harmless, almost no trades.
 **ON HOLD (owner: "keep reminding me"):** the F-E zone (+$1,176, total +$6,847, drop -16.2%, but win 42%, PF 1.58).
 Remind the owner of it at each decision point.
+
+## GLITCH FOUND (chart review of the worst days): stacked duplicate zone trades
+Worst days 2026 (version B): 23 Mar -$145, 21 Apr -$102, 13 Mar -$89. On 13 Mar 18:24 the bot opened 4 buys at the
+same price (5037.86): overlapping structures each took the same H break as a zone trade and as a zone re-entry.
+One setup was traded several times, which works like a hidden bigger lot. 172 of the zone trades in version B were
+such duplicates. With only 1 zone trade per minute and side:
+| Version | Stacked (as reported before) | 1 trade per setup |
+|---|---|---|
+| 10 per, 10 days (old chosen) | +$3,802, -14.3%, PF 2.05 | +$3,365, -14.3%, PF 1.98 |
+| 20 per, 20 days | +$4,269, -14.3%, PF 2.05 | +$3,610, -14.3%, PF 1.97 |
+| 20 per, 20 days, 1 re-entry (B) | +$5,671, -17.5%, PF 2.04 | **+$3,994, -15.3%, PF 1.97** |
+| 99 per, 30 days, 1 re-entry | +$5,933, -17.5% | +$4,132, -15.3%, PF 1.91 |
+Earlier results also include some stacking (e.g. the old +$2,468). Win rate is the same either way (45%), so the stacked
+trades are not worse trades; they are extra size on setups where two structures agree. Owner to decide.
