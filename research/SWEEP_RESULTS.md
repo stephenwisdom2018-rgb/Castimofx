@@ -655,3 +655,17 @@ A run usually keeps going: reversals fail badly. Rejected.
 Continuation after the run (pullback, then 3-candle high break the same way, 2x risk):
 $10: 83 tr 23% -$191 | $20: 53 tr 30% -$13 | **$30: 28 tr 36% +$124 -> total +$6,425, 46% win, -17.5%, PF 2.04**.
 Small gain from only 28 trades (could be luck). Waiting for the owner.
+Owner dropped the after-target trades.
+
+## Strong base above E (pullback that never reaches the zone) (`research/strong_base.py`)
+| Extra trades (+ chosen version) | Extra | Total | Win | Drop | PF |
+|---|---|---|---|---|---|
+| none (chosen) | | +$6,300 | 46% | -17.5% | 2.06 |
+| RSI base (G above E reaches RSI 32) | 200 tr 41% +$444 | +$6,745 | 45% | -19.7% | 1.88 |
+| RSI base 30 | 174 tr 37% +$59 | +$6,359 | 44% | -17.4% | 1.84 |
+| double bottom $1 (1 per setup) | 528 tr 37% +$782 | +$7,082 | 42% | -19.3% | 1.79 |
+| **double bottom $2 (1 per setup)** | 1,035 tr 37% +$1,029 | **+$7,329** | 41% | **-17.4%** | 1.62 |
+| double bottom $3 (1 per setup) | 1,545 tr 37% +$1,635 | +$7,935 | 40% | -19.3% | 1.53 |
+Double bottoms are seen by many overlapping structures (with copies: $2 = 1,819 trades, +$8,057), so copies were
+removed. They add profit, but the win rate falls (46% -> 40-42%) and many more trades (about 8/day for $2).
+Waiting for the owner.
