@@ -935,3 +935,9 @@ Empty days,26%,13%,6%,5%
 Bad streak,7,6,5,4
 Profit 20d,95%,95%,86%,89%
 ```
+
+## ADOPTED (owner, 27 Nov 2026): C + 3micro
+Chosen version + one '3 micro inside SMA 10' re-entry after each stop (2x risk target; `research/micro3_reentry.py`,
+`reentries(CH, 1, '2R')`). 2026 at 0.01: $7,288, 45% win, PF 1.99, drop -22%, min balance $536 (safe $804),
+4.1 trades/day, 1 losing month (Apr -$5). Monthly C+3m: Jan $116, Feb $1,428, Mar $1,284, Apr -$5, May $560,
+Jun $727, Jul $1,676, Aug* $399 (26-31 Aug only), Sep $493, Oct $268, Nov $344.
