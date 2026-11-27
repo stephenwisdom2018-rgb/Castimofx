@@ -1230,3 +1230,10 @@ $400 start at 0.01 (2026, every start day): Chosen blows on 5.5% of start days (
 (-$581), C 0% (-$331, too close). "$400 mode" = C without copies: $4,378/yr, never blown, worst dip -$193
 (keeps ~$200 left). Alternative C+3m+MZ one trade at a time: $3,135, worst dip -$229.
 Levels: $200-399 -> $200 mode; $400-1,199 -> $400 mode; $1,200-1,999 -> full 0.01; $2,000+ -> 0.01 per $2,000.
+
+## $100 mode (`research/mode_100.csv`), 2026, 0.01, every start day
+Best never-blown modes with worst dip <= $70: C+3m+MZ, 1 trade at a time, skip stops over $15: $1,606/yr, worst dip
+-$70 | Chosen, 1 at a time, stop <= $10: $1,262, -$63 | C, no copies, max 2 open, stop <= $10: $1,070, -$62.
+Margin note: one 0.01 gold position needs ~$45 margin at 1:100 (gold ~$4,500), so $100 accounts need 1 trade at a
+time or higher leverage. The EA can switch modes automatically by balance before each trade:
+$100-199 -> $100 mode | $200-399 -> $200 mode | $400-999 -> $400 mode | $1,000+ -> full 0.01 | $2,000+ -> 0.01 per $2,000.
