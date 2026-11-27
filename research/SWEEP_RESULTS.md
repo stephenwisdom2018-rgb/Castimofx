@@ -1310,3 +1310,7 @@ $100 accounts: only C+3m+MZ 1 open stop <= $10 never blows ($223/yr, worst dip -
 Also wrong (used the biased list): "$200 mode 0.01 per $200 capped 0.20 -> $24,928" and the $500-step rule on the
 $100/$200 modes. Corrected $200 mode with 0.01 per $200 capped 0.20 from $200: $4,249 at the end of Nov, worst drop
 -42%, lowest $159. $400 mode, full version, lot sizing and prop results are NOT affected.
+Owner (27 Nov 2026): keep ALL modes in the EA, including the $100 mode; the bot must keep trading on any balance
+(even $10-$20), using the smallest mode, and only skip a trade when the broker's free margin is not enough.
+EA ladder: below $200 -> C+3m+MZ, 1 trade at a time, stops <= $10 | $200-399 -> same, stops <= $15 |
+$400-999 -> C without copies | $1,000+ -> full, 0.01, then 0.01 per $2,000 (half lot after 3 losses).
