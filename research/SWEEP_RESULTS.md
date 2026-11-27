@@ -1269,3 +1269,6 @@ unrealistic (compounding to millions); treat as 'very strong growth'.
 $200 mode (C+3m+MZ, max 2 open, stops <= $15) with 0.01 per $200 from $200, monthly end balance: Jan $309, Feb $417,
 Mar $709, Apr $752, May $2,728, Jun $3,125, Jul $32,031, Aug $45,249, Sep $106,322, Oct $261,483, Nov $284,160.
 Worst drop -47%, lowest $178. Lots pass 1.00 from July: not realistic (slippage, broker limits); cap the lot.
+Same with the lot CAPPED at 0.20 (owner): Jan $309, Feb $417, Mar $709, Apr $752, May $2,728, Jun $3,160, Jul $14,092,
+Aug $15,631, Sep $19,614, Oct $24,123, Nov $24,928. $200 -> ~$24,900 in 2026. Worst drop -47% (largest $ drop
+$2,208), lowest $178. At 0.20 a typical month is +$800 to +$4,500 (Jul +$10,900).
