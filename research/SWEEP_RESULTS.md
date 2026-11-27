@@ -1016,3 +1016,8 @@ Bad streak,7,7,6,6
 Profit 20d,95%,97%,95%,98%
 ```
 MZ is the clear improver; AfterH lowers Jul-Nov and raises drop/worst day; together the drop is -48%.
+
+## ADOPTED (owner, 27 Nov 2026): C+3m+MZ = $8,509 at 0.01
+C+3m + 3-micro zone entries (G in E-A zone with RSI <= 32, 3 micro inside SMA 10 within 4 h before G breaks,
+stop $1 beyond G, 2x risk, up to 3 per structure; `research/micro3_zone.py`, micro_zone(per=3, g_rsi=32)).
+44% win, PF 1.88, drop -26%, min balance $552 (safe $828), 5.4 trades/day. Owner: keep pushing to $10,000.
