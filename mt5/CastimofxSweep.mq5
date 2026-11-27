@@ -42,23 +42,11 @@ enum ENUM_CFX_ACCOUNT
    CFX_NORMAL = 0,   // Normal account
    CFX_PROP   = 1    // Prop firm account
   };
-enum ENUM_CFX_LOT
-  {
-   CFX_LOT_AUTO  = 0, // Auto (account modes + lot grows with balance)
-   CFX_LOT_FIXED = 1  // Fixed lot
-  };
-
-input group "Account"
-input ENUM_CFX_ACCOUNT InpAccount        = CFX_NORMAL;   // Account type
-input ENUM_CFX_LOT     InpLotMode        = CFX_LOT_AUTO; // Lot mode (normal account)
-input double           InpFixedLot       = 0.01;         // Fixed lot (fixed mode and prop)
-input double           InpBalancePer001  = 2000;         // Auto: balance per 0.01 lot (from $2,000)
-input int              InpHalfAfterLoss  = 3;            // Auto: half lot after N losses in a row (0 = off)
-input double           InpMaxLot         = 0.20;         // Maximum lot per trade
-input bool             InpSmallModes     = true;         // Auto: small-account modes below $1,000
+input group "Account (the only choice you make)"
+input ENUM_CFX_ACCOUNT InpAccount        = CFX_NORMAL;   // Account type: Normal or Prop
 
 input group "Prop firm protection"
-input double           InpPropStart      = 100000;       // Prop: starting balance
+input double           InpPropStart      = 100000;       // Prop: starting balance (lot = 0.07 per $100,000, automatic)
 input double           InpPropDailyStop  = 3.0;          // Prop: stop for the day at this % loss
 input double           InpPropMaxStop    = 8.0;          // Prop: stop trading at this % drawdown
 
@@ -67,6 +55,12 @@ input long             InpMagic          = 26112601;     // Magic number
 input int              InpWarmDays       = 31;           // History replayed at start (days)
 input bool             InpTrade          = true;         // Trading on (false = only log signals)
 input bool             InpLog            = true;         // Log signals in the Experts tab
+
+//--- lot settings (automatic, not inputs)
+const double LOT_BAL_PER_001 = 2000;    // 0.01 lot per $2,000 of balance (so 0.01 up to $3,999, 0.02 from $4,000)
+const int    LOT_HALF_AFTER  = 3;       // half lot after 3 losses in a row
+const double LOT_MAX         = 0.20;    // maximum lot per trade (normal accounts)
+const double PROP_LOT_PER_1K = 0.0007;  // prop: 0.07 lot per $100,000
 
 //--- strategy constants (from the backtest)
 #define CAP          65536
@@ -916,7 +910,7 @@ void SetMode()
   {
    double bal = AccountInfoDouble(ACCOUNT_BALANCE);
    g_mask = T_ALL; g_maxOpen = 999; g_cap = 1e9; g_dedupe = false; g_modeName = "full";
-   if(InpAccount == CFX_PROP || InpLotMode == CFX_LOT_FIXED || !InpSmallModes) return;
+   if(InpAccount == CFX_PROP) return;
    if(bal < 200)       { g_mask = T_C | T_M3C | T_MZ; g_maxOpen = 1; g_cap = 10; g_modeName = "$100 mode"; }
    else if(bal < 400)  { g_mask = T_C | T_M3C | T_MZ; g_maxOpen = 1; g_cap = 15; g_modeName = "$200 mode"; }
    else if(bal < 1000) { g_mask = T_C; g_dedupe = true; g_modeName = "$400 mode"; }
@@ -944,16 +938,17 @@ double NormLot(double lot)
    double mn = SymbolInfoDouble(_Symbol, SYMBOL_VOLUME_MIN);
    double mx = SymbolInfoDouble(_Symbol, SYMBOL_VOLUME_MAX);
    lot = MathFloor(lot / step + 1e-9) * step;
-   lot = MathMax(mn, MathMin(mx, MathMin(lot, InpMaxLot)));
+   if(InpAccount != CFX_PROP) lot = MathMin(lot, LOT_MAX);
+   lot = MathMax(mn, MathMin(mx, lot));
    return NormalizeDouble(lot, 2);
   }
 
 double LotNow()
   {
-   if(InpAccount == CFX_PROP || InpLotMode == CFX_LOT_FIXED) return NormLot(InpFixedLot);
+   if(InpAccount == CFX_PROP) return NormLot(InpPropStart / 1000.0 * PROP_LOT_PER_1K);
    double bal = AccountInfoDouble(ACCOUNT_BALANCE);
-   double units = MathMax(1.0, MathFloor(bal / InpBalancePer001));
-   if(InpHalfAfterLoss > 0 && LossesInARow() >= InpHalfAfterLoss) units = MathMax(1.0, MathFloor(units / 2));
+   double units = MathMax(1.0, MathFloor(bal / LOT_BAL_PER_001));
+   if(LOT_HALF_AFTER > 0 && LossesInARow() >= LOT_HALF_AFTER) units = MathMax(1.0, MathFloor(units / 2));
    return NormLot(units * 0.01);
   }
 

@@ -11,19 +11,18 @@ The MT5 bot for the chosen strategy **C+3m+MZ+FE** (see `research/SWEEP_RESULTS.
    set the **Inputs**, press OK. The Experts tab shows "replayed ... M1 bars ... Live."
 
 ## Inputs
+Everything is automatic. The only choice is the **account type**.
 | Input | Meaning |
 |---|---|
-| Account type | **Normal** or **Prop** |
-| Lot mode | **Auto**: small-account modes, then 0.01 per $2,000 with half lot after 3 losses; **Fixed**: always the fixed lot |
-| Fixed lot | Used in Fixed mode and on Prop accounts (prop $100k: 0.07) |
-| Balance per 0.01 lot | Auto: $2,000 per 0.01 from $2,000 (0.01 below that) |
-| Half lot after N losses | Auto: halve the lot after N losing trades in a row (0 = off) |
-| Maximum lot | Cap per trade (default 0.20) |
-| Small-account modes | Auto: below $200 = $100 mode, $200-399 = $200 mode, $400-999 = $400 mode, $1,000+ = full |
-| Prop start balance / daily stop % / max drawdown stop % | Prop only: closes everything and stops for the day at the daily %, stops completely at the drawdown % |
-| Magic number | Change it if you run several copies on one account |
-| History replayed | Days of M1 the bot replays at start to remember structures and zones (31) |
+| Account type | **Normal** (default) or **Prop** |
+| Prop start balance | Prop only. The lot is set automatically: 0.07 per $100,000 |
+| Prop daily stop % / max drawdown stop % | Prop only: closes everything and stops for the day at the daily %, stops completely at the drawdown % |
+| Magic number | Change it only if you run several copies on one account |
+| History replayed | Days of M1 the bot replays at start (31) |
 | Trading on | false = the bot only logs signals (good for a first check) |
+
+Normal accounts: lot is automatic. Small-account modes below $1,000, then 0.01 per $2,000 of balance
+(0.02 from $4,000, 0.03 from $6,000 ...), half lot after 3 losses in a row, maximum 0.20.
 
 ## Account modes (Auto lot mode, normal account)
 | Balance | Trades taken | Max open | Stop cap |
