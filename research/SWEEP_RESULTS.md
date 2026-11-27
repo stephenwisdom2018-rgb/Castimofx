@@ -1379,3 +1379,7 @@ Causes found: (1) the balance fell below $1,000, so the EA switched to the $400 
 much of the month: by design, but not comparable with the backtest; (2) BUG: a setup could be traded twice when the
 broker filled the pending order but the bar check did not see the break (Z23, F42, F36, Z43 ...). Fixed in v1.12:
 a key that got a real fill since it was armed is not placed again. Next test: deposit $3,000 (full mode, 0.01).
+Flips in the EA test (Jan 2026): 24 flips, only 5 won (21%), -$61. The backtest flip check started on the bar AFTER
+the stop (it ignored the rest of the stop bar). Worst case (the stop bar counts): flips win 38% and add only +$319
+for 2026 (not +$1,001); Jan +$82. So the flip gain was partly a backtest artifact; real flips look weaker.
+Watch flips in the next EA test before trusting them.
