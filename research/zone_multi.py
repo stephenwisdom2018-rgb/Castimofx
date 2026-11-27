@@ -54,8 +54,8 @@ def zone(df, sp, max_per, mem_days, fresh=None, rr=2.0, be=None, g_rsi=None, mai
             if (target - entry) * d <= 0: break
             ex = None
             for v in range(ent, n):
-                if (l[v] <= stop) if d == 1 else (h[v] + sp[v] >= stop): res.append((df.index[ent], d * (stop - entry), df.index[v]) + info[:3] + (-1,) + info[4:10] + (entry,)); ex = v; break
-                if v > ent and ((h[v] >= target) if d == 1 else (l[v] + sp[v] <= target)): res.append((df.index[ent], abs(target - entry), df.index[v]) + info[:3] + (-1,) + info[4:10] + (entry,)); ex = v; break
+                if (l[v] <= stop) if d == 1 else (h[v] + sp[v] >= stop): res.append((df.index[ent], d * (stop - entry), df.index[v]) + info[:3] + (-1,) + info[4:10] + (entry,) + info[11:]); ex = v; break
+                if v > ent and ((h[v] >= target) if d == 1 else (l[v] + sp[v] <= target)): res.append((df.index[ent], abs(target - entry), df.index[v]) + info[:3] + (-1,) + info[4:10] + (entry,) + info[11:]); ex = v; break
             if ex is None or res[-1][1] > 0: break
             k += 1; t = ex; v0 = ex
         return res
@@ -106,7 +106,9 @@ def zone(df, sp, max_per, mem_days, fresh=None, rr=2.0, be=None, g_rsi=None, mai
             trr = big_rr if (big_rr and risk > 20) else rr                 # bigger target for big-stop trades
             if hot_rr and ((r[u] >= 68) if d == 1 else (r[u] <= 32)): trr = hot_rr   # RSI already hot at entry
             stop, target = entry - d * risk, entry + d * trr * risk
-            exit_t = None; info = ('zone', d, risk, taken, depth, abs(F - E), (E - g) * d / depth, (u - t0) / 60, abs(lvl - g), u, entry)
+            exit_t = None; seg = (l[t0:u + 1] < E) if d == 1 else (h[t0:u + 1] > E)
+            visits = int(seg[0]) + int(np.sum(seg[1:] & ~seg[:-1]))       # separate visits into the zone before entry
+            info = ('zone', d, risk, taken, depth, abs(F - E), (E - g) * d / depth, (u - t0) / 60, abs(lvl - g), u, entry, visits)
             for v in range(u, n):
                 if (l[v] <= stop) if d == 1 else (h[v] + sp[v] >= stop):
                     out.append((df.index[u], d * (stop - entry), df.index[v]) + info); exit_t = v; break
