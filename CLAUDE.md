@@ -6,6 +6,7 @@
   report it instead).
 
 ## Replies
+- Always include the minimum account balance at 0.01 (biggest $ drop with open trades; safe = 1.5x) when reporting a version. Owner goal: safe at $100.
 - Keep replies to the user short and simple.
 
 ## Project notes
