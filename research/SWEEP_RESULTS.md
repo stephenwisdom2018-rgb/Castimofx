@@ -694,3 +694,12 @@ Neighbouring settings lose money, so these small gains may be luck. Waiting for 
 | client worst after 10 / 20 days | -$180 / -$154 | -$310 / -$435 |
 **ON HOLD #2 (owner, 27 Nov 2026):** double bottom $2 above E (+$1,029; total +$7,329, 41% win, 8 trades/day).
 Good for the owner's own account, but win rate falls and clients' worst stretches deepen. Remind the owner.
+
+## Common traits of losing trades -> reversal idea (`research/loser_common.py`, `research/loser_common_trades.csv`)
+Chosen version, 713 trades. Traits known at entry: trade type, direction vs today's move and yesterday's move,
+distance from today's open, yesterday's high/low already swept, last-4h move, nth trade today, ADX, RSI, weekday.
+**No group loses money in both halves**, so there is no group to trade in reverse (reversing a profitable group loses).
+The losers are spread evenly; after all the filters, the remaining losses look like normal noise.
+Strong groups found: RSI 68-80 at entry (buys; 20-32 for sells): 61% / 73% win, +$2,792. Trades against today's move
+make most of the money (+$4,665), which fits the sweep (reversal) nature of the strategy.
+Weak only in Jan-Jun: main first entries (-$152), trades $5-20 with today's move (24% win), 2nd trade of the day (29%).
