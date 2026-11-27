@@ -782,3 +782,9 @@ At 0.01 a $1,000 account would be wiped out many times. Never trade without a st
 Win rate rises a lot (62-77%) and "+ both" makes much more, but drops and worst days are 2-10x bigger. Profit per
 1% of drop is about the same as the chosen version (~$350), so it behaves like a bigger lot, not a better edge.
 Fails the owner's rule for clients. Possibly for the owner's own account.
+Full comparison, 0.01 (chosen | both opposite | both opposite + $100 stop | both opposite + $50 stop):
+profit $6,300 | $16,165 | $14,197 | $10,923; win 46 | 66 | 65 | 62%; PF 2.06 | 1.76 | 1.63 | 1.47;
+drop -18 | -69 | -41 | -31%; trades/day 3.3 | 15.3 (all three); avg month $590 | $1,570 | $1,374 | $1,052;
+worst day -$148 | -$1,732 | -$784 | -$594; worst week -$103 | -$1,841 | -$756 | -$684;
+worst month -$73 | -$1,303 | -$258 | -$438; worst open loss - | -$2,609 | -$1,223 | -$807;
+winning days 47 | 68 | 63 | 59%; losing days 27 | 26 | 31 | 35%; client in profit after 20 days 93 | 77 | 80 | 85%.
