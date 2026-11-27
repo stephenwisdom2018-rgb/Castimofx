@@ -543,3 +543,10 @@ Drops are % of a $1,000 start in each half. `zone(..., big_rr, reent)` added.
 Passes the all-three test: up to 20 per structure, 20 days (+$4,269). Biggest gain with a small extra drop:
 20 per, 20 days + one 3-candle zone re-entry (2x risk target), +$5,671, Jan-Jun drop -17.5% vs -14.3%.
 Zone re-entries with 20 per structure, 20 days: 1 = +$5,671, drop -17.5%, PF 2.04 | 2 = +$6,053, drop -19.4%, PF 1.93.
+
+## ADOPTED (owner, 27 Nov 2026): version B
+Zone: up to 20 trades per structure, zone memory 20 days, plus 1 zone re-entry after a zone stop: wait for a 3-candle
+high then low, re-enter on the break of that high, stop $1 beyond the lowest point since the stop (min $5), target 2x risk.
+All filters stay. 2026 at 0.01: 652 trades, 45% win, **+$5,671**, PF 2.04, worst drop -17.5% (Jan-Jun) / -7.4% (Jul-Nov),
+1 losing month (Apr -$107). Code: `zone(df, sp, 20, 20, reent=dict(swings='3', target='2R', max=1))` + filters in
+`research/more_trades.py`.
