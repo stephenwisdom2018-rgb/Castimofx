@@ -1266,3 +1266,6 @@ Jun $73, Jul $394, Sep $136, Oct $122, Nov $87.
 The ladder blows the full version (many trades open at once, copies, big stops). It only works with the
 one-trade-at-a-time mode with small stops: 0.01 per $200 gives a -32 to -35% worst drop. End balances are
 unrealistic (compounding to millions); treat as 'very strong growth'.
+$200 mode (C+3m+MZ, max 2 open, stops <= $15) with 0.01 per $200 from $200, monthly end balance: Jan $309, Feb $417,
+Mar $709, Apr $752, May $2,728, Jun $3,125, Jul $32,031, Aug $45,249, Sep $106,322, Oct $261,483, Nov $284,160.
+Worst drop -47%, lowest $178. Lots pass 1.00 from July: not realistic (slippage, broker limits); cap the lot.
