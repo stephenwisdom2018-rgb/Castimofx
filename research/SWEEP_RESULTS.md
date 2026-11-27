@@ -1295,3 +1295,18 @@ Strategy: C+3m+MZ+FE. Lot sizing: 0.01 per $2,000 of balance, half lot after 3 l
 Small accounts use automatic modes at 0.01: $100-199 $100 mode | $200-399 $200 mode | $400-999 $400 mode |
 $1,000-1,999 full 0.01 | $2,000+ full, 0.01 per $2,000. Prop $100k: 0.07 fixed.
 2026: $1,000 -> ~$54,000 (-27%), $2,000 -> ~$67,700 (-25%), prop +$72k (-4.2%). Next: build the MT5 EA.
+
+## CORRECTION (27 Nov 2026): small-account modes were too optimistic (`research/modes_fixed.py`, `modes_fixed.csv`)
+Bug: the mode tests estimated each trade's stop from its result (loss = stop, win = target/2). That is exact for
+2x-risk trades but WRONG for main trades (stop always $30): main winners passed the "$15 stop cap" while main losers
+were skipped. Recomputed with the true stop:
+| Mode (2026, 0.01) | Old (wrong) | Corrected |
+|---|---|---|
+| $100 mode (C+3m+MZ, 1 open, stop <= $15) | $1,606, never blown at $100, worst -$70 | $820, blown 2.3% of starts at $100, worst -$121 |
+| $200 mode (C+3m+MZ, 2 open, stop <= $15) | $2,000, worst -$112 | $1,162, blown 0.8% at $200, worst -$201 |
+| $400 mode (C, no copies) | $4,378 | $4,378 (unchanged, no cap) |
+Corrected best: $200-399 -> C+3m+MZ, 1 trade at a time, stop <= $15: $820/yr, never blown at $200, worst dip -$121.
+$100 accounts: only C+3m+MZ 1 open stop <= $10 never blows ($223/yr, worst dip -$96): not recommended; minimum $200.
+Also wrong (used the biased list): "$200 mode 0.01 per $200 capped 0.20 -> $24,928" and the $500-step rule on the
+$100/$200 modes. Corrected $200 mode with 0.01 per $200 capped 0.20 from $200: $4,249 at the end of Nov, worst drop
+-42%, lowest $159. $400 mode, full version, lot sizing and prop results are NOT affected.
