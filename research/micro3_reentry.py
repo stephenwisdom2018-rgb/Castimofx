@@ -42,7 +42,7 @@ for df, sp, *_ in R.prep:
         dn[k] = c[a] < o[a] and c[b] < o[b] and c[e] < o[e] and c[b] < c[a] and c[e] < c[b] and max(c[a], c[b], c[e]) < min(ma[a], ma[b], ma[e])
     ARR.append((o, h, l, c, sp, df.index, up, dn))
 
-def reentries(trades, max_n, tgt_mode, hours=24):
+def reentries(trades, max_n, tgt_mode, hours=24, with_exit=False):
     out = []
     for t, p, fi, d, e, T, ex in trades:
         if p >= 0: continue
@@ -62,7 +62,7 @@ def reentries(trades, max_n, tgt_mode, hours=24):
                 if (l[v] <= stop) if d == 1 else (h[v] + sp[v] >= stop): res = -risk; break
                 if (h[v] >= tgt) if d == 1 else (l[v] + sp[v] <= tgt): res = abs(tgt - ent); break
             if res is None: break
-            out.append((idx[u], res)); k += 1
+            out.append((idx[u], res, idx[v]) if with_exit else (idx[u], res)); k += 1
             if res > 0: break
             j = v
     return out

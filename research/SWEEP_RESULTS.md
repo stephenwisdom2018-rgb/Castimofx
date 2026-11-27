@@ -1195,3 +1195,23 @@ Max: 2025 $4,380 (PF 1.15, 1 losing month) and 2026 $10,753 (PF 1.22). Cost: ~30
 "We keep this since we are not trading 2025 any more." Robust and Max stay ON HOLD as calmer-market options.
 Risk noted to the owner: in a calm market like 2025 Jan-Jul this version broke even ($82, -$16 per-trade method).
 Watch live results; if gold's daily range falls toward 2025 levels (~$40-65), switch to Max or Robust.
+
+## LOT SIZING on the chosen version C+3m+MZ+FE, 2026 (`research/lot_final.py`)
+Lot set from the closed-trade balance at each entry. Closed trades only, no slippage; compounding results above
+~$50k are not realistic (broker limits, slippage, stacked copies), so read them as "very strong", not as promises.
+| Start | Rule | End | Worst drop | Lowest |
+|---|---|---|---|---|
+| $1,000 | fixed 0.01 | $11,276 | -27% | $854 |
+| $1,000 | 0.01 per $2,000 + half after 3 losses | $54,009 | -27% | $854 |
+| $1,000 | 0.01 per $1,500 + half after 3 losses | $93,939 | -36% | $854 |
+| $1,000 | 0.01 per $1,000 (+half) | $1.1M ($725k) | -61% (-49%) | $854 |
+| $1,000 | 0.01 per $500 / old cushion rule | $21M | -93% | $790 |
+| $2,000 | fixed 0.01 | $12,276 | -14% | $1,854 |
+| $2,000 | 0.01 per $2,000 + half after 3 losses | $67,704 | -25% | $1,854 |
+| $2,000 | 0.01 per $1,500 + half after 3 losses | $169,533 | -33% | $1,854 |
+The old rule (0.01 per $500) is far too aggressive (-93% drop). Recommended for clients: 0.01 per $2,000 (balance)
+with half lot after 3 losses in a row; for growth: 0.01 per $1,500 with the same safety rule.
+Prop $100,000 (fixed lots, limits 4%/day, 10% total): 0.05 = +$51k, max drop $3.2k (3.2%), worst day ~$1.4k |
+0.07 = +$72k, $4.2k (4.2%), worst day ~$2.0k | 0.09 = +$92k, $5.1k, worst day ~$2.5k | 0.12 = +$123k, $6.3k,
+worst day ~$3.4k. Time to +8% ($8,000): 0.07 median 30 days (worst 79); 0.09 median 23 days (worst 70).
+Recommended prop lot: 0.07 (half the drawdown limit, worst day half the daily limit).
