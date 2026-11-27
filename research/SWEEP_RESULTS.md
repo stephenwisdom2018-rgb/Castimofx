@@ -881,3 +881,30 @@ Chosen: $6,300 -> $3,950-$5,171 (min balance $374 -> $302, worst day unchanged -
 +Both: $7,979 -> $5,672-$7,453 (min balance about the same, worst day -$356 -> -$271).
 Every version loses $800-$2,300 of profit: big-stop trades on wild days are mostly big winners (23 Mar was the
 exception). Rejected.
+
+## Full report: Chosen / Chosen+3micro / +Both / +Both+3micro (`research/full_report.py`, `research/full_report.csv`), 0.01
+```
+,Chosen,Chosen+3m,+Both,+Both+3m
+Profit,"$6,300","$7,288","$7,979","$10,089"
+Jan-Jun,"$3,674","$4,109","$3,770","$5,132"
+Jul-Nov,"$2,626","$3,179","$4,210","$4,957"
+Win,46%,45%,40%,39%
+PF,2.06,1.99,1.41,1.40
+Drop,-18%,-22%,-22%,-25%
+Min bal,$374,$536,$797,$923
+Safe bal,$560,$804,"$1,196","$1,385"
+Trades/day,3.3,4.1,11.8,15.2
+Avg day,$29,$34,$37,$46
+Avg week,$143,$166,$181,$229
+Avg month,$590,$689,$757,$969
+Best day,$547,$547,$539,$600
+Worst day,$-148,$-220,$-356,$-367
+Worst week,$-103,$-155,$-412,$-340
+Worst month,$-73,$-5,$-607,$-768
+Losing months,1/10,1/10,1/10,1/10
+Win days,47%,47%,56%,60%
+Lose days,27%,26%,39%,35%
+Empty days,26%,26%,5%,5%
+Bad streak,7,7,5,4
+Profit 20d,93%,95%,89%,89%
+```
