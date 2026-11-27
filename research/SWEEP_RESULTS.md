@@ -874,3 +874,10 @@ After a stop, within 24 h: 3 rising candles (each closing higher, all closes abo
 Best: one 3-micro re-entry with a 2x-risk target. Extra trades win 41% (Chosen) / 36% (+Both) and add +$988 /
 +$2,110, with gains in BOTH halves. Cost: min balance up ($374 -> $536; $797 -> $923), win rate down ~1 point.
 Real edge (profit in both halves), but fails the strict owner rule (drop must fall). Waiting for the owner.
+
+## Skip big stops only on wild days (`research/wild_day_stops.py`), Chosen and +Both, 0.01
+Wild = last 4 h range above 1.5x / 2x / 3x its 5-day median; big stop = over $30 / $40 / $60.
+Chosen: $6,300 -> $3,950-$5,171 (min balance $374 -> $302, worst day unchanged -$148).
++Both: $7,979 -> $5,672-$7,453 (min balance about the same, worst day -$356 -> -$271).
+Every version loses $800-$2,300 of profit: big-stop trades on wild days are mostly big winners (23 Mar was the
+exception). Rejected.
