@@ -828,3 +828,16 @@ Chosen version streaks: after a loss the next trade wins 32%, after a win 63%. L
 | 0.01 after 5 / 6 losses | $11,450 / $12,320 | $745 / $721 | | 15.4 / 17.1 |
 Best: base 0.02, drop to 0.01 after 3 losses in a row until the next win. 23% more profit per $1 of drop than a
 fixed lot; gains in both halves. Min balance about $531 (closed trades; safe ~$800). For the lot-size step.
+
+## '$100 mode' search (`research/safe_100.py`, grid in `research/safe_100_grid.csv`), 0.01
+Levers: stop cap ($10/15/20/none), 1 trade open at a time, daily loss limit ($20/30), main stop ($10-30).
+**No setting is safe on $100 at 0.01**: the smallest possible drop is $84 (safe $126), and that version makes only
++$162 a year. Best per account size:
+| Safe balance | Setting | Profit | Drop | Win |
+|---|---|---|---|---|
+| ~$190 | stop cap $10, 1 open, main stop $10 | +$1,057 | $128 | 35% |
+| ~$270 | stop cap $15, 1 open, main stop $10 | +$1,499 | $182 | 38% |
+| ~$320 | no cap, 1 open, main stop $30 | +$2,786 | $212 | 44% |
+| ~$560 | chosen (stacking, all trades) | +$6,300 | $374 | 46% |
+Real fix for $100 clients: a CENT account (100x smaller contract), where 0.01 risks 1/100: the chosen version's
+$374 drop becomes $3.74. Or set a $300-$600 minimum and use the 1-open mode for small accounts.
