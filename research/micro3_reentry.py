@@ -54,7 +54,7 @@ def reentries(trades, max_n, tgt_mode, hours=24):
             ent = c[u] + (sp[u] if d == 1 else 0)
             ext = l[j:u + 1].min() if d == 1 else h[j:u + 1].max()
             risk = max(abs(ent - ext) + 1, 5); stop = ent - d * risk
-            tgt = T if tgt_mode == 'orig' else ent + d * 2 * risk
+            tgt = T if tgt_mode == 'orig' else ent + d * (2 if tgt_mode == '2R' else float(tgt_mode)) * risk
             if (tgt - ent) * d <= 0: break
             res = None
             for v in range(u + 1, n):

@@ -947,3 +947,32 @@ C+3m, client connecting on a random day (0.01): in profit after 1 day 47% (26% f
 Worst: -$220 after 1 day, -$324 after 10 days, -$108 after 20 days. Longest bad streak 7 days, losing streak 4.
 EA memory: zones live 20 days, so at start the bot must load about 30 days of M1 history to rebuild structures,
 zones and open setups.
+
+## 3-micro zone entry (MZ) (`research/micro3_zone.py`): after a 3-candle low G in the E-A zone that reached RSI 32, enter on '3 micro inside SMA 10' (within 4 h, before G breaks), stop $1 beyond G (min $5), 2x risk, up to 3 per structure. 120-581 trades tested; best = 3 per structure + RSI 32: 286 tr, 39% win, +$1,221.
+Without RSI 32 and limits: 3,211 trades, drop -63% (rejected). Full report (`research/full_report_microzone.csv`):
+```
+,C+3m,C+3m+MZ,B+3m,B+3m+MZ
+Profit,"$7,288","$8,509","$10,089","$11,310"
+Jan-Jun,"$4,109","$4,991","$5,132","$6,013"
+Jul-Nov,"$3,179","$3,518","$4,957","$5,296"
+Win,45%,44%,39%,39%
+PF,1.99,1.88,1.40,1.41
+Drop,-22%,-26%,-25%,-27%
+Min bal,$536,$552,$923,$851
+Safe bal,$804,$828,"$1,385","$1,277"
+Trades/day,4.1,5.4,15.2,16.5
+Avg day,$34,$39,$46,$52
+Avg week,$166,$193,$229,$257
+Avg month,$689,$792,$969,$1072
+Best day,$547,$670,$600,$740
+Worst day,$-220,$-190,$-367,$-367
+Worst week,$-155,$-137,$-340,$-257
+Worst month,$-5,$-17,$-768,$-696
+Losing months,1/10,1/10,1/10,1/10
+Win days,47%,52%,60%,61%
+Lose days,26%,29%,35%,35%
+Empty days,26%,19%,5%,5%
+Bad streak,7,7,4,4
+Profit 20d,95%,97%,89%,92%
+```
+C+3m+MZ gains in both halves, min balance only +$16, worst day/week better, 97% of clients up after 20 days, fewer empty days (19%). Win -1 point, PF 1.99 -> 1.88, drop % -22 -> -26. Waiting for the owner.
