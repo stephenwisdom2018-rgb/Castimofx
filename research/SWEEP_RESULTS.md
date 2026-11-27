@@ -1447,5 +1447,5 @@ Trades: `research/ea_test_jan2026_3k_trades.csv`. Python backtest same days: +$6
 | MZ | 22, +$15 | 13, +$51 |
 | flips | 34, -$87 (won 29%) | 49, +$7 |
 The double-fill bug is gone. Biggest gap: F-E zone - the EA placed no F-E orders on 8-9, 14, 23, 27 Jan where the
-backtest traded (+$100 there), and took some the backtest did not. Likely a filter/zone difference; needs the tester
+backtest traded (about +$120 there), and took some the backtest did not. Likely a filter/zone difference; needs the tester
 Journal log (zone lines) to find. Flips lost again (2nd test).
