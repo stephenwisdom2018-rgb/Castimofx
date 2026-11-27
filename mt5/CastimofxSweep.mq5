@@ -33,7 +33,7 @@
 //+------------------------------------------------------------------+
 #property copyright "Castimofx.com"
 #property link      "https://castimofx.com"
-#property version   "1.10"
+#property version   "1.11"
 #property description "Castimofx gold sweep bot (C+3m+MZ+FE). Logic on M1, any chart timeframe."
 
 #include <Trade/Trade.mqh>
@@ -919,8 +919,8 @@ void SetMode()
    g_mask = T_ALL; g_maxOpen = 999; g_cap = 1e9; g_dedupe = false; g_modeName = "full";
    if(InpAccount == CFX_PROP) return;
    if(bal < 200)       { g_mask = T_C | T_M3C | T_MZ; g_maxOpen = 1; g_cap = 10; g_modeName = "$100 mode"; }
-   else if(bal < 400)  { g_mask = T_C | T_M3C | T_MZ; g_maxOpen = 1; g_cap = 15; g_modeName = "$200 mode"; }
-   else if(bal < 1000) { g_mask = T_C; g_dedupe = true; g_modeName = "$400 mode"; }
+   else if(bal < 400)  { g_mask = T_C | T_M3C | T_MZ | T_FLIP; g_maxOpen = 1; g_cap = 15; g_modeName = "$200 mode"; }
+   else if(bal < 1000) { g_mask = T_C | T_FLIP; g_dedupe = true; g_modeName = "$400 mode"; }
   }
 
 int LossesInARow()
@@ -1227,9 +1227,9 @@ void OnTradeTransaction(const MqlTradeTransaction &trans, const MqlTradeRequest 
    if(risk <= 0) return;
    if(!CanTrade()) return;
    SetMode();
-   if((g_mask & T_FLIP) == 0 || g_maxOpen < 999) return;   // flips only in the full mode and on prop accounts
    int d = -dOld;
    double fr = risk * FLIP_STOP;
+   if((g_mask & T_FLIP) == 0 || fr > g_cap || CountOpen() >= g_maxOpen) return;   // flips: $200 mode and up, prop
    double lot = LotNow();
    double price = d == 1 ? SymbolInfoDouble(_Symbol, SYMBOL_ASK) : SymbolInfoDouble(_Symbol, SYMBOL_BID);
    if(!MarginOk(d, lot, price)) { if(InpLog) Print("CFX: not enough margin for a flip"); return; }
