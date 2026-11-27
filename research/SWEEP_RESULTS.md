@@ -788,3 +788,14 @@ drop -18 | -69 | -41 | -31%; trades/day 3.3 | 15.3 (all three); avg month $590 |
 worst day -$148 | -$1,732 | -$784 | -$594; worst week -$103 | -$1,841 | -$756 | -$684;
 worst month -$73 | -$1,303 | -$258 | -$438; worst open loss - | -$2,609 | -$1,223 | -$807;
 winning days 47 | 68 | 63 | 59%; losing days 27 | 26 | 31 | 35%; client in profit after 20 days 93 | 77 | 80 | 85%.
+
+## Minimum account balance at 0.01 (`research/min_balance.py`) -- ALWAYS REPORT THIS FROM NOW ON (owner)
+Biggest peak-to-low $ drop of the account, closed trades plus open trades' floating losses (hourly). Minimum balance =
+that drop; safe balance = 1.5x. Owner's goal: a version that is safe on a $100 account at 0.01.
+| Version | Profit | Drop closed | Drop with open trades | Min balance | Safe balance |
+|---|---|---|---|---|---|
+| chosen (main first entries only here) | +$5,073 | $374 | $439 | $439 | ~$660 |
+| + both, opposite exit | +$16,229 | $3,632 | $3,767 | $3,767 | ~$5,650 |
+| + both, opposite + $100 stop | +$14,260 | $1,299 | $1,813 | $1,813 | ~$2,720 |
+| + both, opposite + $50 stop | +$10,982 | $1,246 | $1,315 | $1,315 | ~$1,970 |
+A $100 stop does not cap the account drop at $100: about 15 trades a day, several open at once, losses add up.
