@@ -577,3 +577,11 @@ such duplicates. With only 1 zone trade per minute and side:
 | 99 per, 30 days, 1 re-entry | +$5,933, -17.5% | +$4,132, -15.3%, PF 1.91 |
 Earlier results also include some stacking (e.g. the old +$2,468). Win rate is the same either way (45%), so the stacked
 trades are not worse trades; they are extra size on setups where two structures agree. Owner to decide.
+
+## Clean version B (1 trade per setup, `research/version_b.py`) is the new base: 480 tr, 45%, +$3,994, -15.3%, PF 1.97
+Chart review, more checks:
+- Very big zone stops (23 Mar: $80 and $65 stops) are NOT a problem: stops over $60 won 54-100%, +$1,103.
+  Skipping stops over $30 / $40 / $60: +$2,683 / +$2,807 / +$2,891 (much worse).
+- Many buys in a falling market (21 Apr, 7 trades): max 1 zone trade open per side +$3,559; max 2 +$3,973.
+  Pause 60 min after a zone loss: 46% win, +$3,570, -14.6%, PF 2.07. Pause 240 min: **48% win, +$3,635, -14.7%,
+  PF 2.21** (higher win rate and PF, slightly smaller drop, but $359 less profit).
