@@ -550,3 +550,14 @@ high then low, re-enter on the break of that high, stop $1 beyond the lowest poi
 All filters stay. 2026 at 0.01: 652 trades, 45% win, **+$5,671**, PF 2.04, worst drop -17.5% (Jan-Jun) / -7.4% (Jul-Nov),
 1 losing month (Apr -$107). Code: `zone(df, sp, 20, 20, reent=dict(swings='3', target='2R', max=1))` + filters in
 `research/more_trades.py`.
+
+## More options on top of version B (`research/more_trades2.py`), 0.01, all filters on
+| Variant | Jan-Jun | Jul-Nov | Year |
+|---|---|---|---|
+| version B | 41% +$3,344 -17.5% | 51% +$2,327 -7.4% | +$5,671 PF 2.04 |
+| + main against-boss signals | 41% +$3,372 -17.5% | 51% +$2,347 -7.3% | +$5,719 PF 2.05 (only 2 extra trades) |
+| main target $30 when F-G >= $50 | 41% +$3,334 -19.4% | 50% +$2,317 | +$5,651 |
+| main target $40 when F-G >= $50 | 40% +$3,222 -21.8% | | +$5,589 |
+| + zone between F and E | 39% +$3,845 -16.2% | 47% +$3,003 -6.1% | +$6,847 PF 1.58, 1,344 trades |
+F-E zone alone: 692 tr, 39%, +$1,176, PF 1.19. It adds +$1,176 and lowers the drop, but the win rate (45% -> 42%) and
+profit factor (2.04 -> 1.58) fall, so it fails the all-three test. Against-boss signals: harmless, almost no trades.
