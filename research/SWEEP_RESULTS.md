@@ -941,3 +941,9 @@ Chosen version + one '3 micro inside SMA 10' re-entry after each stop (2x risk t
 `reentries(CH, 1, '2R')`). 2026 at 0.01: $7,288, 45% win, PF 1.99, drop -22%, min balance $536 (safe $804),
 4.1 trades/day, 1 losing month (Apr -$5). Monthly C+3m: Jan $116, Feb $1,428, Mar $1,284, Apr -$5, May $560,
 Jun $727, Jul $1,676, Aug* $399 (26-31 Aug only), Sep $493, Oct $268, Nov $344.
+Owner: target is +$10,000 at 0.01 BEFORE lot sizing (then lot size to $20,000+).
+C+3m, client connecting on a random day (0.01): in profit after 1 day 47% (26% flat), 3 days 69%, 5 days 72%,
+10 days 87%, 20 days 95%. Typical (median) result: 1 day $0, 5 days +$93, 10 days +$232, 20 days +$625.
+Worst: -$220 after 1 day, -$324 after 10 days, -$108 after 20 days. Longest bad streak 7 days, losing streak 4.
+EA memory: zones live 20 days, so at start the bot must load about 30 days of M1 history to rebuild structures,
+zones and open setups.
