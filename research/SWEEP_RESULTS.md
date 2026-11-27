@@ -726,3 +726,7 @@ Main: much worse. Not convincing.
 The 0.5-depth, 5-per-structure version gains in BOTH halves (Jan-Jun +$756, Jul-Nov +$260), same win rate and PF,
 but the Jan-Jun drop grows from -17.5% to -23.2%.
 2. Faster zone entry (first H break after G, no I): +$5,843, drop -20.3%, 43% win. Worse. Rejected.
+Below-A zone with a smaller drop (0.5 depth, 5/structure):
+- stop a structure after its 1st loss: 65 tr +$638 -> +$6,938, -22.4% | after 2 losses: +$6,899, -23.2%
+- **only when RSI is 68+ at entry (32- for sells): 9 tr, 89% win, +$318 -> +$6,618, 47% win, -17.5%, PF 2.11.**
+  Passes the all-three test (same drop), but only 9 trades in the year: could be luck.
