@@ -8,6 +8,7 @@
 ## Replies
 - Always include the minimum account balance at 0.01 (biggest $ drop with open trades; safe = 1.5x) when reporting a version. Owner goal: safe at $100.
 - Keep replies to the user short and simple.
+- Every new test must be run on BOTH versions: "Chosen" and "+Both" (chosen + F-E zone + double bottom $2, normal stops; `research/combo_hold.py`), and shown side by side in a narrow table (owner reads on a phone).
 
 ## Project notes
 - MT5 Expert Advisors live in `mt5/`, the TradingView indicator in `tradingview/`, the Python backtester in `castimofx/`.
