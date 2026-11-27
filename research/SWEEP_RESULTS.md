@@ -1096,3 +1096,6 @@ By part (`research/parts_report.py`), 2025 Jan-Jul:
 The core (main + E-A zone) still makes money on unseen data; the newer additions (3m re-entry, MZ, F-E) were fitted
 to 2026 and lose or break even in 2025. Fixed-dollar stops/targets ($20/$30) were tuned on 2026 gold ($4,000-5,000,
 very volatile); 2025 gold was $2,600-3,300. Next idea: scale stops/targets with price or volatility, test on both years.
+2025 Jan-Jul full table (`research/report_2025.py`): C $292 (PF 1.08, drop -31%, min bal $503) | C+3m $176 |
+C+3m+MZ $135 | C+3m+MZ+FE $82 (PF 1.01, min bal $1,038). Every addition makes 2025 worse. Losing months: Apr, Jun
+(and 1-day Aug) for all versions; Jun 2025 is the worst month (-$251 to -$468).
