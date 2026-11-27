@@ -1079,3 +1079,20 @@ Nothing changed in the rules.
 Monthly (C+3m+MZ+FE): Jan $130, Feb $316, Mar $297. The rules STILL WORK on unseen data (every month positive,
 PF 1.38), but profit is much smaller than 2026 (2026 Q1 = $4,422). Gold was ~$2,600-3,100 and much calmer in 2025,
 and our stops/targets are fixed dollars ($20/$30), so fewer and smaller moves. Profit scales with gold volatility.
+
+## OUT-OF-SAMPLE 2025 Jan-Jul (two owner exports) -- HONEST: the additions do NOT hold up
+Data: `data/XAUUSDb_M1_2025-01_2025-04.csv`, `data/XAUUSDb_M1_2025-04_2025-08.csv`.
+C+3m+MZ+FE monthly: Jan $130, Feb $316, Mar $297, Apr -$153, May -$74, Jun -$468, Jul $53 -> total **$82**,
+PF 1.01, drop -53%, min balance $1,038, 4 of 8 months losing, client up after 20 days only 52%.
+C+3m+MZ: $135, PF 1.02, drop -47%.
+By part (`research/parts_report.py`), 2025 Jan-Jul:
+| Part | Profit | Win |
+|---|---|---|
+| main | +$151 | 66% |
+| E-A zone | +$142 | 36% |
+| F-E zone | +$10 | 37% |
+| MZ (3-micro zone entry) | -$42 | 32% |
+| 3m re-entry | -$179 | 34% |
+The core (main + E-A zone) still makes money on unseen data; the newer additions (3m re-entry, MZ, F-E) were fitted
+to 2026 and lose or break even in 2025. Fixed-dollar stops/targets ($20/$30) were tuned on 2026 gold ($4,000-5,000,
+very volatile); 2025 gold was $2,600-3,300. Next idea: scale stops/targets with price or volatility, test on both years.
