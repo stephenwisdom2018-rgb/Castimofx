@@ -1016,3 +1016,39 @@ Bad streak,7,7,6,6
 Profit 20d,95%,97%,95%,98%
 ```
 MZ is the clear improver; AfterH lowers Jul-Nov and raises drop/worst day; together the drop is -48%.
+
+## ADOPTED (owner, 27 Nov 2026): C+3m+MZ = $8,509 at 0.01
+C+3m + 3-micro zone entries (G in E-A zone with RSI <= 32, 3 micro inside SMA 10 within 4 h before G breaks,
+stop $1 beyond G, 2x risk, up to 3 per structure; `research/micro3_zone.py`, micro_zone(per=3, g_rsi=32)).
+44% win, PF 1.88, drop -26%, min balance $552 (safe $828), 5.4 trades/day. Owner: keep pushing to $10,000.
+
+## Pushing C+3m+MZ to $10,000
+- MZ settings grid (per 3/5/10, RSI 30/32/35, wait 4/8 h): best stays per 3, RSI 32 (+$1,221). RSI 30 or 35 give about half.
+- 3m re-entry after MZ stops: +$297 to +$522 but drop -34%. MZ in F-E area: +$113/+$263. MZ below A: +$39/+$165, drop -31/-36%. Rejected.
+- With the on-hold zones (`research/full_report_mz_fe_db.csv`):
+```
+,C+3m+MZ,+FE,+DB
+Profit,"$8,509","$10,276","$9,543"
+Jan-Jun,"$4,991","$6,017","$4,987"
+Jul-Nov,"$3,518","$4,259","$4,556"
+Win,44%,41%,39%
+PF,1.88,1.54,1.53
+Drop,-26%,-27%,-28%
+Min bal,$552,$813,$577
+Safe bal,$828,"$1,219",$866
+Trades/day,5.4,10.2,11.7
+Avg day,$39,$47,$44
+Avg week,$193,$234,$217
+Avg month,$792,$968,$895
+Best day,$670,$740,$714
+Worst day,$-190,$-282,$-183
+Worst week,$-137,$-291,$-237
+Worst month,$-17,$-262,$-367
+Losing months,1/10,1/10,1/10
+Win days,52%,56%,59%
+Lose days,29%,35%,35%
+Empty days,19%,10%,6%
+Bad streak,7,6,4
+Profit 20d,97%,96%,87%
+```
+C+3m+MZ+FE reaches $10,276 (both halves up), but win 41%, PF 1.54, min balance $813, worst month -$262.

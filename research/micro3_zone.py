@@ -8,7 +8,7 @@ import research.reentry_v2 as R, research.more_trades as M, research.micro3_reen
 from research.zone_multi import KW
 from castimofx.sweep import find_signals
 
-def micro_zone(region='EA', wait=240, rr=2.0, per=99, g_rsi=None):
+def micro_zone(region='EA', wait=240, rr=2.0, per=99, g_rsi=None, detail=False):
     out, seen = [], set()
     for fi, (df, sp, *_) in enumerate(R.prep):
         o, h, l, c, sp_, idx, up, dn = MR.ARR[fi]; n = len(c)
@@ -26,6 +26,7 @@ def micro_zone(region='EA', wait=240, rr=2.0, per=99, g_rsi=None):
                 if g_rsi and not ((r[max(0, g-3):g+4].min() <= g_rsi) if d == 1 else (r[max(0, g-3):g+4].max() >= 100 - g_rsi)): continue
                 G = px[g]
                 if region == 'EA' and not (0 < (E - G) * d < depth): continue
+                if region == 'BA' and not (0 < (A - G) * d < depth * 0.5): continue
                 if region == 'FE' and not (F is not None and 0 < (F - G) * d < (F - E) * d): continue
                 sig = up if d == 1 else dn
                 for u in range(g + 3, min(n, g + 3 + wait)):
@@ -36,8 +37,8 @@ def micro_zone(region='EA', wait=240, rr=2.0, per=99, g_rsi=None):
                         ent = c[u] + (sp_[u] if d == 1 else 0); risk = max(abs(ent - G) + 1, 5)
                         stop, tgt = ent - d * risk, ent + d * rr * risk
                         for v in range(u + 1, n):
-                            if (l[v] <= stop) if d == 1 else (h[v] + sp_[v] >= stop): out.append((idx[u], -risk)); break
-                            if (h[v] >= tgt) if d == 1 else (l[v] + sp_[v] <= tgt): out.append((idx[u], rr * risk)); break
+                            if (l[v] <= stop) if d == 1 else (h[v] + sp_[v] >= stop): out.append((idx[u], -risk) + ((fi, d, ent, tgt, idx[v]) if detail else ())); break
+                            if (h[v] >= tgt) if d == 1 else (l[v] + sp_[v] <= tgt): out.append((idx[u], rr * risk) + ((fi, d, ent, tgt, idx[v]) if detail else ())); break
                         break
     return out
 
