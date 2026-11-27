@@ -1161,3 +1161,32 @@ main strategy's latest direction.
 | Worst month | -$251 | -$103 | -$73 | +$14 | -$391 | -$103 | -$475 | -$174 |
 Both fixes make the bot SAFER (smaller worst months, higher PF) but cost profit in both years. Under the owner's
 profit-first rule they are not adopted; kept as a "safe mode" option.
+
+## 'Max' versions: keep 2026 above $10,000 AND make 2025 strong (`research/both_report_max.csv`)
+Max = main + E-A zone + F-E zone + MZ + double bottom + 3m re-entries after MZ, F-E, DB and main; RSI-50 and hours filters, NO consolidation filter. Max+ also adds 3m after E-A.
+```
+,Max 25,Max+ 25,Max 26,Max+ 26
+Profit,"$4,380","$3,999","$10,753","$12,342"
+Jan-Jun,"$4,380","$3,999","$5,283","$6,234"
+Jul-Nov,$0,$0,"$5,470","$6,107"
+Win,37%,36%,36%,36%
+PF,1.15,1.12,1.22,1.23
+Drop,-32%,-32%,-74%,-86%
+Min bal,$818,"$1,074","$1,342","$1,416"
+Safe bal,"$1,226","$1,611","$2,012","$2,124"
+Trades/day,46.5,49.7,30.1,32.4
+Avg day,$29,$26,$50,$57
+Avg week,$141,$129,$244,$280
+Avg month,$548,$500,$1007,$1164
+Best day,$395,$395,$855,$1088
+Worst day,$-445,$-418,$-493,$-493
+Worst week,$-366,$-423,$-510,$-559
+Worst month,$-72,$-181,$-562,$-1010
+Losing months,1/8,2/8,1/10,1/10
+Win days,61%,60%,59%,59%
+Lose days,38%,39%,39%,39%
+Empty days,1%,1%,2%,2%
+Bad streak,5,5,8,6
+Profit 20d,84%,85%,91%,88%
+```
+Max: 2025 $4,380 (PF 1.15, 1 losing month) and 2026 $10,753 (PF 1.22). Cost: ~30-46 trades/day, min balance $818-$1,342, worst day ~-$450-$490, 2026 drop -74%.
