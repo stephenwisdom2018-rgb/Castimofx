@@ -1255,3 +1255,14 @@ $7.4/day, $36/week, $156/month. Best day $99, worst day -$50, worst week -$22, w
 Win / lose / empty days 46 / 24 / 31%. From $100 on 1 Jan: $1,706 at the end, lowest $81, biggest peak-to-low drop
 $85. From any start day: worst dip -$70, typical -$11. Monthly: Jan $81, Feb $157, Mar $166, Apr $83, May $257,
 Jun $73, Jul $394, Sep $136, Oct $122, Nov $87.
+
+## Owner's lot ladder: 0.01 per $200 (0.05 at $1,000, 0.10 at $2,000 ...) and 0.01 per $100, 2026
+| Trades | Start | 0.01 per $200 | 0.01 per $100 |
+|---|---|---|---|
+| Chosen (all trades, stacking) | $200 | BLOWN | BLOWN |
+| Chosen | $1,000 | BLOWN | BLOWN |
+| $100 mode (1 trade at a time, stops <= $15) | $200 | huge, worst drop -32%, lowest $181 | huge, -59% |
+| $100 mode | $1,000 | huge, -35%, lowest $909 | huge, -59% |
+The ladder blows the full version (many trades open at once, copies, big stops). It only works with the
+one-trade-at-a-time mode with small stops: 0.01 per $200 gives a -32 to -35% worst drop. End balances are
+unrealistic (compounding to millions); treat as 'very strong growth'.
