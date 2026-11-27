@@ -799,3 +799,6 @@ that drop; safe balance = 1.5x. Owner's goal: a version that is safe on a $100 a
 | + both, opposite + $100 stop | +$14,260 | $1,299 | $1,813 | $1,813 | ~$2,720 |
 | + both, opposite + $50 stop | +$10,982 | $1,246 | $1,315 | $1,315 | ~$1,970 |
 A $100 stop does not cap the account drop at $100: about 15 trades a day, several open at once, losses add up.
+**ON HOLD #3 (owner, 27 Nov 2026):** "+ both" with opposite exit (no stop / + $100 stop / + $50 stop). Owner's view:
+lot sizing would make these worse; the chosen version with its stops, properly lot-sized, can reach the money target
+with less drawdown. Remind the owner.
