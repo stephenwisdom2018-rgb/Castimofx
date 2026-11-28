@@ -1709,3 +1709,18 @@ Worst open loss  -$57,571     -$158,338    -$8,047      -$32,779
 Drawdown (min)   $43,984      $109,779     $5,469       $23,312
 ```
 REJECTED: 7-8% of trades never come back and their open losses are far bigger than all the profit.
+
+## OWNER DAY PLAN (28 Nov 2026, `research/day_stop.py`): stop for the day at +$X, or at break-even after a loss
+Quality hours on, true data, real fills, 0.01. Bot stops OPENING trades; open trades run to their exit.
+Best rule in every version and both years: "+$20 & BE" (stop when the day is +$20, or back to $0 after being red).
+```
+               2026 $  green  min    2025 $  green  min
+Chosen none    7,651   54%    865    138     44%    806
+Chosen +20&BE  6,568   57%    710    731     50%    370
++Both none     8,578   55%    880    132     53%    953
++Both +20&BE   7,909   62%    672    912     59%    485
+Robust none    6,902   54%    501    225     50%    508
+Robust +20&BE  7,325   60%    337    474     57%    443
+```
+Max 4-5 trades/day: profit falls by more than half in 2026 (rejected).
+Robust +20&BE: more profit in both years, more green days, smallest money needed (min $337, safe ~$506).
