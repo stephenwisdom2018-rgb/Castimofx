@@ -1699,3 +1699,13 @@ Safe bal 26  $1,267  $1,510  $823    $2,208
 Min bal 25   $842    $948    $503    $768
 ```
 Robust = smallest risk (best profit per $ of safe balance); Max = only one clearly positive in 2025.
+
+### Owner idea: NO stop, every trade must take profit (28 Nov 2026, `research/no_stop_real.py`, true data, 0.01)
+```
+                 2026 Chosen  2026 +Both   2025 Chosen  2025 +Both
+Took profit      92%          93%          94%          94%
+Closed profit    $18,274      $60,101      $7,180       $29,016
+Worst open loss  -$57,571     -$158,338    -$8,047      -$32,779
+Drawdown (min)   $43,984      $109,779     $5,469       $23,312
+```
+REJECTED: 7-8% of trades never come back and their open losses are far bigger than all the profit.
