@@ -3,22 +3,22 @@
 Stake rule: 0.5% of betting money per slip. Odds = my estimates (check real odds in app).
 Result: W = won, L = lost, V = void, ? = pending.
 
-## Sat 28 Nov 2026 (v4 FINAL: major leagues only, fixtures checked)
+## Sat 28 Nov 2026 (v5: O/U 2.5 mixed with BTTS, major leagues)
 
-O/U 2.5 only, max 3 legs, each pick in max 3 slips, est. odds 5+.
+Max 3 legs, one market per match per slip, each pick in max 3 slips, est. odds 5+.
 
 | Slip | Picks | Est. odds | Real odds | Stake | Result | P/L |
 |---|---|---|---|---|---|---|
-| 1 | Stuttgart-Frankfurt O + Leeds-Coventry U + LeMans-Lille O | 5.1 | | | ? | |
-| 2 | Rangers-Falkirk O + LeHavre-Strasbourg O + Motherwell-Hibs U | 5.1 | | | ? | |
-| 3 | Inter-Genoa O + LeHavre-Strasbourg O + Nice-Troyes O | 5.2 | | | ? | |
-| 4 | ManUtd-Brentford O + Leeds-Coventry U + Ipswich-Villa O | 5.5 | | | ? | |
-| 5 | ManUtd-Brentford O + LeMans-Lille O + Nice-Troyes O | 5.3 | | | ? | |
-| 6 | Torino-Lazio U + Ipswich-Villa O + LeHavre-Strasbourg O | 5.3 | | | ? | |
-| 7 | Angers-Lens U + Motherwell-Hibs U + Ipswich-Villa O | 5.3 | | | ? | |
-| 8 | Angers-Lens U + LeMans-Lille O + Nice-Troyes O | 5.3 | | | ? | |
-| 9 | ManUtd-Brentford O + Torino-Lazio U + Motherwell-Hibs U | 5.0 | | | ? | |
-| 10 | Torino-Lazio U + Angers-Lens U + Leeds-Coventry U | 5.2 | | | ? | |
+| 1 | ManUtd-Brentford BTTS Yes + Leeds-Coventry BTTS No + LeHavre-Strasbourg O2.5 | 6.0 | | | ? | |
+| 2 | Ipswich-Villa BTTS Yes + Inter-Genoa BTTS No + Angers-Lens U2.5 | 5.3 | | | ? | |
+| 3 | Stuttgart-Frankfurt BTTS Yes + Leeds-Coventry BTTS No + Nice-Troyes O2.5 | 5.3 | | | ? | |
+| 4 | ManUtd-Brentford O2.5 + LeMans-Lille BTTS Yes + Inter-Genoa BTTS No | 5.3 | | | ? | |
+| 5 | Torino-Lazio U2.5 + Ipswich-Villa BTTS Yes + LeHavre-Strasbourg O2.5 | 5.3 | | | ? | |
+| 6 | Rangers-Falkirk O2.5 + Leeds-Coventry BTTS No + Motherwell-Hibs U2.5 | 5.4 | | | ? | |
+| 7 | LeMans-Lille BTTS Yes + Nice-Troyes O2.5 + Angers-Lens U2.5 | 5.2 | | | ? | |
+| 8 | ManUtd-Brentford BTTS Yes + Inter-Genoa BTTS No + Motherwell-Hibs U2.5 | 5.6 | | | ? | |
+| 9 | Ipswich-Villa BTTS Yes + LeMans-Lille BTTS Yes + Torino-Lazio U2.5 | 5.1 | | | ? | |
+| 10 | ManUtd-Brentford O2.5 + LeHavre-Strasbourg O2.5 + Motherwell-Hibs U2.5 | 5.6 | | | ? | |
 
 ## Running totals
 
