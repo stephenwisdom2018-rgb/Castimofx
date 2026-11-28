@@ -21,10 +21,15 @@ for df, sp, r, _, groups in R.prep:
     f['adx'] = adx(m15.high, m15.low, m15.close).shift(1).reindex(df.index, method='ffill')
     FEAT.append(f)
 
+import os
+# optional quality filter: no new trades in these server hours, e.g. CASTIMO_SKIP_HOURS=8-13 (London morning)
+_SK = os.environ.get('CASTIMO_SKIP_HOURS', '')
+SKIP_HOURS = set(range(int(_SK.split('-')[0]), int(_SK.split('-')[1]) + 1)) if _SK else set()
+
 def keep(fi, t, d):
     f = FEAT[fi].loc[t]
     if not ((f.rsi >= 50) if d == 1 else (f.rsi <= 50)): return False
-    if t.hour in (15, 23): return False
+    if t.hour in (15, 23) or t.hour in SKIP_HOURS: return False
     if f.rng60 < 0.6 or 25 < f.adx <= 35: return False
     return True
 
