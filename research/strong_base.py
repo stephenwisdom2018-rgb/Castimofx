@@ -7,7 +7,7 @@ import sys
 sys.path.insert(0, '.')
 import numpy as np, pandas as pd
 import research.reentry_v2 as R, research.more_trades as M, research.more_profit3 as P
-from research.zone_multi import zone, KW
+from research.zone_multi import zone, KW, FILL, MAX_SLIP
 from castimofx.sweep import find_signals
 
 RE = dict(swings='3', target='2R', max=1)
@@ -41,10 +41,15 @@ def double_bottom(tol, mem=20, detail=False):
                         if i in used or not M.keep(fi, idx[i], d): break
                         used.add(i)
                         entry = top + (sp[i] if d == 1 else 0); risk = max(abs(entry - base) + 1, 5)
-                        stop, tgt = entry - d * risk, entry + d * 2 * risk
+                        if FILL == 'market':                      # real fills (EA): no fill on the pivot's own bar,
+                            if i == b + 3: break                  # gap past the level -> the bar's open, max 0.5x risk
+                            op = df.open.iat[i] + (sp[i] if d == 1 else 0)
+                            if (op - entry) * d > MAX_SLIP * risk: break
+                            if (op - entry) * d > 0: entry = op
+                        stop, tgt = top + (sp[i] if d == 1 else 0) - d * risk, top + (sp[i] if d == 1 else 0) + d * 2 * risk
                         for v in range(i, n):
-                            if (l[v] <= stop) if d == 1 else (h[v] + sp[v] >= stop): out.append((idx[i], -risk) + ((fi, i, d, entry, 2 * risk, idx[v]) if detail else ())); break
-                            if v > i and ((h[v] >= tgt) if d == 1 else (l[v] + sp[v] <= tgt)): out.append((idx[i], 2 * risk) + ((fi, i, d, entry, 2 * risk, idx[v]) if detail else ())); break
+                            if (l[v] <= stop) if d == 1 else (h[v] + sp[v] >= stop): out.append((idx[i], d * (stop - entry)) + ((fi, i, d, entry, abs(tgt - entry), idx[v]) if detail else ())); break
+                            if v > i and ((h[v] >= tgt) if d == 1 else (l[v] + sp[v] <= tgt)): out.append((idx[i], d * (tgt - entry)) + ((fi, i, d, entry, abs(tgt - entry), idx[v]) if detail else ())); break
                         break
     return out
 

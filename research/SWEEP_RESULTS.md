@@ -1633,3 +1633,18 @@ Limits (against us): Chosen $2,711/$4,827/$4,518/$3,033/$4,635 for $1-$5; +Both 
 Best +Both limits $2: $7,174, 62% green days, worst day -$2,513, min bal $4,877 (1 order: $7,028, 56%, -$435, $1,004).
 Stops (with the move): Chosen -$1,391/$1,680/$1,492/-$2,040/$637; +Both -$4,436/$1,501/$635/-$2,379/$595.
 REJECTED: limits $2 = same profit for ~5x the money; stops always worse.
+
+## EA v1.16 (28 Nov 2026): version input Chosen / +Both / +Both without F-E
+Double bottom added to the EA (pending buy stop at the top, no fill on the pivot's own bar, market entry if
+price is already past, max 0.5x risk). Python double bottom now uses the same real fills (`CASTIMO_FILL=market`).
+True 2026 (`research/full_2026.py`), 0.01:
+```
+            Chosen  +Both   +Both no F-E
+Profit      $7,043  $7,760  $6,774
+PF          1.27    1.22    1.30
+Green days  52%     56%     53%
+Worst day   -$293   -$350   -$315
+Min bal     $880    $1,026  $690
+Safe bal    $1,320  $1,539  $1,034
+```
+(+Both with the old touch fills for the double bottom was $8,391.)

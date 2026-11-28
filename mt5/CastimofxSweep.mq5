@@ -22,6 +22,9 @@
 //|   3M    after a taken losing trade: 3 rising candles closing     |
 //|         above SMA 10 -> enter, stop beyond the low, 2x risk.     |
 //|   MZ    G in the E-A zone at RSI 32 -> 3 micro -> enter early.   |
+//|   DB    (+Both) double bottom $2 above E inside F-E, buy the    |
+//|         break of the top between the two lows, 2x risk.          |
+//|   Version input: Chosen / +Both / +Both without the F-E zone.    |
 //|   FLIP  a main/zone trade hits its stop -> trade the other way:   |
 //|         stop = half its risk, target = 1.5x that stop.           |
 //|  Filters: RSI side of 50, no new trades at 15:00 / 23:00 server, |
@@ -33,8 +36,8 @@
 //+------------------------------------------------------------------+
 #property copyright "Castimofx.com"
 #property link      "https://castimofx.com"
-#property version   "1.15"
-#property description "Castimofx gold sweep bot (C+3m+MZ, F-E zone off). Logic on M1, any chart timeframe."
+#property version   "1.16"
+#property description "Castimofx gold sweep bot: Chosen / +Both (double bottom). Logic on M1, any chart timeframe."
 
 #include <Trade/Trade.mqh>
 
@@ -46,6 +49,14 @@ enum ENUM_CFX_ACCOUNT
   };
 input group "Account (the only choice you make)"
 input ENUM_CFX_ACCOUNT InpAccount        = CFX_NORMAL;   // Account type: Normal or Prop
+
+enum ENUM_CFX_VERSION
+  {
+   CFX_V_CHOSEN = 0,   // Chosen (E-A + F-E zones, main, micro)
+   CFX_V_BOTH   = 1,   // +Both (Chosen + double bottom)
+   CFX_V_BOTH_NOFE = 2 // +Both without the F-E zone
+  };
+input ENUM_CFX_VERSION InpVersion   = CFX_V_CHOSEN; // Version
 
 input group "Prop firm protection"
 input double           InpPropStart      = 100000;       // Prop: starting balance (lot = 0.07 per $100,000, automatic)
@@ -64,7 +75,11 @@ input double           InpFixedLot       = 0;            // Test only: fixed lot
 //   up to $10,000      : 0.01 per $2,000             ($2k 0.01, $4k 0.02, $10k 0.05)
 //   $10,000 - $50,000  : 0.05 + 0.01 per $4,000      ($30k 0.10, $50k 0.15)
 //   above $50,000      : 0.15 + 0.01 per $8,000      ($100k 0.21, $250k 0.40, $500k 0.71)
-const bool   FE_ON           = false;   // v1.15: F-E zone off (lost -$750 at 0.01 in the MT5 2026 test)
+bool FeOn() { return InpVersion != CFX_V_BOTH_NOFE; }   // v1.16: F-E zone by version
+bool DbOn() { return InpVersion != CFX_V_CHOSEN; }      // double bottom $2 above E (+Both)
+const double DB_TOL     = 2.0;     // double bottom: the two lows within $2
+const int    DB_GAP     = 10;      // at least 10 bars between the two lows
+const int    DB_BARS    = 1440;    // the break of the top must come within 24 h
 const bool   FLIPS_ON        = false;   // flips switched off in v1.13 (lost in both EA tests)
 const int    LOT_HALF_AFTER  = 3;       // half lot after 3 losses in a row
 const double PROP_LOT_PER_1K = 0.0007;  // prop: 0.07 lot per $100,000
@@ -104,7 +119,9 @@ const double MZ_RSI     = 32.0;
 #define T_M3FE    128
 #define T_MZ      256
 #define T_FLIP    512
-#define T_ALL     1023
+#define T_DB      1024
+#define T_M3DB    2048
+#define T_ALL     4095
 #define T_C       (T_MAIN | T_MAINRE | T_ZEA | T_ZEARE)
 
 //--- bar ring buffer (closed M1 bars), absolute index t = 0..N-1
@@ -620,6 +637,7 @@ void MainStep(int t, MainSignal &sig, Swing &bsw[], int nb)
 struct VTrade { bool open; double entry, stop, target, risk; int t; bool taken; };
 
 struct MZCand { double G; int from; int until; bool on; };
+struct DBSet  { double top, base; int conf, until, key; bool on; };
 
 class CZone
   {
@@ -646,6 +664,11 @@ public:
    // MZ (E-A only)
    int    mzTaken;
    MZCand mz[];
+   // F-E structure: F-E zone trades on/off, double bottom (+Both)
+   bool   feTrade;
+   bool   dbHas; int dbI; double dbP; int dbLastEntry;
+   DBSet  db[];
+   VTrade dbt[];
 
    bool InZone(double p)
      {
@@ -658,6 +681,7 @@ public:
 CZone *zones[];
 int    zone_seq = 0;
 datetime mz_seen_t[]; int mz_seen_d[];
+int      db_seq = 0;
 
 bool MZSeen(datetime t, int d)
   {
@@ -676,12 +700,14 @@ void AddZones(ALevel &a)
    if((a.E - a.A) * a.d <= 0) return;
    for(int region = 0; region < 2; region++)
      {
-      if(region == 1 && (!FE_ON || (a.F - a.E) * a.d <= 0)) continue;
+      if(region == 1 && ((!FeOn() && !DbOn()) || (a.F - a.E) * a.d <= 0)) continue;
       CZone *z = new CZone;
       z.id = ++zone_seq; z.d = a.d; z.region = region; z.A = a.A; z.E = a.E; z.F = a.F; z.depth = (a.E - a.A) * a.d;
       z.t0 = a.t0; z.endBar = a.t0 + ZONE_BARS; z.searching = true; z.taken = 0; z.searchFrom = a.t0;
       z.hasG = false; z.hasH = false; z.iok = false; z.armed = false; z.tr.open = false;
       z.reOn = false; z.rt.open = false; z.mzTaken = 0;
+      z.feTrade = region == 0 || FeOn(); z.searching = z.feTrade;
+      z.dbHas = false; z.dbI = 0; z.dbP = 0; z.dbLastEntry = -1;
       int n = ArraySize(zones); ArrayResize(zones, n + 1, 100); zones[n] = z;
      }
   }
@@ -807,6 +833,64 @@ void ZoneStep(CZone *z, int t)
            }
         }
      }
+   // 4) double bottom above E (+Both): two 3-candle lows inside F-E within $2, at least 10 bars apart, nothing
+   //    deeper than $2 below them in between; buy the break of the highest high between them within 24 h.
+   //    Stop $1 below the lower low (min $5), target 2x risk, one trade per base (research/strong_base.py)
+   if(z.region == 1 && DbOn())
+     {
+      int lo = d == 1 ? -1 : 1;
+      for(int i = 0; i < nx3; i++)
+        {
+         Swing x = x3[i];
+         if(x.kind != lo || x.conf <= z.t0 || x.conf >= z.t0 + ZONE_BARS || !z.InZone(x.price)) continue;
+         if(z.dbHas && MathAbs(x.price - z.dbP) <= DB_TOL && x.index - z.dbI >= DB_GAP)
+           {
+            double base = d == 1 ? MathMin(x.price, z.dbP) : MathMax(x.price, z.dbP);
+            double top = d == 1 ? Hh(z.dbI) : Ll(z.dbI); bool bad = false;
+            for(int j = z.dbI; j <= x.index; j++)
+              {
+               if(d == 1) { if(Ll(j) < base - DB_TOL) bad = true; top = MathMax(top, Hh(j)); }
+               else       { if(Hh(j) > base + DB_TOL) bad = true; top = MathMin(top, Ll(j)); }
+              }
+            if(!bad)
+              {
+               int n = ArraySize(z.db); ArrayResize(z.db, n + 1, 10); ArrayResize(z.dbt, n + 1, 10);
+               z.db[n].top = top; z.db[n].base = base; z.db[n].conf = t; z.db[n].until = t + DB_BARS;
+               z.db[n].key = ++db_seq; z.db[n].on = true; z.dbt[n].open = false;
+              }
+           }
+         z.dbHas = true; z.dbI = x.index; z.dbP = x.price;
+        }
+      for(int i = 0; i < ArraySize(z.db); i++)
+        {
+         if(z.dbt[i].open)
+           {
+            int r = (t > z.dbt[i].t) ? VExit(z.dbt[i], d, t) : 0;
+            if(r != 0) { z.dbt[i].open = false; if(r < 0 && z.dbt[i].taken) AddM3(d, t, T_M3DB); }
+            continue;
+           }
+         if(!z.db[i].on) continue;
+         if(t >= z.db[i].until || (d == 1 ? Ll(t) < z.db[i].base : Hh(t) > z.db[i].base)) { z.db[i].on = false; continue; }
+         if(d == 1 ? Hh(t) > z.db[i].top : Ll(t) < z.db[i].top)
+           {
+            z.db[i].on = false;
+            if(t == z.db[i].conf || t == z.dbLastEntry || !Keep(t, d)) continue;   // no real fill on the pivot's own bar
+            double entry = z.db[i].top + (d == 1 ? Sp(t) : 0);
+            double risk = MathMax(MathAbs(entry - z.db[i].base) + 1.0, RISK_MIN);
+            VTrade v; v.open = true; v.entry = entry; v.risk = risk; v.stop = entry - d * risk; v.target = entry + d * 2 * risk;
+            v.t = t; v.taken = true;
+            double op = Oo(t) + (d == 1 ? Sp(t) : 0);
+            if((op - entry) * d > MKT_MAX_SLIP * risk) continue;                     // gapped too far past the level
+            if((op - entry) * d > 0) v.entry = op;
+            z.dbt[i] = v; z.dbLastEntry = t;
+            if(InpLog && g_live) PrintFormat("CFX double bottom #%d %s at %.2f risk $%.1f", z.id, d == 1 ? "BUY" : "SELL", v.entry, risk);
+            if(VExit(z.dbt[i], d, t) < 0) { z.dbt[i].open = false; AddM3(d, t, T_M3DB); }
+           }
+        }
+      int w = 0;
+      for(int i = 0; i < ArraySize(z.db); i++) if(z.db[i].on || z.dbt[i].open) { z.db[w] = z.db[i]; z.dbt[w] = z.dbt[i]; w++; }
+      ArrayResize(z.db, w, 10); ArrayResize(z.dbt, w, 10);
+     }
    // 3) MZ: G in the E-A zone at RSI 32, then 3 micro
    if(z.region == 0)
      {
@@ -846,7 +930,8 @@ int Last();
 bool ZoneDead(CZone *z)
   {
    bool mzOn = (z.region == 0 && ArraySize(z.mz) > 0) || (z.region == 0 && z.mzTaken < MZ_PER && Last() < z.t0 + ZONE_BARS);
-   return !z.searching && !z.tr.open && !z.reOn && !z.rt.open && !mzOn;
+   bool dbAlive = z.region == 1 && DbOn() && (Last() < z.t0 + ZONE_BARS || ArraySize(z.db) > 0);
+   return !z.searching && !z.tr.open && !z.reOn && !z.rt.open && !mzOn && !dbAlive;
   }
 int Last() { return N - 1; }
 
@@ -1097,6 +1182,14 @@ void BuildWants(int t)
          double entry = z.reLvl + (d == 1 ? sp : 0);
          double risk = MathMax(MathAbs(entry - ext) + 1.0, RISK_MIN);
          AddWant(StringFormat("CFX %sR%d", z.region == 0 ? "Z" : "F", z.id), d, z.region == 0 ? T_ZEARE : T_ZFERE, entry, entry - d * risk, entry + d * 2 * risk, risk, Tt(z.reArmConf));
+        }
+      // double bottom: buy stop at the top, armed from the bar after the second low is confirmed
+      for(int k = 0; k < ArraySize(z.db); k++)
+        {
+         if(!z.db[k].on || z.dbt[k].open || t < z.db[k].conf) continue;
+         double entry = z.db[k].top + (d == 1 ? sp : 0);
+         double risk = MathMax(MathAbs(entry - z.db[k].base) + 1.0, RISK_MIN);
+         AddWant(StringFormat("CFX D%d", z.db[k].key), d, T_DB, entry, entry - d * risk, entry + d * 2 * risk, risk, Tt(z.db[k].conf));
         }
      }
   }
