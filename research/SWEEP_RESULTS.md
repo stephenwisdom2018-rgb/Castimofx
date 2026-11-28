@@ -1750,3 +1750,7 @@ Flips alone: 2026 624 flips 43% win +$315 (Robust 274, +$182); 2025 -$19 (Robust
 With the day rule: Chosen $6,568 -> $6,695 / 2025 $731 -> $1,080; +Both $7,909 -> $8,112 / $912 -> $1,388;
 Robust $7,325 -> $7,050 / $474 -> $586. Worst day 2026 worse: -$611 / -$601 / -$333 (was -$438 / -$428 / -$226).
 Small gain for Chosen / +Both, mixed for Robust, bigger worst days. Not adopted unless the owner wants it.
+
+### Max drawdown WITH open trades (hourly marks), quality hours + day rule (`research/float_dd.py`, 0.01)
+2026: Chosen $846, +Both $736, Robust $435 (closed-only $710 / $672 / $337). 2025: $342 / $495 / $494.
+Robust safe (1.5x) = $652 (2026) / $741 (2025).
