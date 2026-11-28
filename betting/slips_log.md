@@ -20,6 +20,16 @@ Max 3 legs, one market per match per slip, each pick in max 3 slips, est. odds 5
 | 9 | Ipswich-Villa BTTS Yes + LeMans-Lille BTTS Yes + Torino-Lazio U2.5 | 5.1 | | | ? | |
 | 10 | ManUtd-Brentford O2.5 + LeHavre-Strasbourg O2.5 + Motherwell-Hibs U2.5 | 5.6 | | | ? | |
 
+## Sat 28 Nov 2026 - BIG ODDS slips (4+ legs)
+
+| Slip | Picks | Est. odds | Real odds | Stake | Result | P/L |
+|---|---|---|---|---|---|---|
+| B1 | ManUtd-Brentford GG + Leeds-Coventry NG + LeHavre-Strasbourg O2.5 + Torino-Lazio U2.5 | 9.8 | | | ? | |
+| B2 | Ipswich-Villa GG + Inter win & NG vs Genoa + Angers-Lens U2.5 + Nice-Troyes O2.5 | 10.9 | | | ? | |
+| B3 | Rangers win & O2.5 vs Falkirk + LeMans-Lille GG + PSG win & O2.5 vs Lorient + Motherwell-Hibs U2.5 + Stuttgart-Frankfurt GG | 15.3 | | | ? | |
+| B4 | ManUtd win & O2.5 vs Brentford + Leeds-Coventry U2.5 + Ipswich-Villa O2.5 + LeHavre-Strasbourg O2.5 + Torino-Lazio U2.5 | 26.4 | | | ? | |
+| B5 | Inter win & NG vs Genoa + LeMans-Lille GG + Nice-Troyes O2.5 + Motherwell-Hibs U2.5 + Angers-Lens U2.5 + ManUtd-Brentford GG | 33.3 | | | ? | |
+
 ## Running totals
 
 | Days | Slips | Won | Win % | Staked | P/L |
