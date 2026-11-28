@@ -1573,3 +1573,10 @@ Chosen left        +$2,363        +$23          -$2,317 (account empty in Nov)
 +Both no F left    +$3,867        +$1,527       -$813
 ```
 Works only with 0.01 per ~$1,000 or less. Sep-Nov the balance fell every month in every case.
+
+### Owner idea: small take-profit + small stop (28 Nov 2026, `research/small_tp_sl.py`, true 2026, 0.01)
+First move of 3,022 Chosen entries: +$2 before -$2 = 49%, +$3/-$3 50%, +$5/-$5 51%, +$10/-$10 51% (a coin flip).
+Fixed exits on the same entries (both hit in one candle = loss): Chosen TP2/SL2 -$402, TP3/SL3 -$320,
+TP5/SL5 -$122, TP5/SL10 +$378 (best), TP10/SL10 +$158; +Both best TP5/SL10 +$1,084 (69% win, min $710).
+Normal exits: Chosen $7,043, +Both $8,391. The money comes from the few big runs, not from the first move.
+REJECTED: small TP/SL removes the edge.
