@@ -9,6 +9,10 @@ from castimofx.sweep import find_signals, simulate_reentry, Swing
 import os
 FILES = os.environ['CASTIMO_FILES'].split(',') if os.environ.get('CASTIMO_FILES') else \
     ['data/XAUUSDb_M1_2026-01_2026-04.csv', 'data/XAUUSDb_M1_2026-04_2026-08.csv', 'data/XAUUSDb_M1_2026-08_2026-11.csv']
+# fill model: 'touch' = fill at the level H even if the bar opened beyond it (old backtests);
+# 'market' = like EA v1.14: if the bar opens beyond H, buy at that open (same stop/target levels), skip if more than 0.5x risk away
+FILL = os.environ.get('CASTIMO_FILL', 'touch')
+MAX_SLIP = 0.5
 KW = dict(tol=1.0, minor_e=5, structure='takeout', takeout_counts=True, cancel_on_g_sweep=True)
 
 def zone(df, sp, max_per, mem_days, fresh=None, rr=2.0, be=None, g_rsi=None, main=True, big_rr=None, reent=None, region='EA', hot_rr=None, need_i=True, ba_frac=1.0):
@@ -16,7 +20,7 @@ def zone(df, sp, max_per, mem_days, fresh=None, rr=2.0, be=None, g_rsi=None, mai
     from castimofx.sweep import rsi as _rsi
     r = _rsi(c)
     rsi_ok = lambda x, d: g_rsi is None or ((r[max(0, x.index - 3):x.index + 4].min() <= g_rsi) if d == 1 else (r[max(0, x.index - 3):x.index + 4].max() >= 100 - g_rsi))
-    h, l = df.high.to_numpy(), df.low.to_numpy(); n = len(df)
+    h, l, o = df.high.to_numpy(), df.low.to_numpy(), df.open.to_numpy(); n = len(df)
     lv = []; sig, _ = find_signals(df, **KW, a_levels=lv)
     sw = []
     for i in range(3, n - 3):
@@ -53,6 +57,10 @@ def zone(df, sp, max_per, mem_days, fresh=None, rr=2.0, be=None, g_rsi=None, mai
             ext = l[v0:ent + 1].min() if d == 1 else h[v0:ent + 1].max()
             risk = max(abs(entry - ext) + 1, 5); stop = entry - d * risk
             target = tgt0 if cfg['target'] == 'orig' else entry + d * cfg.get('rr', 2) * risk
+            if FILL == 'market':
+                op = o[ent] + (sp[ent] if d == 1 else 0)
+                if (op - entry) * d > MAX_SLIP * risk: break
+                if (op - entry) * d > 0: entry = op
             if (target - entry) * d <= 0: break
             ex = None
             for v in range(ent, n):
@@ -108,6 +116,10 @@ def zone(df, sp, max_per, mem_days, fresh=None, rr=2.0, be=None, g_rsi=None, mai
             trr = big_rr if (big_rr and risk > 20) else rr                 # bigger target for big-stop trades
             if hot_rr and ((r[u] >= 68) if d == 1 else (r[u] <= 32)): trr = hot_rr   # RSI already hot at entry
             stop, target = entry - d * risk, entry + d * trr * risk
+            if FILL == 'market':
+                op = o[u] + (sp[u] if d == 1 else 0)
+                if (op - entry) * d > MAX_SLIP * risk: start = u; continue   # too far past the level: no trade
+                if (op - entry) * d > 0: entry = op                         # bought at the bar's open, levels kept
             exit_t = None; seg = (l[t0:u + 1] < E) if d == 1 else (h[t0:u + 1] > E)
             visits = int(seg[0]) + int(np.sum(seg[1:] & ~seg[:-1]))       # separate visits into the zone before entry
             info = ('zone', d, risk, taken, depth, abs(F - E), (E - g) * d / depth, (u - t0) / 60, abs(lvl - g), u, entry, visits)
@@ -115,7 +127,7 @@ def zone(df, sp, max_per, mem_days, fresh=None, rr=2.0, be=None, g_rsi=None, mai
                 if (l[v] <= stop) if d == 1 else (h[v] + sp[v] >= stop):
                     out.append((df.index[u], d * (stop - entry), df.index[v]) + info); exit_t = v; break
                 if v > u and ((h[v] >= target) if d == 1 else (l[v] + sp[v] <= target)):
-                    out.append((df.index[u], trr * risk, df.index[v]) + info); exit_t = v; break
+                    out.append((df.index[u], d * (target - entry), df.index[v]) + info); exit_t = v; break
                 if be is not None and ((h[v] >= entry + be * risk) if d == 1 else (l[v] + sp[v] <= entry - be * risk)):
                     stop = entry if d == 1 else entry          # move the stop to breakeven
             if exit_t is None: break

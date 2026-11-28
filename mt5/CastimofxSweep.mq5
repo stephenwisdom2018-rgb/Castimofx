@@ -33,7 +33,7 @@
 //+------------------------------------------------------------------+
 #property copyright "Castimofx.com"
 #property link      "https://castimofx.com"
-#property version   "1.13"
+#property version   "1.14"
 #property description "Castimofx gold sweep bot (C+3m+MZ+FE). Logic on M1, any chart timeframe."
 
 #include <Trade/Trade.mqh>
@@ -57,6 +57,7 @@ input long             InpMagic          = 26112601;     // Magic number
 input int              InpWarmDays       = 31;           // History replayed at start (days)
 input bool             InpTrade          = true;         // Trading on (false = only log signals)
 input bool             InpLog            = true;         // Log signals in the Experts tab
+input double           InpFixedLot       = 0;            // Test only: fixed lot (0 = automatic lot plan)
 
 //--- lot settings (automatic, not inputs)
 // The lot grows with the balance, but more slowly as the account gets bigger (less risk on big money):
@@ -68,6 +69,7 @@ const int    LOT_HALF_AFTER  = 3;       // half lot after 3 losses in a row
 const double PROP_LOT_PER_1K = 0.0007;  // prop: 0.07 lot per $100,000
 const double FLIP_STOP       = 0.5;     // flip: stop = half the stopped trade's risk
 const double FLIP_TARGET     = 1.5;     // flip: target = 1.5x the flip stop
+const double MKT_MAX_SLIP    = 0.5;     // v1.14: price already past the level -> buy at market if within 0.5x risk
 
 //--- strategy constants (from the backtest)
 #define CAP          65536
@@ -962,6 +964,7 @@ double LotUnits(double bal)
 
 double LotNow()
   {
+   if(InpFixedLot > 0) return NormLot(InpFixedLot);
    if(InpAccount == CFX_PROP) return NormLot(InpPropStart / 1000.0 * PROP_LOT_PER_1K);
    double units = LotUnits(AccountInfoDouble(ACCOUNT_BALANCE));
    if(LOT_HALF_AFTER > 0 && LossesInARow() >= LOT_HALF_AFTER) units = MathMax(1.0, MathFloor(units / 2));
@@ -1159,8 +1162,20 @@ void SyncOrders(int t)
       if(have[j]) continue;
       Want w = ok[j];
       double price = NormalizeDouble(w.price, digits), sl = NormalizeDouble(w.sl, digits), tp = NormalizeDouble(w.tp, digits);
-      if(w.d == 1 && price <= ask + stopsLvl) continue;   // already through the level: the setup will resolve on the bar
-      if(w.d == -1 && price >= bid - stopsLvl) continue;
+      bool through = (w.d == 1 && price <= ask + stopsLvl) || (w.d == -1 && price >= bid - stopsLvl);
+      if(through)
+        {
+         // v1.14: price is already past the level -> enter at market with the same stop and target,
+         // unless price moved too far (more than half the risk) or is already at the stop/target
+         double now = w.d == 1 ? ask : bid;
+         double slip = (now - price) * w.d;
+         if(slip > MKT_MAX_SLIP * w.risk) continue;
+         if((now - sl) * w.d <= stopsLvl || (tp - now) * w.d <= stopsLvl) continue;
+         if(!MarginOk(w.d, lot, now)) { if(InpLog) Print("CFX: not enough margin for ", w.key); continue; }
+         bool rm = w.d == 1 ? trade.Buy(lot, _Symbol, 0, sl, tp, w.key) : trade.Sell(lot, _Symbol, 0, sl, tp, w.key);
+         if(InpLog) PrintFormat("CFX %s market (price past level by $%.2f) %s", w.key, slip, rm ? "sent" : "FAILED");
+         continue;
+        }
       if(!MarginOk(w.d, lot, price)) { if(InpLog) Print("CFX: not enough margin for ", w.key); continue; }
       bool r = w.d == 1 ? trade.BuyStop(lot, price, _Symbol, sl, tp, ORDER_TIME_GTC, 0, w.key)
                         : trade.SellStop(lot, price, _Symbol, sl, tp, ORDER_TIME_GTC, 0, w.key);

@@ -1477,3 +1477,27 @@ backtest still filled those trades AT H, a price that was already gone. `researc
 | Enter at market instead | $4,220 | $16 |
 So about $2,900 of the chosen $10,276 came from impossible fills; realistic is about $7,400 (skip) to $9,100 (market).
 F-E is worth about $0 once fills are real. Next: EA enters at market when already past the level; re-check F-E.
+
+## GROSS vs NET FIX (28 Nov 2026): MT5 full year v1.13 vs backtest
+MT5 v1.13, 2026.01.01-11.27, $3,000, lots grew 0.01->0.05: net $7,110, PF 1.15, 36% win, 2,073 trades.
+Per 0.01 (each trade scaled to 0.01, costs included; `research/mt5_report_tags.py`): **+$4,623** (costs -$408).
+Backtest with old fills (at the level even if price already passed): $10,276. With REAL fills (zone entries
+bought at the bar open when price already passed, skip if > 0.5x risk; `CASTIMO_FILL=market`,
+`research/real_fills.py`): Chosen **$9,176**, 40% win, PF 1.47, min balance $880 (safe $1,320);
++Both $10,209, PF 1.37, min $903 (safe $1,354).
+By type, 2026 at 0.01 (`research/real_fills_by_type.py`):
+```
+type  MT5 tr   MT5 $  BT tr   BT $
+Z      268   1,229    379   2,803
+ZR     163     889    204   1,443
+F      336    -750    514     -39
+FR     176      85    284      45
+M+R     98     783    100   1,540
+ZM     418     432    286   1,221
+3M     614   1,956    402   2,164
+All  2,073   4,623  2,169   9,177
+```
+The F-E zone loses in both (MT5 -$750). MT5 takes fewer zone trades (skipped when price is past the level:
+fixed in EA v1.14 = market entry) but MORE micro-zone (ZM) and 3-micro trades than the backtest.
+EA v1.14: market entry when price is already past the level (same stop/target, max 0.5x risk away) +
+input InpFixedLot (test only, 0 = automatic lots) so MT5 and Python can be compared at 0.01.
