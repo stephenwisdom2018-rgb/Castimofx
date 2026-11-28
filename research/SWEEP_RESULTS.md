@@ -1428,3 +1428,76 @@ Rules for main, E-A and F-E trades open in the same direction: own TP (today; re
 | Biggest $ drop | $813 | $874 | $686 | | $862 | $904 | $820 |
 'First TP' adds ~$860-1,090 but only in Jul-Nov (Jan-Jun slightly lower), win rate not higher, drop slightly bigger.
 'Newest TP' is worse. Each trade keeping its own TP stays. Not adopted.
+
+## Shared TP test (27 Nov 2026) - REJECTED, keep each trade's own TP
+Chosen 2026 at 0.01: own TP $10,249 | first-trade TP $11,106 (unbalanced: Jul-Nov weaker) | newest TP $9,576.
++Both: own $11,282 | first $12,374 | newest $10,276 (`research/shared_tp.py`).
+Newest-TP effect on older trades: 186 of 1,525 changed; of 169 winners, 79 became smaller wins and 19 became losses;
+17 losers became wins; none closed at a tiny profit (<$3; TP is never set below entry). Net -$673.
+
+## Second EA tester run (owner, v1.12), XAUUSDb M1, 1-29 Jan 2026, $3,000 (full mode, 0.01), 1-min OHLC
+Report: net +$102 (+$136 before commission/swap), 148 trades, win 36%, PF 1.08, max equity drop $629 (18.6%).
+Trades: `research/ea_test_jan2026_3k_trades.csv`. Python backtest same days: +$608, 159 trades.
+| Jan 1-29 | EA | Backtest |
+|---|---|---|
+| main + re | 12, -$188 | 14, -$110 |
+| zone E-A + re | 28, +$210 | 24, +$289 |
+| zone F-E + re | 24, -$60 | 42, +$161 |
+| 3 micro | 28, +$246 | 17, +$210 |
+| MZ | 22, +$15 | 13, +$51 |
+| flips | 34, -$87 (won 29%) | 49, +$7 |
+The double-fill bug is gone. Biggest gap: F-E zone - the EA placed no F-E orders on 8-9, 14, 23, 27 Jan where the
+backtest traded (about +$120 there), and took some the backtest did not. Likely a filter/zone difference; needs the tester
+Journal log (zone lines) to find. Flips lost again (2nd test).
+
+## Commission and swap (from the owner's v1.12 tester report, HFM XAUUSDb)
+Real costs at 0.01: commission $0.10 per trade; swap on buys -$0.74 per night (x3 Wednesday night); sells paid no swap
+in the test (worst case assumed -$0.74 too). Backtest already includes the spread. 2026 at 0.01:
+| | Chosen | +Both |
+|---|---|---|
+| Gross (backtest) | $10,276 | $11,310 |
+| Commission | -$222 | -$359 |
+| Swap (sells free / sells charged) | -$176 / -$388 | -$191 / -$483 |
+| Net | $9,878 / $9,666 | $10,760 / $10,467 |
+Costs take 4-7%, not the profit. The EA vs backtest gap in the Jan test ($136 vs $608 gross) is trade differences
+(F-E zone, flips, mains), not costs: costs were only $34 that month.
+
+## EA v1.13 (28 Nov 2026, owner): flips switched OFF
+Flips lost in both EA tests (Jan 2026: 21% and 29% win, -$61 and -$87). Code kept; `FLIPS_ON = false`.
+
+## IMPORTANT: zone backtest fills were partly unreal (found from the owner's v1.13 Journal, 28 Nov 2026)
+The Journal showed many zone triggers with no real order (e.g. F-E #48, #50, #62, #64, Jan 2026). Cause: when the
+swing high H is confirmed, price is often already above H. The EA cannot place a buy stop there and skips. The Python
+backtest still filled those trades AT H, a price that was already gone. `research/zone_gap_check.py`, 2026, 0.01:
+| | E-A zone | F-E zone |
+|---|---|---|
+| Trades / already past the level | 613 / 226 (37%) | 812 / 309 (38%) |
+| Backtest (as before) | $4,761 | $650 |
+| Skip those (EA today) | $2,996 | -$490 |
+| Enter at market instead | $4,220 | $16 |
+So about $2,900 of the chosen $10,276 came from impossible fills; realistic is about $7,400 (skip) to $9,100 (market).
+F-E is worth about $0 once fills are real. Next: EA enters at market when already past the level; re-check F-E.
+
+## GROSS vs NET FIX (28 Nov 2026): MT5 full year v1.13 vs backtest
+MT5 v1.13, 2026.01.01-11.27, $3,000, lots grew 0.01->0.05: net $7,110, PF 1.15, 36% win, 2,073 trades.
+Per 0.01 (each trade scaled to 0.01, costs included; `research/mt5_report_tags.py`): **+$4,623** (costs -$408).
+Backtest with old fills (at the level even if price already passed): $10,276. With REAL fills (zone entries
+bought at the bar open when price already passed, skip if > 0.5x risk; `CASTIMO_FILL=market`,
+`research/real_fills.py`): Chosen **$9,176**, 40% win, PF 1.47, min balance $880 (safe $1,320);
++Both $10,209, PF 1.37, min $903 (safe $1,354).
+By type, 2026 at 0.01 (`research/real_fills_by_type.py`):
+```
+type  MT5 tr   MT5 $  BT tr   BT $
+Z      268   1,229    379   2,803
+ZR     163     889    204   1,443
+F      336    -750    514     -39
+FR     176      85    284      45
+M+R     98     783    100   1,540
+ZM     418     432    286   1,221
+3M     614   1,956    402   2,164
+All  2,073   4,623  2,169   9,177
+```
+The F-E zone loses in both (MT5 -$750). MT5 takes fewer zone trades (skipped when price is past the level:
+fixed in EA v1.14 = market entry) but MORE micro-zone (ZM) and 3-micro trades than the backtest.
+EA v1.14: market entry when price is already past the level (same stop/target, max 0.5x risk away) +
+input InpFixedLot (test only, 0 = automatic lots) so MT5 and Python can be compared at 0.01.
