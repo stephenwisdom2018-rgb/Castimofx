@@ -3,20 +3,20 @@
 Stake rule: 0.5% of betting money per slip. Odds = my estimates (check real odds in app).
 Result: W = won, L = lost, V = void, ? = pending.
 
-## Sat 28 Nov 2026
+## Sat 28 Nov 2026 (v2: Over/Under 2.5 only, max 3 legs, each pick in max 3 slips, odds 5+)
 
 | Slip | Picks | Est. odds | Real odds | Stake | Result | P/L |
 |---|---|---|---|---|---|---|
-| 1 | Crewe v Grimsby O2.5 + Salford v Gillingham O2.5 + Aberdeen v Dundee O2.5 | 6.0 | | | ? | |
-| 2 | Hamburg v Bayern O3.5 + PSG v Lorient O3.5 + Botafogo v Bahia O1.5 | 6.5 | | | ? | |
-| 3 | QPR win & O2.5 + Mainz v Union U2.5 | 5.4 | | | ? | |
-| 4 | Arsenal v City BTTS + QPR v Sheff Utd BTTS + Salford O2.5 | 5.7 | | | ? | |
-| 5 | Hamburg O2.5 + PSG O2.5 + Crewe O2.5 + Aberdeen O2.5 | 6.8 | | | ? | |
-| 6 | Arsenal v City U2.5 + Everton v Liverpool U3.5 + Mainz U2.5 | 5.1 | | | ? | |
-| 7 | Frosinone win & O2.5 + Arsenal v City O1.5 + Everton U3.5 | 6.1 | | | ? | |
-| 8 | Bayern 3+ goals + Crewe v Grimsby BTTS + Botafogo O1.5 | 5.5 | | | ? | |
-| 9 | Man Utd v Brentford O2.5 + Salford O2.5 + QPR BTTS | 5.3 | | | ? | |
-| 10 | Crewe v Grimsby correct score 2-2 | 13 | | | ? | |
+| 1 | Crewe-Grimsby O2.5 + Aberdeen-Dundee O2.5 + Mainz-Union U2.5 | 5.8 | | | ? | |
+| 2 | Salford-Gillingham O2.5 + Arsenal-City U2.5 + Koln-Elversberg O2.5 | 6.4 | | | ? | |
+| 3 | QPR-Sheff Utd O2.5 + Colchester-York U2.5 + Botafogo-Bahia U2.5 | 5.5 | | | ? | |
+| 4 | Brighton-Newcastle O2.5 + Sunderland-Spurs O2.5 + Blackburn-Charlton U2.5 | 5.7 | | | ? | |
+| 5 | Fulham-Bournemouth O2.5 + Le Mans-Lille O2.5 + Crewe-Grimsby O2.5 | 5.4 | | | ? | |
+| 6 | Aberdeen-Dundee O2.5 + Arsenal-City U2.5 + Botafogo-Bahia U2.5 | 6.6 | | | ? | |
+| 7 | Mainz-Union U2.5 + Sunderland-Spurs O2.5 + Koln-Elversberg O2.5 | 5.5 | | | ? | |
+| 8 | Salford-Gillingham O2.5 + Colchester-York U2.5 + Blackburn-Charlton U2.5 | 6.0 | | | ? | |
+| 9 | QPR-Sheff Utd O2.5 + Brighton-Newcastle O2.5 + Le Mans-Lille O2.5 | 5.7 | | | ? | |
+| 10 | Fulham-Bournemouth O2.5 + Mainz-Union U2.5 + Aberdeen-Dundee O2.5 | 6.0 | | | ? | |
 
 ## Running totals
 
