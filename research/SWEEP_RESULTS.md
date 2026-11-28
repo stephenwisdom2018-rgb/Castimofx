@@ -1744,3 +1744,9 @@ Robust: day rule only 2026 $7,325 / 2025 $474 (min $337 / $443, worst day -$226 
 copies 2: $6,897 / $561 (min $328 / $399, worst day -$197 / -$149, green weeks 81% / 69%);
 max open 3: $5,425 / $205 (worst week -$94 / -$176, min $241 / $571). Chosen/+Both: copies 1-2 and max open 3-5
 cut 2025 profit a lot. Option: Robust + max 2 copies (a bit safer, -$428 in 2026, +$87 in 2025).
+
+### Flip re-test with quality hours + day rule (`research/flip_day_rule.py`, 0.01)
+Flips alone: 2026 624 flips 43% win +$315 (Robust 274, +$182); 2025 -$19 (Robust -$2) = about break-even.
+With the day rule: Chosen $6,568 -> $6,695 / 2025 $731 -> $1,080; +Both $7,909 -> $8,112 / $912 -> $1,388;
+Robust $7,325 -> $7,050 / $474 -> $586. Worst day 2026 worse: -$611 / -$601 / -$333 (was -$438 / -$428 / -$226).
+Small gain for Chosen / +Both, mixed for Robust, bigger worst days. Not adopted unless the owner wants it.
