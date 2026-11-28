@@ -18,12 +18,13 @@ def build(rr, with_db=False):
     tr = EAZ + MR.MAIN + (MR.DB if with_db else [])
     return [(x[0], x[1]) for x in tr] + MR.reentries(tr, 1, str(rr)) + Z.micro_zone(per=3, g_rsi=32, rr=rr)
 
-def daily(T, side_stop=None):
+def daily(T, side_stop=None, start='2026-01-02', end='2026-11-27'):
     s = pd.Series([p for t, p in T], index=pd.to_datetime([t for t, p in T])).sort_index()
-    s = s[s.index.year == 2026]
-    days = pd.bdate_range('2026-01-02', '2026-11-27')
+    s = s[(s.index >= start) & (s.index <= pd.Timestamp(end) + pd.Timedelta(days=1))]
+    days = pd.bdate_range(start, end)
     have = pd.Index(s.index.normalize().unique())
-    days = days[days.isin(have) | (days < '2026-08-01') | (days >= '2026-08-26')]   # skip the data hole
+    if start.startswith('2026'):
+        days = days[days.isin(have) | (days < '2026-08-01') | (days >= '2026-08-26')]   # old split files: data hole
     d = s.groupby(s.index.normalize()).sum().reindex(days, fill_value=0)
     eq = s.cumsum().to_numpy(); dd = -(eq - np.maximum.accumulate(np.r_[0, eq])[1:]).min()
     return {'Profit': f'${s.sum():,.0f}', 'Trade win': f'{100*(s>0).mean():.0f}%', 'Green days': f'{100*(d>0).mean():.0f}%',
