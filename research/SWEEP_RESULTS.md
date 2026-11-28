@@ -1604,3 +1604,15 @@ B30/S10  -4,734 / $5,142         -8,197  / $8,929
 B50/S10  -12,236 / $13,948       -16,880 / $18,429
 ```
 Win 60-73% but one basket stop loses many orders at once. REJECTED (normal exits: $7,043 / $8,391).
+
+### Owner idea v2: basket PER ENTRY, close all at the entry's own $ target (28 Nov 2026, `research/basket2.py`)
+True 2026, 0.01 per order, pendings every $S down to the entry's stop (x1) or 2x stop. Same-method baseline "1 order".
+```
+              Chosen $ / green d / worst day / min    +Both $ / green d / worst day / min
+1 order       5,740 51%  -378  1,026                  6,899 56%  -435  1,004
+S5 stop x1    4,635 57% -1,141 2,775                  5,022 57% -1,289 2,944
+S3 stop x1    4,518 58% -1,687 3,186                  5,898 59% -1,595 3,427
+S5 stop x2    3,129 64% -5,453 6,001                 -1,226 59% -6,333 6,954
+S3 stop x2   -2,622 68% -7,379 9,853                 -6,662 64% -7,166 12,792
+```
+More green days (up to 64-68%) and win 73-80%, but less profit and 3-12x the money needed. REJECTED.
