@@ -1738,3 +1738,9 @@ Robust 2026 $7,325 / 7,264 / 7,214 / 7,077 / 7,014 / 6,845 (min $337-$422); 2025
 Day rule alone already gives green weeks: Chosen 67% / 65% (2026 / 2025), +Both 77% / 69%, Robust 79% / 65%.
 Week break-even stop: Robust green weeks 88% / 73% but profit $7,325 -> $5,214 and $474 -> $58; +Both 2025 -$110.
 Week +$60/+$100 targets and -$60/-$100 caps: less profit, green weeks about the same. NOT adopted.
+
+### Money management 1: max copies / max open trades (`research/money_mgmt.py`, day rule on, 0.01)
+Robust: day rule only 2026 $7,325 / 2025 $474 (min $337 / $443, worst day -$226 / -$186);
+copies 2: $6,897 / $561 (min $328 / $399, worst day -$197 / -$149, green weeks 81% / 69%);
+max open 3: $5,425 / $205 (worst week -$94 / -$176, min $241 / $571). Chosen/+Both: copies 1-2 and max open 3-5
+cut 2025 profit a lot. Option: Robust + max 2 copies (a bit safer, -$428 in 2026, +$87 in 2025).
