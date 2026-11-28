@@ -1724,3 +1724,8 @@ Robust +20&BE  7,325   60%    337    474     57%    443
 ```
 Max 4-5 trades/day: profit falls by more than half in 2026 (rejected).
 Robust +20&BE: more profit in both years, more green days, smallest money needed (min $337, safe ~$506).
+
+### Owner day plan v2: protect profit (stop after giving back $G from the day's best) (`research/day_trail.py`)
+2026: helps Chosen / +Both a little (+Both give back 40 / +20: $8,706, drawdown $493 vs $7,909 / $672), Robust no.
+2025: worse in EVERY version (e.g. +Both $912 -> $459-$749, Robust $474 -> $203-$401).
+KEEP the current rule (+$20 target, or break-even after a red start): best over both years.
