@@ -1547,3 +1547,21 @@ Trades/day  6.3      11.8    13.7        19.2
 Monthly Chosen: Jan $298, Feb $2,251, Mar $1,396, Apr $125, May $997, Jun $470, Jul $2,009, Aug $34,
 Sep -$113, Oct -$413, Nov -$10. Sep-Nov now loses in the backtest too, like MT5 (MT5 v1.13 Chosen at 0.01: $4,623).
 The old $10,276 came from impossible fills (~$1,100) and data holes / file restarts (~$2,100).
+
+### Day rules on the true 2026 data (28 Nov 2026, `research/day_rules.py`, 0.01)
+```
+rule          Chosen: $ / green / worst / min   +Both: $ / green / worst / min
+none          7,043 53% -372  867               8,391 57% -428  862
+dedupe copies 3,545 51% -169  494               4,426 53% -211  548
+3 loss/side   4,050 48% -287  892               4,604 50% -314  749
+cap -$100/day 3,296 50% -406 1,295              4,552 53% -448 1,468
+trend H4      3,625 51% -252  684               4,787 54% -279  876
+trend D1      5,911 50% -468  984               7,788 54% -518 1,177 (0 losing months)
+mom 24h       4,871 48% -225  624               6,190 54% -254  760
+no ZM         6,448 52% -356  835               7,796 58% -412  881
+no F          7,199 53% -372  822               8,547 56% -428  680
+```
+No rule raises green days; every rule that cuts the worst day cuts profit about as much.
+### Fixed daily pay from the account (`research/daily_pay.py`, 2026, 0.01, day-end balances)
+$20/day every weekday: Chosen ends +$2,363 above the start, +Both +$3,711, +Both no F +$3,866.
+Start money needed (day-end only): $392-$575; use the safe balance (~$1,300-1,450) to cover open trades.
