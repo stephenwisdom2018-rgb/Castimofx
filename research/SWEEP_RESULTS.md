@@ -1565,3 +1565,11 @@ No rule raises green days; every rule that cuts the worst day cuts profit about 
 ### Fixed daily pay from the account (`research/daily_pay.py`, 2026, 0.01, day-end balances)
 $20/day every weekday: Chosen ends +$2,363 above the start, +Both +$3,711, +Both no F +$3,866.
 Start money needed (day-end only): $392-$575; use the safe balance (~$1,300-1,450) to cover open trades.
+
+### 2% of the deposit paid every weekday, deposit returned at year end (`research/pay_2pct.py`, 2026, 0.01)
+```
+deposit per 0.01   $1,000         $1,500        $2,000
+Chosen left        +$2,363        +$23          -$2,317 (account empty in Nov)
++Both no F left    +$3,867        +$1,527       -$813
+```
+Works only with 0.01 per ~$1,000 or less. Sep-Nov the balance fell every month in every case.
