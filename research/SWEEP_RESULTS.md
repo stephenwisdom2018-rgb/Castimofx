@@ -1680,3 +1680,22 @@ Safe bal    $1,267       $1,510   $1,263       $1,421
 ```
 Without the F-E zone: 2026 $6,506 / +DB $7,433 (min $693 / $670); 2025 $220 / $215 (min $580 / $668).
 EA v1.17: input InpQuality (default on) = no new trades 08:00-13:59 server.
+
+## ON-HOLD RE-TEST on TRUE data (28 Nov 2026), real fills, quality hours on (no new trades 08-13), 0.01
+Close-on-opposite (`research/opposite_real.py`): 2026 Chosen no stop -$9,273 (min $12,271), $100 stop $1,032,
+$50 stop $2,499; +Both $1,338 / $1,075 / $2,920 (min $1,747-$3,320). 2025: Chosen $293 / $173 / -$32, +Both
+-$499 / -$553 / -$613. REJECTED (the old +$16k used touch fills and split files).
+Robust / Max exact (`research/onhold_exact.py`; Max with CASTIMO_NO_CONS=1):
+```
+             Chosen  +Both   Robust  Max
+2026 profit  $7,651  $8,578  $6,902  $7,868
+2025 profit  $138    $132    $225    $1,379
+Trades/day   8.6     12.2    8.1     19.9
+Green wks 26 67%     73%     67%     62%
+Worst day 26 -$305   -$321   -$222   -$936
+Worst wk 26  -$329   -$351   -$243   -$820
+Min bal 26   $845    $1,007  $549    $1,472
+Safe bal 26  $1,267  $1,510  $823    $2,208
+Min bal 25   $842    $948    $503    $768
+```
+Robust = smallest risk (best profit per $ of safe balance); Max = only one clearly positive in 2025.
