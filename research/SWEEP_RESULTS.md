@@ -1648,3 +1648,16 @@ Min bal     $880    $1,026  $690
 Safe bal    $1,320  $1,539  $1,034
 ```
 (+Both with the old touch fills for the double bottom was $8,391.)
+
+## WARNING (28 Nov 2026): 2025 with real fills LOSES (`research/full_2025.py`, Feb-Jul 2025, 0.01)
+One continuous 2025 file (Jan = warm-up), real fills:
+```
+            Chosen   +Both    +Both no F-E
+Profit      -$800    -$607    -$293
+PF          0.92     0.96     0.98
+Green days  47%      53%      53%
+Min bal     $1,456   $1,860   $1,333
+```
+Monthly Chosen: Feb +$229, Mar +$243, Apr -$444, May -$263, Jun -$582, Jul +$17.
+(The old "Robust 2025 $1,957" used touch fills.) With Sep-Nov 2026 also losing, the edge is NOT stable:
+it made money in strong trends (Feb-Mar, Jul 2026) and loses in other markets.
