@@ -1501,3 +1501,17 @@ The F-E zone loses in both (MT5 -$750). MT5 takes fewer zone trades (skipped whe
 fixed in EA v1.14 = market entry) but MORE micro-zone (ZM) and 3-micro trades than the backtest.
 EA v1.14: market entry when price is already past the level (same stop/target, max 0.5x risk away) +
 input InpFixedLot (test only, 0 = automatic lots) so MT5 and Python can be compared at 0.01.
+
+### Trade-by-trade match, MT5 v1.13 vs backtest (28 Nov 2026, all at 0.01)
+Trades taken by BOTH give the same money (main $815 vs $783, Z $2,652 vs $2,711, ZM $1,031 vs $1,084,
+3M $2,037 vs $2,107): the EA copies the rules correctly. The gap comes from trades only one side has:
+- Backtest data holes: no M1 for Dec 2025, 1-25 Aug 2026 and 25-27 Nov, and each data file restarts the
+  structures. MT5 sees those structures; their trades mostly LOST (MT5-only ZM 136 tr -$599, Z 163 tr -$533,
+  most in Aug-Nov). So the backtest was too optimistic there.
+- MT5 missed winners the backtest has (main 27 tr +$757 incl. 6 Feb +$350; zone 315 tr +$1,535): partly the
+  "price already past the level" skips, fixed in v1.14.
+Monthly MT5 vs backtest: Jan -$278/+$391, Feb $1,413/$2,251, Mar $1,340/$1,396, Apr $242/-$312, May $681/$997,
+Jun $604/$470, Jul $1,138/$2,040, Aug -$114/$590, Sep $21/$459, Oct -$351/$309, Nov -$73/$586.
+MT5 at 0.01 by removal: all $4,623 (min $761) | no F/FR $5,289, PF 1.41 (min $780, safe $1,170) |
+no F/FR/ZM $4,857, PF 1.52 (min $534). EA v1.15: F-E zone switched off (FE_ON = false).
+Next: one continuous M1 file (Dec 2025 - Nov 2026) so the backtest sees exactly what MT5 sees.
