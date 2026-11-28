@@ -28,6 +28,7 @@
 //|   FLIP  a main/zone trade hits its stop -> trade the other way:   |
 //|         stop = half its risk, target = 1.5x that stop.           |
 //|  Filters: RSI side of 50, no new trades at 15:00 / 23:00 server, |
+//|  (v1.17 quality) no new trades 08:00-13:59 server,               |
 //|  no trades when the last hour is tight (< 0.6x normal) or when   |
 //|  ADX(14) on M15 is 25-35.                                        |
 //|  Sells mirror everything.                                        |
@@ -36,7 +37,7 @@
 //+------------------------------------------------------------------+
 #property copyright "Castimofx.com"
 #property link      "https://castimofx.com"
-#property version   "1.16"
+#property version   "1.17"
 #property description "Castimofx gold sweep bot: Chosen / +Both (double bottom). Logic on M1, any chart timeframe."
 
 #include <Trade/Trade.mqh>
@@ -57,6 +58,7 @@ enum ENUM_CFX_VERSION
    CFX_V_BOTH_NOFE = 2 // +Both without the F-E zone
   };
 input ENUM_CFX_VERSION InpVersion   = CFX_V_CHOSEN; // Version
+input bool             InpQuality   = true;          // Quality: no new trades 08:00-13:59 server time
 
 input group "Prop firm protection"
 input double           InpPropStart      = 100000;       // Prop: starting balance (lot = 0.07 per $100,000, automatic)
@@ -255,6 +257,7 @@ bool Keep(int t, int d)
    if(d == -1 && r > 50) return false;
    MqlDateTime dt; TimeToStruct(Tt(t), dt);
    if(dt.hour == 15 || dt.hour == 23) return false;
+   if(InpQuality && dt.hour >= 8 && dt.hour <= 13) return false;   // v1.17: London morning loses in 2025 and 2026
    double rr = RangeRatio(t);
    if(rr != EMPTY_VALUE && rr < 0.6) return false;
    double ad = ADXB[IX(t)];
@@ -1204,6 +1207,7 @@ bool AllowedNow(int t, int d, int type, double risk)
    if(d == -1 && r > 50) return false;
    MqlDateTime dt; TimeToStruct(Tt(t) + 60, dt);
    if(dt.hour == 15 || dt.hour == 23) return false;
+   if(InpQuality && dt.hour >= 8 && dt.hour <= 13) return false;   // v1.17: London morning loses in 2025 and 2026
    double rr = RangeRatio(t);
    if(rr != EMPTY_VALUE && rr < 0.6) return false;
    double ad = ADXB[IX(t)];

@@ -1661,3 +1661,22 @@ Min bal     $1,456   $1,860   $1,333
 Monthly Chosen: Feb +$229, Mar +$243, Apr -$444, May -$263, Jun -$582, Jul +$17.
 (The old "Robust 2025 $1,957" used touch fills.) With Sep-Nov 2026 also losing, the edge is NOT stable:
 it made money in strong trends (Feb-Mar, Jul 2026) and loses in other markets.
+
+## QUALITY TRADES (28 Nov 2026): what the best trades have in common (`research/quality.py`, `research/quality_run.py`)
+Traits checked on every Chosen trade, 2026 AND 2025 (a trait must hold in both years): type, side, hour, weekday,
+risk, RSI, ADX, last-hour range, H4/D1 trend, 4h/24h move, yesterday's range, trades already today.
+Only clear one in both years: trades opened 08:00-13:59 server (London morning) lose: 2026 -$1,109, 2025 -$837.
+(Asia hours 00-04 and evening 19-22 win in both. F-E zone loses in both. Others flip between years.)
+Exact backtest with no new trades 08:00-13:59 (CASTIMO_SKIP_HOURS=8-13), real fills, 0.01:
+```
+            2026 Chosen  +Both    2025 Chosen  +Both
+Profit      $7,651       $8,578   $138         $132
+  (before)  $7,043       $7,760   -$800        -$607
+Trades/day  8.6          12.2     8.3          14.9
+Green wks   67%          73%      46%          58%
+Worst wk    -$329        -$351    -$233        -$280
+Min bal     $845         $1,007   $842         $948
+Safe bal    $1,267       $1,510   $1,263       $1,421
+```
+Without the F-E zone: 2026 $6,506 / +DB $7,433 (min $693 / $670); 2025 $220 / $215 (min $580 / $668).
+EA v1.17: input InpQuality (default on) = no new trades 08:00-13:59 server.
