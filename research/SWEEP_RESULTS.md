@@ -1461,3 +1461,6 @@ in the test (worst case assumed -$0.74 too). Backtest already includes the sprea
 | Net | $9,878 / $9,666 | $10,760 / $10,467 |
 Costs take 4-7%, not the profit. The EA vs backtest gap in the Jan test ($136 vs $608 gross) is trade differences
 (F-E zone, flips, mains), not costs: costs were only $34 that month.
+
+## EA v1.13 (28 Nov 2026, owner): flips switched OFF
+Flips lost in both EA tests (Jan 2026: 21% and 29% win, -$61 and -$87). Code kept; `FLIPS_ON = false`.

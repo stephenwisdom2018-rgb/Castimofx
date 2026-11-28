@@ -33,7 +33,7 @@
 //+------------------------------------------------------------------+
 #property copyright "Castimofx.com"
 #property link      "https://castimofx.com"
-#property version   "1.12"
+#property version   "1.13"
 #property description "Castimofx gold sweep bot (C+3m+MZ+FE). Logic on M1, any chart timeframe."
 
 #include <Trade/Trade.mqh>
@@ -63,6 +63,7 @@ input bool             InpLog            = true;         // Log signals in the E
 //   up to $10,000      : 0.01 per $2,000             ($2k 0.01, $4k 0.02, $10k 0.05)
 //   $10,000 - $50,000  : 0.05 + 0.01 per $4,000      ($30k 0.10, $50k 0.15)
 //   above $50,000      : 0.15 + 0.01 per $8,000      ($100k 0.21, $250k 0.40, $500k 0.71)
+const bool   FLIPS_ON        = false;   // flips switched off in v1.13 (lost in both EA tests)
 const int    LOT_HALF_AFTER  = 3;       // half lot after 3 losses in a row
 const double PROP_LOT_PER_1K = 0.0007;  // prop: 0.07 lot per $100,000
 const double FLIP_STOP       = 0.5;     // flip: stop = half the stopped trade's risk
@@ -1247,7 +1248,7 @@ void OnTradeTransaction(const MqlTradeTransaction &trans, const MqlTradeRequest 
    SetMode();
    int d = -dOld;
    double fr = risk * FLIP_STOP;
-   if((g_mask & T_FLIP) == 0 || fr > g_cap || CountOpen() >= g_maxOpen) return;   // flips: $200 mode and up, prop
+   if(!FLIPS_ON || (g_mask & T_FLIP) == 0 || fr > g_cap || CountOpen() >= g_maxOpen) return;   // flips: $200 mode and up, prop
    double lot = LotNow();
    double price = d == 1 ? SymbolInfoDouble(_Symbol, SYMBOL_ASK) : SymbolInfoDouble(_Symbol, SYMBOL_BID);
    if(!MarginOk(d, lot, price)) { if(InpLog) Print("CFX: not enough margin for a flip"); return; }
