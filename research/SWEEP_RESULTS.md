@@ -1464,3 +1464,16 @@ Costs take 4-7%, not the profit. The EA vs backtest gap in the Jan test ($136 vs
 
 ## EA v1.13 (28 Nov 2026, owner): flips switched OFF
 Flips lost in both EA tests (Jan 2026: 21% and 29% win, -$61 and -$87). Code kept; `FLIPS_ON = false`.
+
+## IMPORTANT: zone backtest fills were partly unreal (found from the owner's v1.13 Journal, 28 Nov 2026)
+The Journal showed many zone triggers with no real order (e.g. F-E #48, #50, #62, #64, Jan 2026). Cause: when the
+swing high H is confirmed, price is often already above H. The EA cannot place a buy stop there and skips. The Python
+backtest still filled those trades AT H, a price that was already gone. `research/zone_gap_check.py`, 2026, 0.01:
+| | E-A zone | F-E zone |
+|---|---|---|
+| Trades / already past the level | 613 / 226 (37%) | 812 / 309 (38%) |
+| Backtest (as before) | $4,761 | $650 |
+| Skip those (EA today) | $2,996 | -$490 |
+| Enter at market instead | $4,220 | $16 |
+So about $2,900 of the chosen $10,276 came from impossible fills; realistic is about $7,400 (skip) to $9,100 (market).
+F-E is worth about $0 once fills are real. Next: EA enters at market when already past the level; re-check F-E.
