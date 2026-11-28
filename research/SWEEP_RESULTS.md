@@ -1733,3 +1733,8 @@ KEEP the current rule (+$20 target, or break-even after a red start): best over 
 ### Day target size (`research/day_target_grid.py`): +$20 / 30 / 40 / 60 / 80 / 100 (all with break-even after a red start)
 Robust 2026 $7,325 / 7,264 / 7,214 / 7,077 / 7,014 / 6,845 (min $337-$422); 2025 $474 / 323 / 278 / 329 / 364 / 380.
 +$20 is best or equal in every version and both years (more green days, smaller min balance). KEEP +$20.
+
+### Week rule on top of the day rule (`research/week_rule.py`, 0.01)
+Day rule alone already gives green weeks: Chosen 67% / 65% (2026 / 2025), +Both 77% / 69%, Robust 79% / 65%.
+Week break-even stop: Robust green weeks 88% / 73% but profit $7,325 -> $5,214 and $474 -> $58; +Both 2025 -$110.
+Week +$60/+$100 targets and -$60/-$100 caps: less profit, green weeks about the same. NOT adopted.
