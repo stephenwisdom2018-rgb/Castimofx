@@ -1592,3 +1592,15 @@ wild 2.5x range 6,332 53% -383 1,039 (90 skipped)    7,400 59% -454  976
 ```
 REJECTED: every live crash filter loses profit and does not cut the worst week or the min balance
 (the trades against a fast move also catch the big turns).
+
+### Owner idea: BASKET / grid (28 Nov 2026, `research/basket.py`, true 2026, 0.01 per order)
+Of 3,022 entries, 2,772 reach +$10 within 4 days; how far against us first: half $8, 70% $19, 80% $31, 90% $57, 95% $88.
+Basket stop $B, pendings every $S, each $10 TP:
+```
+         Chosen $ / min bal      +Both $ / min bal
+B10/S5   +165   / $1,167         +913    / $1,287
+B20/S10  -1,851 / $2,496         -2,331  / $3,494
+B30/S10  -4,734 / $5,142         -8,197  / $8,929
+B50/S10  -12,236 / $13,948       -16,880 / $18,429
+```
+Win 60-73% but one basket stop loses many orders at once. REJECTED (normal exits: $7,043 / $8,391).
