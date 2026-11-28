@@ -1515,3 +1515,17 @@ Jun $604/$470, Jul $1,138/$2,040, Aug -$114/$590, Sep $21/$459, Oct -$351/$309, 
 MT5 at 0.01 by removal: all $4,623 (min $761) | no F/FR $5,289, PF 1.41 (min $780, safe $1,170) |
 no F/FR/ZM $4,857, PF 1.52 (min $534). EA v1.15: F-E zone switched off (FE_ON = false).
 Next: one continuous M1 file (Dec 2025 - Nov 2026) so the backtest sees exactly what MT5 sees.
+
+### Daily green test (28 Nov 2026, owner: clients need money every day; `research/daily_green.py`)
+Real fills, F-E off, 2026 at 0.01. Smaller targets for zone/MZ/3-micro (main unchanged):
+```
+            C 2R   +DB 2R  C 1R   +DB 1R  C 0.5R +DB 0.5R
+Profit      $7,998 $9,032  $3,678 $4,531  $2,494 $3,500
+Trade win   44%    39%     54%    46%     69%    56%
+Green days  49%    58%     51%    58%     52%    57%
+Avg day     $37    $41     $17    $21     $11    $16
+Worst day   -$192  -$187   -$331  -$264   -$251  -$184
+Min bal     $555   $617    $448   $900    $330   $835
+```
+Higher trade win does NOT give more green days (stays 49-58%); it only shrinks the average day.
+MT5 trade list: daily target / daily loss stop / one trade at a time / stop after N losses: green days 45-50%.
