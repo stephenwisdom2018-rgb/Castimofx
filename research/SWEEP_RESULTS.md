@@ -1760,3 +1760,7 @@ Robust safe (1.5x) = $652 (2026) / $741 (2025).
 2026: +$11,237 -> $12,237, lot 0.01 -> 0.05, green weeks 75%, worst week -$627, max drawdown with open trades
 $1,563 (12% of the $13,179 peak, Nov), lowest balance $751 (Jan). 2025 (Feb-Jul): +$238 -> $1,238, lot 0.01,
 green weeks 69%, max drawdown $619 (38% of the $1,646 peak), lowest balance $991.
+
+Flat 0.01 per $1,000 (`research/lot_weekly.py 2026 1000 1000`): 2026 $1,000 -> $79,835 (lot up to 0.90), green weeks 77%,
+worst week -$7,306, max drawdown with open trades $21,909 (24% of the $92,792 peak), lowest balance $751 (Jan).
+2025: lot never above 0.01 (balance < $2,000): $1,238, max drawdown $619 (38%).

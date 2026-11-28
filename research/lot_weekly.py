@@ -1,13 +1,15 @@
 """Robust + quality hours + day rule WITH the lot plan (EA LotUnits: 0.01 per $2,000 up to $10k, then per $4k / $8k;
 half lot after 3 losses in a row; min 0.01). Day target +$20 per 0.01 of the day's lot. Start $1,000 (arg 2).
-Weekly results + max drawdown INCLUDING open trades (hourly). True data, real fills. Arg: 2026 or 2025, start."""
+Weekly results + max drawdown INCLUDING open trades (hourly). True data, real fills. Arg: 2026 or 2025, start [, PER for a flat 0.01 per $PER plan]."""
 import sys
 sys.path.insert(0, '.')
 import numpy as np, pandas as pd
 import research.float_dd as FD, research.day_stop as DS
 START = float(sys.argv[2]) if len(sys.argv) > 2 else 1000.0
+PER = float(sys.argv[3]) if len(sys.argv) > 3 else None     # optional flat plan: 0.01 per $PER (e.g. 1000)
 
 def units(bal):
+    if PER: return max(1.0, np.floor(bal / PER))
     u = np.floor(bal / 2000) if bal <= 10000 else (5 + np.floor((bal - 10000) / 4000) if bal <= 50000 else 15 + np.floor((bal - 50000) / 8000))
     return max(1.0, u)
 
