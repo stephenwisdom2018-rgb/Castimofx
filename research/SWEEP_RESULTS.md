@@ -1764,3 +1764,7 @@ green weeks 69%, max drawdown $619 (38% of the $1,646 peak), lowest balance $991
 Flat 0.01 per $1,000 (`research/lot_weekly.py 2026 1000 1000`): 2026 $1,000 -> $79,835 (lot up to 0.90), green weeks 77%,
 worst week -$7,306, max drawdown with open trades $21,909 (24% of the $92,792 peak), lowest balance $751 (Jan).
 2025: lot never above 0.01 (balance < $2,000): $1,238, max drawdown $619 (38%).
+
+Constant 0.40 lot from $2,000 (`lot_weekly.py 2026 2000 fix40`): 2026 BLOWN on 8 Jan (week of 5 Jan -$7,534,
+equity -$7,946). 2025: survives but drawdown $24,750 = 89% of the $27,827 peak (lowest $1,659).
+Safe constant lot for $2,000 = $2,000 / (1.5 x $494) = 0.02.

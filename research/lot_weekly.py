@@ -6,9 +6,12 @@ sys.path.insert(0, '.')
 import numpy as np, pandas as pd
 import research.float_dd as FD, research.day_stop as DS
 START = float(sys.argv[2]) if len(sys.argv) > 2 else 1000.0
-PER = float(sys.argv[3]) if len(sys.argv) > 3 else None     # optional flat plan: 0.01 per $PER (e.g. 1000)
+ARG3 = sys.argv[3] if len(sys.argv) > 3 else ''
+FIX = float(ARG3[3:]) if ARG3.startswith('fix') else None   # 'fix40' = constant 0.40 lot (no half-lot rule)
+PER = float(ARG3) if ARG3 and not FIX else None              # optional flat plan: 0.01 per $PER (e.g. 1000)
 
 def units(bal):
+    if FIX: return FIX
     if PER: return max(1.0, np.floor(bal / PER))
     u = np.floor(bal / 2000) if bal <= 10000 else (5 + np.floor((bal - 10000) / 4000) if bal <= 50000 else 15 + np.floor((bal - 50000) / 8000))
     return max(1.0, u)
@@ -26,7 +29,7 @@ for e, ex, p, d, ent in X:
     for q in reversed(closed):
         if q[2] < 0: streak += 1
         else: break
-    if streak >= 3: u = max(1.0, np.floor(u / 2))
+    if streak >= 3 and not FIX: u = max(1.0, np.floor(u / 2))
     taken.append((e, ex, p, d, ent, u))
 
 c, grid, gi = FD.c, FD.grid, FD.gi
@@ -35,6 +38,8 @@ for e, ex, p, d, ent, u in taken:
     a = np.searchsorted(grid, e); b = np.searchsorted(grid, ex)
     if b > a: eq[a:b] += (c[gi[a:b]] - ent) * d * u
     eq[b:] += p * u
+blown = np.nonzero(eq <= 0)[0]
+if len(blown): print('ACCOUNT BLOWN (equity <= 0) on', grid[blown[0]])
 peak = np.maximum.accumulate(eq); dd = peak - eq; k = dd.argmax()
 s = pd.Series([q[2] * q[5] for q in taken], index=[q[1] for q in taken]).sort_index()
 lots = pd.Series([q[5] for q in taken], index=[q[0] for q in taken])
