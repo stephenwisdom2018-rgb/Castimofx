@@ -1616,3 +1616,14 @@ S5 stop x2    3,129 64% -5,453 6,001                 -1,226 59% -6,333 6,954
 S3 stop x2   -2,622 68% -7,379 9,853                 -6,662 64% -7,166 12,792
 ```
 More green days (up to 64-68%) and win 73-80%, but less profit and 3-12x the money needed. REJECTED.
+
+### Owner idea v3: basket with STOP orders (add with the move) (28 Nov 2026, `research/basket3.py`, 2026, 0.01/order)
+```
+           Chosen $ / win / worst day / min      +Both $ / win / worst day / min
+1 order    5,869 36%  -378 1,026                 7,028 36%  -435 1,004
+stops $2   1,680 58% -1,169 3,254                1,501 57% -1,169 4,973
+stops $3   1,492 53% -1,459 3,853                  635 52% -1,665 4,872
+stops $5     637 48% -1,964 4,195                  595 47% -1,964 3,908
+stops $10  4,293 42% -1,005 1,872                5,224 41% -1,035 2,680
+```
+REJECTED: the basket reaches the $ target early (runners cut), and reversals hit the stop with 2-4 orders.
