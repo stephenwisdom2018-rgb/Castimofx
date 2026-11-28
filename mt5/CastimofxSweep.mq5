@@ -33,8 +33,8 @@
 //+------------------------------------------------------------------+
 #property copyright "Castimofx.com"
 #property link      "https://castimofx.com"
-#property version   "1.14"
-#property description "Castimofx gold sweep bot (C+3m+MZ+FE). Logic on M1, any chart timeframe."
+#property version   "1.15"
+#property description "Castimofx gold sweep bot (C+3m+MZ, F-E zone off). Logic on M1, any chart timeframe."
 
 #include <Trade/Trade.mqh>
 
@@ -64,6 +64,7 @@ input double           InpFixedLot       = 0;            // Test only: fixed lot
 //   up to $10,000      : 0.01 per $2,000             ($2k 0.01, $4k 0.02, $10k 0.05)
 //   $10,000 - $50,000  : 0.05 + 0.01 per $4,000      ($30k 0.10, $50k 0.15)
 //   above $50,000      : 0.15 + 0.01 per $8,000      ($100k 0.21, $250k 0.40, $500k 0.71)
+const bool   FE_ON           = false;   // v1.15: F-E zone off (lost -$750 at 0.01 in the MT5 2026 test)
 const bool   FLIPS_ON        = false;   // flips switched off in v1.13 (lost in both EA tests)
 const int    LOT_HALF_AFTER  = 3;       // half lot after 3 losses in a row
 const double PROP_LOT_PER_1K = 0.0007;  // prop: 0.07 lot per $100,000
@@ -675,7 +676,7 @@ void AddZones(ALevel &a)
    if((a.E - a.A) * a.d <= 0) return;
    for(int region = 0; region < 2; region++)
      {
-      if(region == 1 && (a.F - a.E) * a.d <= 0) continue;
+      if(region == 1 && (!FE_ON || (a.F - a.E) * a.d <= 0)) continue;
       CZone *z = new CZone;
       z.id = ++zone_seq; z.d = a.d; z.region = region; z.A = a.A; z.E = a.E; z.F = a.F; z.depth = (a.E - a.A) * a.d;
       z.t0 = a.t0; z.endBar = a.t0 + ZONE_BARS; z.searching = true; z.taken = 0; z.searchFrom = a.t0;
