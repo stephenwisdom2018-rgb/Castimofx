@@ -3,20 +3,22 @@
 Stake rule: 0.5% of betting money per slip. Odds = my estimates (check real odds in app).
 Result: W = won, L = lost, V = void, ? = pending.
 
-## Sat 28 Nov 2026 (v2: Over/Under 2.5 only, max 3 legs, each pick in max 3 slips, odds 5+)
+## Sat 28 Nov 2026 (v3: fixtures re-checked; v1/v2 wrongly used Sunday PL games)
+
+O/U 2.5 only, max 3 legs, each pick in max 3 slips, est. odds 5+.
 
 | Slip | Picks | Est. odds | Real odds | Stake | Result | P/L |
 |---|---|---|---|---|---|---|
-| 1 | Crewe-Grimsby O2.5 + Aberdeen-Dundee O2.5 + Mainz-Union U2.5 | 5.8 | | | ? | |
-| 2 | Salford-Gillingham O2.5 + Arsenal-City U2.5 + Koln-Elversberg O2.5 | 6.4 | | | ? | |
-| 3 | QPR-Sheff Utd O2.5 + Colchester-York U2.5 + Botafogo-Bahia U2.5 | 5.5 | | | ? | |
-| 4 | Brighton-Newcastle O2.5 + Sunderland-Spurs O2.5 + Blackburn-Charlton U2.5 | 5.7 | | | ? | |
-| 5 | Fulham-Bournemouth O2.5 + Le Mans-Lille O2.5 + Crewe-Grimsby O2.5 | 5.4 | | | ? | |
-| 6 | Aberdeen-Dundee O2.5 + Arsenal-City U2.5 + Botafogo-Bahia U2.5 | 6.6 | | | ? | |
-| 7 | Mainz-Union U2.5 + Sunderland-Spurs O2.5 + Koln-Elversberg O2.5 | 5.5 | | | ? | |
-| 8 | Salford-Gillingham O2.5 + Colchester-York U2.5 + Blackburn-Charlton U2.5 | 6.0 | | | ? | |
-| 9 | QPR-Sheff Utd O2.5 + Brighton-Newcastle O2.5 + Le Mans-Lille O2.5 | 5.7 | | | ? | |
-| 10 | Fulham-Bournemouth O2.5 + Mainz-Union U2.5 + Aberdeen-Dundee O2.5 | 6.0 | | | ? | |
+| 1 | ManUtd-Brentford O + Leeds-Coventry U + Aberdeen-Dundee O | 6.0 | | | ? | |
+| 2 | QPR-SheffUtd O + Crewe-Grimsby O + Salford-Gillingham O | 5.7 | | | ? | |
+| 3 | Ipswich-Villa O + Motherwell-Hibs U + Torino-Lazio U | 5.3 | | | ? | |
+| 4 | Angers-Lens U + LeHavre-Strasbourg O + LeMans-Lille O | 5.5 | | | ? | |
+| 5 | Nice-Troyes O + SheffWed-Reading U + ManUtd-Brentford O | 5.5 | | | ? | |
+| 6 | Leeds-Coventry U + QPR-SheffUtd O + Ipswich-Villa O | 6.0 | | | ? | |
+| 7 | Aberdeen-Dundee O + Salford-Gillingham O + Motherwell-Hibs U | 6.5 | | | ? | |
+| 8 | Crewe-Grimsby O + LeHavre-Strasbourg O + SheffWed-Reading U | 5.8 | | | ? | |
+| 9 | LeMans-Lille O + Nice-Troyes O + Leeds-Coventry U | 6.2 | | | ? | |
+| 10 | Torino-Lazio U + Angers-Lens U + Aberdeen-Dundee O | 5.2 | | | ? | |
 
 ## Running totals
 
