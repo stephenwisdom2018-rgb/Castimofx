@@ -9,6 +9,7 @@
 - ALL tests (Python and MT5) are done at a fixed 0.01 lot before any lot sizing (EA: InpFixedLot=0.01).
 - Always include the minimum account balance at 0.01 (biggest $ drop with open trades; safe = 1.5x) when reporting a version. Owner goal: safe at $100.
 - Keep replies to the user short and simple.
+- Owner understands best this format: a long narrow table (e.g. every week: Week | Chosen | +Both), then a small Totals table (incl. min balance + safe), then 2-3 short "What it shows" bullets.
 - Every new test must be run on BOTH versions: "Chosen" and "+Both" (chosen + F-E zone + double bottom $2, normal stops; `research/combo_hold.py`), and shown side by side in a narrow table (owner reads on a phone).
 
 ## Project notes
