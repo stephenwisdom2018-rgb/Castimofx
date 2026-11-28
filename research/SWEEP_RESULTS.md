@@ -1627,3 +1627,9 @@ stops $5     637 48% -1,964 4,195                  595 47% -1,964 3,908
 stops $10  4,293 42% -1,005 1,872                5,224 41% -1,035 2,680
 ```
 REJECTED: the basket reaches the $ target early (runners cut), and reversals hit the stop with 2-4 orders.
+
+### Basket spacing $1-$5 (28 Nov 2026, `research/basket_spacing.py`, 2026, 0.01/order)
+Limits (against us): Chosen $2,711/$4,827/$4,518/$3,033/$4,635 for $1-$5; +Both $5,409/$7,174/$5,898/$4,335/$5,022.
+Best +Both limits $2: $7,174, 62% green days, worst day -$2,513, min bal $4,877 (1 order: $7,028, 56%, -$435, $1,004).
+Stops (with the move): Chosen -$1,391/$1,680/$1,492/-$2,040/$637; +Both -$4,436/$1,501/$635/-$2,379/$595.
+REJECTED: limits $2 = same profit for ~5x the money; stops always worse.
