@@ -1729,3 +1729,7 @@ Robust +20&BE: more profit in both years, more green days, smallest money needed
 2026: helps Chosen / +Both a little (+Both give back 40 / +20: $8,706, drawdown $493 vs $7,909 / $672), Robust no.
 2025: worse in EVERY version (e.g. +Both $912 -> $459-$749, Robust $474 -> $203-$401).
 KEEP the current rule (+$20 target, or break-even after a red start): best over both years.
+
+### Day target size (`research/day_target_grid.py`): +$20 / 30 / 40 / 60 / 80 / 100 (all with break-even after a red start)
+Robust 2026 $7,325 / 7,264 / 7,214 / 7,077 / 7,014 / 6,845 (min $337-$422); 2025 $474 / 323 / 278 / 329 / 364 / 380.
++$20 is best or equal in every version and both years (more green days, smaller min balance). KEEP +$20.
