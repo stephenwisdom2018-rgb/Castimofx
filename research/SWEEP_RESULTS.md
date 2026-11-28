@@ -1580,3 +1580,15 @@ Fixed exits on the same entries (both hit in one candle = loss): Chosen TP2/SL2 
 TP5/SL5 -$122, TP5/SL10 +$378 (best), TP10/SL10 +$158; +Both best TP5/SL10 +$1,084 (69% win, min $710).
 Normal exits: Chosen $7,043, +Both $8,391. The money comes from the few big runs, not from the first move.
 REJECTED: small TP/SL removes the edge.
+
+### Live crash filters (28 Nov 2026, `research/crash_filter.py`, true 2026, 0.01)
+77 of 234 days in 2026 moved > $100 from the open (a third of all days: "crash" is normal for gold now).
+```
+filter          Chosen $ / green / worst wk / min    +Both $ / green / worst wk / min
+none            7,043 53% -383  867                  8,391 57% -353  862
+day $50 against 5,287 51% -520 1,061 (471 skipped)   6,558 56% -534 1,027
+fast $15/60min  5,217 52% -416  746 (469 skipped)    6,694 59% -564 1,079
+wild 2.5x range 6,332 53% -383 1,039 (90 skipped)    7,400 59% -454  976
+```
+REJECTED: every live crash filter loses profit and does not cut the worst week or the min balance
+(the trades against a fast move also catch the big turns).
