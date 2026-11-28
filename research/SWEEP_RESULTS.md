@@ -1529,3 +1529,21 @@ Min bal     $555   $617    $448   $900    $330   $835
 ```
 Higher trade win does NOT give more green days (stays 49-58%); it only shrinks the average day.
 MT5 trade list: daily target / daily loss stop / one trade at a time / stop after N losses: green days 45-50%.
+
+## TRUE 2026 BASE (28 Nov 2026): one continuous M1 file, real fills, 0.01 (`research/full_2026.py`)
+Owner sent Dec 2025 and 3-31 Aug 2026. `data/XAUUSDb_M1_2025-12_2026-11.csv` = Dec 2025 (warm-up) + Jan-Nov 2026,
+no file restarts. Results 1 Jan - 25 Nov 2026:
+```
+            F-E off  Chosen  F-E off+DB  +Both
+Profit      $6,057   $7,043  $7,405      $8,391
+PF          1.44     1.27    1.30        1.22
+Green days  48%      52%     58%         58%
+Avg day     $26      $30     $31         $36
+Worst day   -$245    -$293   -$326       -$360
+Min bal     $795     $880    $683        $968
+Safe bal    $1,192   $1,320  $1,025      $1,452
+Trades/day  6.3      11.8    13.7        19.2
+```
+Monthly Chosen: Jan $298, Feb $2,251, Mar $1,396, Apr $125, May $997, Jun $470, Jul $2,009, Aug $34,
+Sep -$113, Oct -$413, Nov -$10. Sep-Nov now loses in the backtest too, like MT5 (MT5 v1.13 Chosen at 0.01: $4,623).
+The old $10,276 came from impossible fills (~$1,100) and data holes / file restarts (~$2,100).
